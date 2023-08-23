@@ -36,7 +36,8 @@ class Priority(IntEnum):
 class ET:
   ENABLE = 'enable'
   PRE_ENABLE = 'preEnable'
-  OVERRIDE = 'override'
+  OVERRIDE_LATERAL = 'overrideLateral'
+  OVERRIDE_LONGITUDINAL = 'overrideLongitudinal'
   NO_ENTRY = 'noEntry'
   WARNING = 'warning'
   USER_DISABLE = 'userDisable'
@@ -649,7 +650,15 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
   },
 
   EventName.gasPressedOverride: {
-    ET.OVERRIDE: Alert(
+    ET.OVERRIDE_LONGITUDINAL: Alert(
+      "",
+      "",
+      AlertStatus.normal, AlertSize.none,
+      Priority.LOWEST, VisualAlert.none, AudibleAlert.none, .1),
+  },
+
+  EventName.steerOverride: {
+    ET.OVERRIDE_LATERAL: Alert(
       "",
       "",
       AlertStatus.normal, AlertSize.none,
@@ -968,7 +977,7 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
 
   # dp - use for atl alert
   EventName.communityFeatureDisallowedDEPRECATED: {
-    ET.OVERRIDE: Alert(
+    ET.OVERRIDE_LATERAL: Alert(
       "",
       "",
       AlertStatus.normal, AlertSize.none,

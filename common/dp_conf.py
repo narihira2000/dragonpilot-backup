@@ -73,6 +73,7 @@ confs = [
   {'name': 'dp_toyota_cruise_override_speed', 'default': 30, 'type': 'UInt8', 'min': 5, 'max': 60, 'depends': [{'name': 'dp_accel_profile_ctrl', 'vals': [True]}], 'conf_type': ['param', 'struct']},
   {'name': 'dp_toyota_auto_lock', 'default': False, 'type': 'Bool', 'conf_type': ['param', 'struct']},
   {'name': 'dp_toyota_auto_unlock', 'default': False, 'type': 'Bool', 'conf_type': ['param', 'struct']},
+  {'name': 'dp_toyota_fp_btn_link', 'default': False, 'type': 'Bool', 'conf_type': ['param']},
 
   {'name': 'dp_mapd', 'default': False, 'type': 'Bool', 'conf_type': ['param', 'struct']},
   {'name': 'dp_local_db', 'default': False, 'type': 'Bool', 'conf_type': ['param', 'struct']},
@@ -98,13 +99,14 @@ confs = [
   {'name': 'dp_dm', 'default': False, 'type': 'Bool', 'conf_type': ['param']},
   {'name': 'dp_speed_check', 'default': True, 'type': 'Bool', 'conf_type': ['param', 'struct']},
   {'name': 'dp_temp_check', 'default': True, 'type': 'Bool', 'conf_type': ['param']},
+  {'name': 'dp_vag_resume_fix', 'default': False, 'type': 'Bool', 'conf_type': ['param']},
   # # lat ctrl
   # {'name': 'dp_lane_less_mode_ctrl', 'default': False, 'type': 'Bool', 'conf_type': ['param', 'struct']},
   # {'name': 'dp_lane_less_mode', 'default': 2, 'type': 'UInt8', 'min': 0, 'max': 2, 'depends': [{'name': 'dp_lane_less_mode_ctrl', 'vals': [True]}], 'conf_type': ['param', 'struct']},
   # # long ctrl
   # {'name': 'dp_allow_gas', 'default': False, 'type': 'Bool', 'depends': [{'name': 'dp_atl', 'vals': [False]}], 'conf_type': ['param', 'struct']},
-  # #{'name': 'dp_following_profile_ctrl', 'default': False, 'type': 'Bool', 'conf_type': ['param', 'struct']},
-  # #{'name': 'dp_following_profile', 'default': 0, 'type': 'UInt8', 'min': 0, 'max': 3, 'depends': [{'name': 'dp_following_profile_ctrl', 'vals': [True]}], 'conf_type': ['param', 'struct']},
+  {'name': 'dp_following_profile_ctrl', 'default': False, 'type': 'Bool', 'conf_type': ['param', 'struct']},
+  {'name': 'dp_following_profile', 'default': 0, 'type': 'UInt8', 'min': 0, 'max': 2, 'depends': [{'name': 'dp_following_profile_ctrl', 'vals': [True]}], 'conf_type': ['param', 'struct']},
   # {'name': 'dp_accel_profile_ctrl', 'default': False, 'type': 'Bool', 'conf_type': ['param', 'struct']},
   # {'name': 'dp_accel_profile', 'default': 0, 'type': 'UInt8', 'min': 0, 'max': 2, 'depends': [{'name': 'dp_accel_profile_ctrl', 'vals': [True]}], 'conf_type': ['param', 'struct']},
   # # safety

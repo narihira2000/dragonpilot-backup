@@ -54,24 +54,16 @@ MIN_ACCEL = -3.5
 MAX_ACCEL = 2.0
 T_FOLLOW = 1.45
 COMFORT_BRAKE = 2.5
-STOP_DISTANCE = 5.5
+STOP_DISTANCE = 6.0
 
-def get_stopped_equivalence_factor(v_lead, v_ego, t_follow=T_FOLLOW):
-  # KRKeegan this offset rapidly decreases the following distance when the lead pulls
-  # away, resulting in an early demand for acceleration.
-  v_diff_offset = 0
-  if np.all(v_lead - v_ego > 0):
-    v_diff_offset = ((v_lead - v_ego) * 1.)
-    v_diff_offset = np.clip(v_diff_offset, 0, STOP_DISTANCE / 2)
-    v_diff_offset = np.maximum(v_diff_offset * ((10 - v_ego)/10), 0)
-  distance = (v_lead**2) / (2 * COMFORT_BRAKE) + v_diff_offset
-  return distance
+def get_stopped_equivalence_factor(v_lead, t_follow=T_FOLLOW):
+  return (v_lead**2) / (2 * COMFORT_BRAKE)
 
 def get_safe_obstacle_distance(v_ego, t_follow=T_FOLLOW):
   return (v_ego**2) / (2 * COMFORT_BRAKE) + t_follow * v_ego + STOP_DISTANCE
 
 def desired_follow_distance(v_ego, v_lead, t_follow=T_FOLLOW):
-  return get_safe_obstacle_distance(v_ego, t_follow) - get_stopped_equivalence_factor(v_lead, v_ego, t_follow)
+  return get_safe_obstacle_distance(v_ego, t_follow) - get_stopped_equivalence_factor(v_lead, t_follow)
 
 
 def gen_long_model():
@@ -210,6 +202,8 @@ class LongitudinalMpc:
     self.desired_TF = T_FOLLOW
     self.reset()
     self.source = SOURCES[2]
+    self.dp_following_profile_ctrl = False
+    self.dp_following_profile = 2
 
   def reset(self):
     # self.solver = AcadosOcpSolverCython(MODEL_NAME, ACADOS_SOLVER_TYPE, N)
@@ -260,29 +254,17 @@ class LongitudinalMpc:
     for i in range(N):
       self.solver.cost_set(i, 'Zl', Zl)
 
-  def get_cost_multipliers(self, v_lead0, v_lead1):
-    v_ego = self.x0[1]
-    v_ego_bps = [0, 10]
+  def get_cost_multipliers(self):
     TFs = [1.0, 1.25, T_FOLLOW, 1.8]
     # KRKeegan adjustments to costs for different TFs
     # these were calculated using the test_longitudial.py deceleration tests
     a_change_tf = interp(self.desired_TF, TFs, [.1, .8, 1., 1.1])
     j_ego_tf = interp(self.desired_TF, TFs, [.6, .8, 1., 1.1])
     d_zone_tf = interp(self.desired_TF, TFs, [1.6, 1.3, 1., 1.])
-    # KRKeegan adjustments to improve sluggish acceleration
-    # do not apply to deceleration
-    j_ego_v_ego = 1
-    a_change_v_ego = 1
-    if (v_lead0 - v_ego >= 0) and (v_lead1 - v_ego >= 0):
-      j_ego_v_ego = interp(v_ego, v_ego_bps, [.05, 1.])
-      a_change_v_ego = interp(v_ego, v_ego_bps, [.05, 1.])
-    # Select the appropriate min/max of the options
-    j_ego = min(j_ego_tf, j_ego_v_ego)
-    a_change = min(a_change_tf, a_change_v_ego)
-    return a_change, j_ego, d_zone_tf
+    return a_change_tf, j_ego_tf, d_zone_tf
 
-  def set_weights(self, prev_accel_constraint=True, v_lead0=0, v_lead1=0):
-    cost_multipliers = self.get_cost_multipliers(v_lead0, v_lead1)
+  def set_weights(self, prev_accel_constraint=True):
+    cost_multipliers = self.get_cost_multipliers()
     if self.mode == 'acc':
       a_change_cost = A_CHANGE_COST if prev_accel_constraint else 0
       cost_weights = [X_EGO_OBSTACLE_COST, X_EGO_COST, V_EGO_COST, A_EGO_COST, a_change_cost * cost_multipliers[0], J_EGO_COST * cost_multipliers[1]]
@@ -340,38 +322,36 @@ class LongitudinalMpc:
     self.cruise_min_a = min_a
     self.cruise_max_a = max_a
 
-  def update_TF(self, carstate):
-    if carstate.distanceLines == 1: # Traffic
-      # At slow speeds more time, decrease time up to 60mph
-      # in mph ~= 5     10   15   20  25     30    35     40  45     50    55     60  65     70    75     80  85     90
-      x_vel = [0.0,  1,    2.78,  5.56,   8.33,  11.11, 13.89, 16.67, 19.44, 22.22, 25.0, 27.78, 30.56, 33.33, 36.11, 38.89, 41.67]
-      y_dist = [1.1, 1.15, 1.25,  1.3,   1.3368, 1.3368, 1.3, 1.24,  1.16,  1.2,  1.21, 1.22,  1.23,  1.24,   1.25,  1.26,  1.27]
-      self.desired_TF = np.interp(carstate.vEgo, x_vel, y_dist)
-    elif carstate.distanceLines == 2: # Relaxed
-      x_vel = [0.0,  1,    2.78,  5.56,   8.33,  11.11, 13.89, 16.67, 19.44, 22.22, 27.78, 30.56, 33.33, 36.11, 38.89, 41.67]
-      y_dist = [1.3, 1.38, 1.45,   1.5045, 1.535, 1.59,  1.642, 1.683, 1.726, 1.76,  1.83,  1.9,   1.99,  2.1,   2.23,  2.4]
-      self.desired_TF = np.interp(carstate.vEgo, x_vel, y_dist)
-    else:
-      #x_vel = [0.0,  1,    2.78,  5.56,   8.33,  11.11, 13.89, 16.67, 19.44, 22.22, 27.78, 30.56, 33.33, 36.11, 38.89, 41.67]
-      #y_dist = [1.3, 1.38, 1.45,   1.5045, 1.535, 1.59,  1.642, 1.683, 1.726, 1.76,  1.83,  1.9,   1.99,  2.1,   2.23,  2.4]
-      #self.desired_TF = np.interp(carstate.vEgo, x_vel, y_dist)
-      self.desired_TF = T_FOLLOW
+  def update_TF(self, sm, carstate):
+    if self.dp_following_profile_ctrl and self.mode == 'acc':
+      if self.dp_following_profile == 0:
+        # At slow speeds more time, decrease time up to 60mph
+        # in mph ~= 5     10   15   20  25     30    35     40  45     50    55     60  65     70    75     80  85     90
+        x_vel = [0.0,  1,    2.78,  5.56,   8.33,  11.11, 13.89, 16.67, 19.44, 22.22, 25.0, 27.78, 30.56, 33.33, 36.11, 38.89, 41.67]
+        y_dist = [1.1, 1.15, 1.25,  1.3,   1.3368, 1.3368, 1.3, 1.24,  1.16,  1.2,  1.21, 1.22,  1.23,  1.24,   1.25,  1.26,  1.27]
+        self.desired_TF = np.interp(carstate.vEgo, x_vel, y_dist)
+      if self.dp_following_profile == 1:
+        x_vel = [0.0,  1,    2.78,  5.56,   8.33,  11.11, 13.89, 16.67, 19.44, 22.22, 27.78, 30.56, 33.33, 36.11, 38.89, 41.67]
+        y_dist = [1.3, 1.38, 1.45,   1.5045, 1.535, 1.59,  1.642, 1.683, 1.726, 1.76,  1.83,  1.9,   1.99,  2.1,   2.23,  2.4]
+        self.desired_TF = np.interp(carstate.vEgo, x_vel, y_dist)
+      if self.dp_following_profile == 2:
+        self.desired_TF = T_FOLLOW
 
-  def update(self, carstate, radarstate, v_cruise, x, v, a, j, prev_accel_constraint):
+  def update(self, sm, carstate, radarstate, v_cruise, x, v, a, j, prev_accel_constraint):
     v_ego = self.x0[1]
     self.status = radarstate.leadOne.status or radarstate.leadTwo.status
 
     lead_xv_0 = self.process_lead(radarstate.leadOne)
     lead_xv_1 = self.process_lead(radarstate.leadTwo)
 
-    self.update_TF(carstate)
-    self.set_weights(prev_accel_constraint=prev_accel_constraint, v_lead0=lead_xv_0[0,1], v_lead1=lead_xv_1[0,1])
+    self.update_TF(sm, carstate)
+    self.set_weights(prev_accel_constraint)
 
     # To estimate a safe distance from a moving lead, we calculate how much stopping
     # distance that lead needs as a minimum. We can add that to the current distance
     # and then treat that as a stopped car/obstacle at this new distance.
-    lead_0_obstacle = lead_xv_0[:,0] + get_stopped_equivalence_factor(lead_xv_0[:,1], self.x_sol[:,1], self.desired_TF)
-    lead_1_obstacle = lead_xv_1[:,0] + get_stopped_equivalence_factor(lead_xv_1[:,1], self.x_sol[:,1], self.desired_TF)
+    lead_0_obstacle = lead_xv_0[:,0] + get_stopped_equivalence_factor(lead_xv_0[:,1], self.desired_TF)
+    lead_1_obstacle = lead_xv_1[:,0] + get_stopped_equivalence_factor(lead_xv_1[:,1], self.desired_TF)
 
     # Update in ACC mode or ACC/e2e blend
     if self.mode == 'acc':

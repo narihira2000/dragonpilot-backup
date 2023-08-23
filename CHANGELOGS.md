@@ -1,4 +1,11 @@
-dragonpilot 2022.09.12
+dragonpilot 2022.09.20
+========================
+* Synced with openpilot master 2022.09.19 commits.
+* READD: refactored dyanmaic follow. support all car with op long.
+* ADDED: PRIUS_TSS2 (2020-2022) now uses torque as default and auto learns.
+* bug fix and improvement
+
+dragonpilot [2022.09.09]
 ========================
 * Synced with openpilot master 2022.09.09 commits.
 * ADDED: us-west coast can now use mapd without data. See toggle description for more detail.
@@ -6,6 +13,7 @@ dragonpilot 2022.09.12
 * bug fix and improvement
 
 dragonpilot [2022.09.04]
+========================
 * Synced with openpilot master 2022.09.01 commits.
 * Refactor: Dynamic Follow has been removerd temporary. Needs a refactor. (wip)
 * ADDED: Auto Toyota door lock/unlock **only works on some car**

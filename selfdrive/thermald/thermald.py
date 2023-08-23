@@ -354,9 +354,6 @@ def thermald_thread(end_event, hw_queue):
     # Check if we need to auto shut down
     # we only enable it when it's been on-road once.
     if started_seen and dp_auto_shutdown and off_ts is not None and (sec_since_boot() - off_ts > dp_auto_shutdown_in):
-      msg.deviceState.chargingDisabled = True
-      # give a sec for panda to disable charging
-      time.sleep(1)
       params.put_bool("DoShutdown", True)
 
     if power_monitor.should_shutdown(onroad_conditions["ignition"], in_car, off_ts, started_seen):

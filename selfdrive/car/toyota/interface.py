@@ -264,6 +264,7 @@ class CarInterface(CarInterfaceBase):
     else:
       set_long_tune(ret.longitudinalTuning, LongTunes.TSS)
 
+    CarInterfaceBase.configure_lqr_tune(ret.lateralTuning)
     return ret
 
   # returns a car.CarState

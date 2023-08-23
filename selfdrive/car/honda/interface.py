@@ -329,6 +329,7 @@ class CarInterface(CarInterfaceBase):
     ret.steerActuatorDelay = 0.1
     ret.steerLimitTimer = 0.8
 
+    CarInterfaceBase.configure_lqr_tune(ret.lateralTuning)
     return ret
 
   @staticmethod
@@ -385,4 +386,4 @@ class CarInterface(CarInterfaceBase):
   # pass in a car.CarControl
   # to be called @ 100hz
   def apply(self, c):
-    return self.CC.update(c, self.CS)
+    return self.CC.update(c, self.CS, self.dragonconf)

@@ -42,6 +42,9 @@ class CarState(CarStateBase):
     self.acc_type = 1
 
     #dp
+    self.dp_sig_check = False
+    self.dp_sig_sport_on_seen = True
+    self.dp_sig_econ_on_seen = True
     self.dp_accel_profile = None
     self.dp_accel_profile_prev = None
     self.dp_accel_profile_init = False
@@ -103,21 +106,26 @@ class CarState(CarStateBase):
 
     #dp: Thank you Arne (acceleration)
     if self.dp_toyota_ap_btn_link:
-      if self.CP.carFingerprint in TSS2_CAR:
-        sport_on = cp.vl["GEAR_PACKET"]['SPORT_ON']
-        econ_on = cp.vl["GEAR_PACKET"]['ECON_ON']
-      else:
+      sport_on_sig = 'SPORT_ON_2' if CAR.RAV4_TSS2 else 'SPORT_ON'
+      # check signal once
+      if not self.dp_sig_check:
+        self.dp_sig_check = True
+        # sport on
+        try:
+          sport_on = cp.vl["GEAR_PACKET"][sport_on_sig]
+        except KeyError:
+          sport_on = 0
+          self.dp_sig_sport_on_seen = False
+        # econ on
         try:
           econ_on = cp.vl["GEAR_PACKET"]['ECON_ON']
         except KeyError:
           econ_on = 0
-        if self.CP.carFingerprint == CAR.RAV4_TSS2:
-          sport_on = cp.vl["GEAR_PACKET"]['SPORT_ON_2']
-        else:
-          try:
-            sport_on = cp.vl["GEAR_PACKET"]['SPORT_ON']
-          except KeyError:
-            sport_on = 0
+          self.dp_sig_econ_on_seen = False
+      else:
+        sport_on = cp.vl["GEAR_PACKET"][sport_on_sig] if self.dp_sig_sport_on_seen else 0
+        econ_on = cp.vl["GEAR_PACKET"]['ECON_ON'] if self.dp_sig_econ_on_seen else 0
+
       if sport_on == 0 and econ_on == 0:
         self.dp_accel_profile = DP_ACCEL_NORMAL
       elif sport_on == 1:

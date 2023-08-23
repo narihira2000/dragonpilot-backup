@@ -11,7 +11,11 @@ from selfdrive.mapd.lib.WayCollection import WayCollection
 from selfdrive.mapd.config import QUERY_RADIUS, MIN_DISTANCE_FOR_NEW_QUERY, FULL_STOP_MAX_SPEED, LOOK_AHEAD_HORIZON_TIME
 from system.swaglog import cloudlog
 
-ROAD_NAME_TIMEOUT = 10 # secs
+# dp
+from common.params import Params
+import json
+
+ROAD_NAME_TIMEOUT = 30 # secs
 
 _DEBUG = False
 _CLOUDLOG_DEBUG = True
@@ -54,6 +58,18 @@ class MapD():
     self._road_name_last = ""
     self._road_name_last_timed_out = 0.
 
+    # dp - use LastGPSPosition as init position (if we are in a undercover car park?)
+    # this way we can prefetch osm data before we get a fix.
+    last_pos = Params().get("LastGPSPosition")
+    if last_pos is not None and last_pos != "":
+      l = json.loads(last_pos)
+      lat = float(l["latitude"])
+      lon = float(l["longitude"])
+      self.location_rad = np.radians(np.array([lat, lon], dtype=float))
+      self.location_deg = (lat, lon)
+      self.bearing_rad = np.radians(0, dtype=float)
+      _debug("Use LastGPSPosition position - lat: %s, lon: %s" % (lat, lon))
+
   def udpate_state(self, sm):
     sock = 'controlsState'
     if not sm.updated[sock] or not sm.valid[sock]:
@@ -75,7 +91,7 @@ class MapD():
     if log.flags % 2 == 0:
       return
 
-    self.last_gps_fix_timestamp = log.timestamp  # Unix TS. Milliseconds since January 1, 1970.
+    self.last_gps_fix_timestamp = log.unixTimestampMillis  # Unix TS. Milliseconds since January 1, 1970.
     self.location_rad = np.radians(np.array([log.latitude, log.longitude], dtype=float))
     self.location_deg = (log.latitude, log.longitude)
     self.bearing_rad = np.radians(log.bearingDeg, dtype=float)
@@ -201,13 +217,13 @@ class MapD():
     turn_speed_limit_section = self.route.current_curvature_speed_limit_section
     horizon_mts = self.gps_speed * LOOK_AHEAD_HORIZON_TIME
     next_turn_speed_limit_sections = self.route.next_curvature_speed_limit_sections(horizon_mts)
-    current_road_name = self.route.current_road_name
+    current_road_name = str(self.route.current_road_name).strip()
 
     map_data_msg = messaging.new_message('liveMapData')
     map_data_msg.valid = sm.all_alive(service_list=['gpsLocationExternal']) and \
                          sm.all_valid(service_list=['gpsLocationExternal'])
 
-    map_data_msg.liveMapData.lastGpsTimestamp = self.last_gps.timestamp
+    map_data_msg.liveMapData.lastGpsTimestamp = self.last_gps.unixTimestampMillis
     map_data_msg.liveMapData.lastGpsLatitude = float(self.last_gps.latitude)
     map_data_msg.liveMapData.lastGpsLongitude = float(self.last_gps.longitude)
     map_data_msg.liveMapData.lastGpsSpeed = float(self.last_gps.speed)
@@ -234,18 +250,22 @@ class MapD():
     map_data_msg.liveMapData.turnSpeedLimitsAheadDistances = [float(s.start) for s in next_turn_speed_limit_sections]
     map_data_msg.liveMapData.turnSpeedLimitsAheadSigns = [float(s.curv_sign) for s in next_turn_speed_limit_sections]
 
-    road_name = str(current_road_name if current_road_name is not None else "").strip()
-    if road_name == "" and self._road_name_last != "":
-      if self._road_name_last_timed_out == 0.:
-        self._road_name_last_timed_out = sec_since_boot() + ROAD_NAME_TIMEOUT
+    # dp - cache road name to avoid name display blinking
+    if current_road_name == "":
+      if self._road_name_last == "":
+        # can't do anything as we do not have any road name history
+        pass
       else:
-        if sec_since_boot() <= self._road_name_last_timed_out:
-          road_name = self._road_name_last
+        if self._road_name_last_timed_out == 0.:
+          self._road_name_last_timed_out = sec_since_boot() + ROAD_NAME_TIMEOUT
+        else:
+          if sec_since_boot() <= self._road_name_last_timed_out:
+            current_road_name = self._road_name_last
     else:
       self._road_name_last_timed_out = 0.
-      self._road_name_last = road_name
+      self._road_name_last = current_road_name
 
-    map_data_msg.liveMapData.currentRoadName = road_name
+    map_data_msg.liveMapData.currentRoadName = current_road_name
 
     pm.send('liveMapData', map_data_msg)
     _debug(f'Mapd *****: Publish: \n{map_data_msg}\n********', log_to_cloud=False)

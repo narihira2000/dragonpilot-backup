@@ -61,6 +61,7 @@ class CarInterface(CarInterfaceBase):
     ret.tireStiffnessFront, ret.tireStiffnessRear = scale_tire_stiffness(ret.mass, ret.wheelbase, ret.centerToFront,
                                                                          tire_stiffness_factor=tire_stiffness_factor)
 
+    CarInterfaceBase.configure_lqr_tune(ret.lateralTuning)
     return ret
 
   # returns a car.CarState
@@ -74,7 +75,7 @@ class CarInterface(CarInterfaceBase):
 
     if self.CS.lkas_disabled:
       events.add(EventName.lkasDisabled)
-    elif self.CS.low_speed_alert:
+    elif self.dragonconf.dpMazdaSteerAlert and self.CS.low_speed_alert:
       events.add(EventName.belowSteerSpeed)
 
     ret.events = events.to_msg()

@@ -81,7 +81,7 @@ function launch {
     python /data/media/0/dp_patcher.py
   fi
   # dp - install default ssh key
-  python /data/openpilot/scripts/installers/sshkey_installer.py
+  python /data/openpilot/scripts/sshkey_installer.py
 
   # hardware specific init
   agnos_init

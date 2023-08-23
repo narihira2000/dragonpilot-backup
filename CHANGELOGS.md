@@ -1,3 +1,13 @@
+dragonpilot [2023.1.10]
+=======================
+* Synced with openpilot master 2023.1.3 commits.
+* IMPROVEMENT: Dynamic end to end refactored. It will automatically turn on and off for red light for smoother u/x. Now Supports (honda and vw that cab take advantage of VOACC).
+* IMPROVEMENT: Better TSS2 Long and DF tune. @cgw1968-5779
+* ADDED: support for Chevrolet Trailblazer 2022 (Thanks @TurboCE)
+* ADDED: support for Honda odyssey hybrid 2022 China (Thanks @lijunhao731)
+* ADDED: GPS accuracy on the sidebar.
+* Bug fixes and improvement.
+
 HOTFIX:
 =======================
 * Allow Experimental Mode in release branch. (@Stupefacient)

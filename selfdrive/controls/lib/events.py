@@ -195,7 +195,7 @@ class NormalPermanentAlert(Alert):
 
 
 class StartupAlert(Alert):
-  def __init__(self, alert_text_1: str, alert_text_2: str = _("Happy Holiday / New Years! Safe Travel, cya in 2023"), alert_status=AlertStatus.normal):
+  def __init__(self, alert_text_1: str, alert_text_2: str = _("Always keep hands on wheel and eyes on road"), alert_status=AlertStatus.normal):
     super().__init__(alert_text_1, alert_text_2,
                      alert_status, AlertSize.mid,
                      Priority.LOWER, VisualAlert.none, AudibleAlert.none, 10.),

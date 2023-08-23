@@ -17,7 +17,7 @@ class OSM():
   def __init__(self):
     self.api = overpy.Overpass()
     self.areas = None
-    self.osm_local_db_enabled = is_local_osm_installed() and Params().get_bool("OsmLocalDb")
+    self.osm_local_db_enabled = is_local_osm_installed()
     # self.api = overpy.Overpass(url='http://3.65.170.21/api/interpreter')
 
   def fetch_road_ways_around_location(self, lat, lon, radius):

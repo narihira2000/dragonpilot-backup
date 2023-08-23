@@ -17,11 +17,8 @@ inline std::string log_root() {
   if (const char *env = getenv("LOG_ROOT")) {
     return env;
   }
-  if (std::atoi(Params().get("dp_atl").c_str()) > 0 || Params().getBool("dp_jetson") || Params().getBool("dp_api_custom")) {
-    return "/data/media/0/fakedata";
-  } else {
-    return Hardware::PC() ? util::getenv("HOME") + "/.comma/media/0/realdata" : "/data/media/0/realdata";
-  }
+  return "/data/media/0/fakedata";
+  //return Hardware::PC() ? util::getenv("HOME") + "/.comma/media/0/realdata" : "/data/media/0/realdata";
 }
 inline std::string params() {
   return Hardware::PC() ? util::getenv("HOME") + "/.comma/params" : "/data/params";

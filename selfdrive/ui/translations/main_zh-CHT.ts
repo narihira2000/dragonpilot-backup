@@ -266,17 +266,13 @@ Reboot required.</source>
 需重新啟動。</translation>
     </message>
     <message>
-        <source>Volkswagen</source>
-        <translation></translation>
-    </message>
-    <message>
         <source>Enable VAG Resume Fix</source>
-        <translation>啟用 VAG RES 修正</translation>
+        <translation type="vanished">啟用 VAG RES 修正</translation>
     </message>
     <message>
         <source>Enable this if your car does not auto resume (stop and go).
 Reboot required.</source>
-        <translation>如果您的車子無法自動跟車，請開啟這個功能。
+        <translation type="vanished">如果您的車子無法自動跟車，請開啟這個功能。
 需重新啟動。</translation>
     </message>
     <message>
@@ -300,12 +296,21 @@ Thanks to @TheCrowd</source>
         <source>Enable this to bypass dashcam mode.</source>
         <translation>啟用這個選項來繞過行車記錄模式。</translation>
     </message>
+    <message>
+        <source>Enable Reverse ACC Set speed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enabling this will reverse set acc short press +5 jump, Long press +1 Jump.
+Reboot Required.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>DPControlPanel</name>
     <message>
         <source>ALCA Delay</source>
-        <translation>設置自動換道延遲時間</translation>
+        <translation type="vanished">設置自動換道延遲時間</translation>
     </message>
     <message>
         <source>Once the vehicle meets all ALCA criteria, it will wait for the seconds set here before performing lane change automatically.</source>
@@ -317,7 +322,7 @@ Thanks to @TheCrowd</source>
     </message>
     <message>
         <source>ALCA Min Speed</source>
-        <translation>自動換道最低啟用速度</translation>
+        <translation type="vanished">自動換道最低啟用速度</translation>
     </message>
     <message>
         <source>ALCA minimum engage speed in mph.
@@ -331,7 +336,7 @@ Thanks to @TheCrowd</source>
     </message>
     <message>
         <source>LCA Min Speed</source>
-        <translation>輔助換道最低啟用速度</translation>
+        <translation type="vanished">輔助換道最低啟用速度</translation>
     </message>
     <message>
         <source>LCA minimum engage speed in mph.
@@ -351,7 +356,7 @@ Thanks to @TheCrowd</source>
     </message>
     <message>
         <source>Camera Offset</source>
-        <translation>相機偏移</translation>
+        <translation type="vanished">相機偏移</translation>
     </message>
     <message>
         <source>Adjust your camera position if your device is not mounted as per guidance.</source>
@@ -359,7 +364,7 @@ Thanks to @TheCrowd</source>
     </message>
     <message>
         <source>Driving Path Offset</source>
-        <translation>駕駛路徑偏移</translation>
+        <translation type="vanished">駕駛路徑偏移</translation>
     </message>
     <message>
         <source>Adjust this if you wish to let openpilot drive slightly towards to left (+) or right (-)</source>
@@ -421,7 +426,7 @@ When on close will be dynamic but get closer in traffic. Normal is also dynamic 
     </message>
     <message>
         <source>DE2E When Lead Car Speed Below:</source>
-        <translation>切換至 E2E 當前車車速低於：</translation>
+        <translation type="vanished">切換至 E2E 當前車車速低於：</translation>
     </message>
     <message>
         <source>Dynamic End-to-end</source>
@@ -504,22 +509,22 @@ Reboot required.</source>
     <message>
         <source>when acc set speed below the setting and there is no lead car, e2e will be turned on automatically. 
 1 km/h = 0.62 mph</source>
-        <translation>當車子的定速低於設定值並且在沒有前車的情形下，系統會自動開啟 E2E 模式。
+        <translation type="vanished">當車子的定速低於設定值並且在沒有前車的情形下，系統會自動開啟 E2E 模式。
 1 km/h = 0.62 mph</translation>
     </message>
     <message>
         <source> km/h</source>
-        <translation> km/h</translation>
+        <translation type="vanished"> km/h</translation>
     </message>
     <message>
         <source>when lead car is going below the setting, e2e will be turned on automatically. 
 1 km/h = 0.62 mph</source>
-        <translation>當前車車速於低於設定值時，系統將自動切換至 E2E 模式。
+        <translation type="vanished">當前車車速於低於設定值時，系統將自動切換至 E2E 模式。
 1 km/h = 0.62 mph</translation>
     </message>
     <message>
         <source>DE2E When Car Set Speed Below (w/o Lead):</source>
-        <translation>切換至 E2E 當定速低於 (無前車)：</translation>
+        <translation type="vanished">切換至 E2E 當定速低於 (無前車)：</translation>
     </message>
     <message>
         <source>E2E When Car Set Speed Below (w/o Lead):</source>
@@ -531,7 +536,7 @@ Reboot required.</source>
     </message>
     <message>
         <source>DE2E Adapt Following Mode</source>
-        <translation>E2E 配合跟車距離控制</translation>
+        <translation type="vanished">E2E 配合跟車距離控制</translation>
     </message>
     <message>
         <source>Enable this if you wish to use following dist. mode in DE2E.</source>
@@ -539,10 +544,46 @@ Reboot required.</source>
     </message>
     <message>
         <source>DE2E Adapt Accel Mode</source>
-        <translation>E2E 配合加速模式控制</translation>
+        <translation type="vanished">E2E 配合加速模式控制</translation>
     </message>
     <message>
         <source>Enable this if you wish to use accel mode in DE2E.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable this if your vehicles is in VOACC (e.g. Honda Bosch / VAG).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>    ALCA Delay</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>    ALCA Min Speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>    LCA Min Speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>   Camera Offset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>   Driving Path Offset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>    DE2E Adapt Following Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>    DE2E Adapt Accel Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>   DE2E w/ VOACC</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -550,7 +591,7 @@ Reboot required.</source>
     <name>DPGeneralPanel</name>
     <message>
         <source>Auto Shutdown In</source>
-        <translation>熄火後自動關機：</translation>
+        <translation type="vanished">熄火後自動關機：</translation>
     </message>
     <message>
         <source>Adjust your shutdown waiting period.
@@ -705,6 +746,10 @@ Reboot required.</source>
         <source>Are you sure delete all media?</source>
         <translation>您確定要刪除所有的行車記錄嗎？</translation>
     </message>
+    <message>
+        <source>    Auto Shutdown In</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>DPMapsPanel</name>
@@ -809,14 +854,14 @@ Please note:
     </message>
     <message>
         <source>Use Mapd without data.</source>
-        <translation>使用本地端 Mapd 圖資</translation>
+        <translation type="vanished">使用本地端 Mapd 圖資</translation>
     </message>
     <message>
         <source>You need minimum of 50 gb storage in /data/media/0/.
  Run df -h /data/media/0/ to see how much space you have available.
  Strongly recommend getting 1 TB ssd.
  If you decide not to upgrade you can delete all logs under dp-general </source>
-        <translation>您設備的 /data/media/0/ 將需要至少 50GB 的存儲空間。</translation>
+        <translation type="vanished">您設備的 /data/media/0/ 將需要至少 50GB 的存儲空間。</translation>
     </message>
 </context>
 <context>
@@ -845,11 +890,11 @@ Please note:
     </message>
     <message>
         <source>Alert Volume</source>
-        <translation>提示音量</translation>
+        <translation type="vanished">提示音量</translation>
     </message>
     <message>
         <source>Adjust your alert volume.</source>
-        <translation>調整設備的提示音量。</translation>
+        <translation type="vanished">調整設備的提示音量。</translation>
     </message>
     <message>
         <source>Quiet Drive</source>
@@ -910,6 +955,14 @@ Please note:
     <message>
         <source>Display Driver Camera when reversing.</source>
         <translation>倒車顯示駕駛監控畫面</translation>
+    </message>
+    <message>
+        <source>Rainbow Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>for all the tesla fanboy&apos;s.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1125,18 +1178,6 @@ Please note:
     <message>
         <source>Installing...</source>
         <translation>安裝中…</translation>
-    </message>
-    <message>
-        <source>Receiving objects: </source>
-        <translation>接收對象： </translation>
-    </message>
-    <message>
-        <source>Resolving deltas: </source>
-        <translation>分析差異： </translation>
-    </message>
-    <message>
-        <source>Updating files: </source>
-        <translation>更新檔案： </translation>
     </message>
 </context>
 <context>
@@ -1524,18 +1565,6 @@ location set</source>
         <translation>連接至網路中</translation>
     </message>
     <message>
-        <source>Choose Software to Install</source>
-        <translation>選擇要安裝的軟體</translation>
-    </message>
-    <message>
-        <source>Dashcam</source>
-        <translation>行車記錄器</translation>
-    </message>
-    <message>
-        <source>Custom Software</source>
-        <translation>定制的軟體</translation>
-    </message>
-    <message>
         <source>Enter URL</source>
         <translation>輸入網址</translation>
     </message>
@@ -1660,6 +1689,10 @@ location set</source>
     <message>
         <source>5G</source>
         <translation></translation>
+    </message>
+    <message>
+        <source>%1 m</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1881,14 +1914,6 @@ Reboot now?</source>
         <translation>在本車輛中，openpilot預設將使用原車內建的ACC系統，而非openpilot縱向控制。開啟此開關來啟用openpilot縱向控制，使用此選項時建議一併啟用實驗模式。</translation>
     </message>
     <message>
-        <source>Experimental mode is currently unavailable on this car, since the car&apos;s stock ACC is used for longitudinal control.</source>
-        <translation>因車輛使用內建ACC系統，無法在本車輛上啟動實驗模式。</translation>
-    </message>
-    <message>
-        <source>Enable experimental longitudinal control to allow experimental mode.</source>
-        <translation>啟用實驗性縱向控制以使用實驗模式。</translation>
-    </message>
-    <message>
         <source>openpilot defaults to driving in &lt;b&gt;chill mode&lt;/b&gt;. Experimental mode enables &lt;b&gt;alpha-level features&lt;/b&gt; that aren&apos;t ready for chill mode. Experimental features are listed below:</source>
         <translation>openpilot 預設以 &lt;b&gt;輕鬆模式&lt;/b&gt; 駕駛。    實驗模式啟用了尚未準備好進入輕鬆模式的 &lt;b&gt;alpha 級功能&lt;/b&gt;。實驗功能如下：</translation>
     </message>
@@ -1907,6 +1932,22 @@ Reboot now?</source>
     <message>
         <source>The driving visualization will transition to the road-facing wide-angle camera at low speeds to better show some turns. The Experimental mode logo will also be shown in the top right corner.</source>
         <translation>低速行駛時，將會切換成路側廣角鏡頭，以完整顯示轉彎路徑，右上角將出現實驗模式圖案。</translation>
+    </message>
+    <message>
+        <source>Experimental mode is currently unavailable on this car since the car&apos;s stock ACC is used for longitudinal control.</source>
+        <translation>因車輛使用內建ACC系統，無法在本車輛上啟動實驗模式。</translation>
+    </message>
+    <message>
+        <source>openpilot longitudinal control may come in a future update.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An experimental version of openpilot longitudinal control can be tested, along with Experimental mode, on non-release branches.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable experimental longitudinal control to allow Experimental mode.</source>
+        <translation>啟用實驗性縱向控制以使用實驗模式。</translation>
     </message>
 </context>
 <context>

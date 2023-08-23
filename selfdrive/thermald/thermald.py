@@ -191,9 +191,6 @@ def thermald_thread(end_event, hw_queue):
 
   fan_controller = None
 
-  dp_auto_shutdown = params.get_bool("dp_auto_shutdown")
-  dp_auto_shutdown_in = int(params.get("dp_auto_shutdown_in", encoding='utf8')) * 60
-
   while not end_event.is_set():
     sm.update(PANDA_STATES_TIMEOUT)
 
@@ -362,11 +359,6 @@ def thermald_thread(end_event, hw_queue):
     statlog.sample("som_power_draw", som_power_draw)
     msg.deviceState.somPowerDrawW = som_power_draw
 
-
-    # Check if we need to auto shut down
-    # we only enable it when it's been on-road once.
-    if started_seen and dp_auto_shutdown and off_ts is not None and (sec_since_boot() - off_ts > dp_auto_shutdown_in):
-      params.put_bool("DoShutdown", True)
 
     if power_monitor.should_shutdown(onroad_conditions["ignition"], in_car, off_ts, started_seen):
       cloudlog.warning(f"shutting device down, offroad since {off_ts}")

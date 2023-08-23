@@ -255,19 +255,6 @@ Reboot required.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Volkswagen</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enable VAG Resume Fix</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enable this if your car does not auto resume (stop and go).
-Reboot required.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Mazda</source>
         <translation type="unfinished"></translation>
     </message>
@@ -288,13 +275,18 @@ Thanks to @TheCrowd</source>
         <source>Enable this to bypass dashcam mode.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Enable Reverse ACC Set speed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enabling this will reverse set acc short press +5 jump, Long press +1 Jump.
+Reboot Required.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>DPControlPanel</name>
-    <message>
-        <source>ALCA Delay</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Once the vehicle meets all ALCA criteria, it will wait for the seconds set here before performing lane change automatically.</source>
         <translation type="unfinished"></translation>
@@ -304,20 +296,12 @@ Thanks to @TheCrowd</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>ALCA Min Speed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>ALCA minimum engage speed in mph.
 1 mph = 1.61 km/h.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source> mph</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>LCA Min Speed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -335,15 +319,7 @@ Thanks to @TheCrowd</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Camera Offset</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Adjust your camera position if your device is not mounted as per guidance.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Driving Path Offset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -468,50 +444,52 @@ Reboot required.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>when acc set speed below the setting and there is no lead car, e2e will be turned on automatically. 
-1 km/h = 0.62 mph</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> km/h</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>when lead car is going below the setting, e2e will be turned on automatically. 
-1 km/h = 0.62 mph</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>DE2E When Car Set Speed Below (w/o Lead):</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>DE2E When Lead Car Speed Below:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>DE2E Adapt Following Mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Enable this if you wish to use following dist. mode in DE2E.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>DE2E Adapt Accel Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Enable this if you wish to use accel mode in DE2E.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Enable this if your vehicles is in VOACC (e.g. Honda Bosch / VAG).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>    ALCA Delay</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>    ALCA Min Speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>    LCA Min Speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>   Camera Offset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>   Driving Path Offset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>    DE2E Adapt Following Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>    DE2E Adapt Accel Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>   DE2E w/ VOACC</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>DPGeneralPanel</name>
-    <message>
-        <source>Auto Shutdown In</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Adjust your shutdown waiting period.
 0 = shutdown immediately.</source>
@@ -657,6 +635,10 @@ Reboot required.</source>
         <source>Are you sure delete all media?</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>    Auto Shutdown In</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>DPMapsPanel</name>
@@ -749,17 +731,6 @@ Please note:
 4. Not connecting to the internet for while might feel up device storage from all the gps traces. </source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Use Mapd without data.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>You need minimum of 50 gb storage in /data/media/0/.
- Run df -h /data/media/0/ to see how much space you have available.
- Strongly recommend getting 1 TB ssd.
- If you decide not to upgrade you can delete all logs under dp-general </source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>DPUIPanel</name>
@@ -782,14 +753,6 @@ Please note:
     </message>
     <message>
         <source>AUTO</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Alert Volume</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Adjust your alert volume.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -850,6 +813,14 @@ Please note:
     </message>
     <message>
         <source>Display Driver Camera when reversing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rainbow Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>for all the tesla fanboy&apos;s.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1066,18 +1037,6 @@ Please note:
     <message>
         <source>Installing...</source>
         <translation>インストールしています...</translation>
-    </message>
-    <message>
-        <source>Receiving objects: </source>
-        <translation>ｵﾌﾞｼﾞｪｸﾄをﾀﾞｳﾝﾛｰﾄﾞしています： </translation>
-    </message>
-    <message>
-        <source>Resolving deltas: </source>
-        <translation>デルタを解決しています： </translation>
-    </message>
-    <message>
-        <source>Updating files: </source>
-        <translation>ファイルを更新しています： </translation>
     </message>
 </context>
 <context>
@@ -1465,18 +1424,6 @@ location set</source>
         <translation>インターネット接続を待機中</translation>
     </message>
     <message>
-        <source>Choose Software to Install</source>
-        <translation>インストールするソフトウェアを選択してください</translation>
-    </message>
-    <message>
-        <source>Dashcam</source>
-        <translation>ﾄﾞﾗｲﾌﾞﾚｺｰﾀﾞｰ</translation>
-    </message>
-    <message>
-        <source>Custom Software</source>
-        <translation>カスタムソフトウェア</translation>
-    </message>
-    <message>
         <source>Enter URL</source>
         <translation>URL を入力</translation>
     </message>
@@ -1601,6 +1548,10 @@ location set</source>
     <message>
         <source>5G</source>
         <translation>5G</translation>
+    </message>
+    <message>
+        <source>%1 m</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1822,14 +1773,6 @@ Reboot now?</source>
         <translation>openpilotはこの車の場合、車に内蔵されているACCを標準で利用します。この機能を有効にすることで実験段階のopenpilotによるアクセル制御を利用できます。実験モードと合わせて利用することをお勧めします。</translation>
     </message>
     <message>
-        <source>Experimental mode is currently unavailable on this car, since the car&apos;s stock ACC is used for longitudinal control.</source>
-        <translation>この車のACCがアクセル制御を行うため、実験モードを利用することができません。</translation>
-    </message>
-    <message>
-        <source>Enable experimental longitudinal control to allow experimental mode.</source>
-        <translation>実験段階のopenpilotによるアクセル制御を有効にしてください。</translation>
-    </message>
-    <message>
         <source>openpilot defaults to driving in &lt;b&gt;chill mode&lt;/b&gt;. Experimental mode enables &lt;b&gt;alpha-level features&lt;/b&gt; that aren&apos;t ready for chill mode. Experimental features are listed below:</source>
         <translation>openpilotは標準ではゆっくりとくつろげる運転を提供します。この実験モードを有効にすると、以下のくつろげる段階ではない開発中の機能を利用する事ができます。</translation>
     </message>
@@ -1848,6 +1791,22 @@ Reboot now?</source>
     <message>
         <source>The driving visualization will transition to the road-facing wide-angle camera at low speeds to better show some turns. The Experimental mode logo will also be shown in the top right corner.</source>
         <translation>新しい運転画面では、低速時に広角カメラの映像を表示することで、曲がる際の道路の視覚を向上します。実験段階を表すマークが右上に表示されます。</translation>
+    </message>
+    <message>
+        <source>Experimental mode is currently unavailable on this car since the car&apos;s stock ACC is used for longitudinal control.</source>
+        <translation>この車のACCがアクセル制御を行うため実験モードを利用することができません。</translation>
+    </message>
+    <message>
+        <source>openpilot longitudinal control may come in a future update.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An experimental version of openpilot longitudinal control can be tested, along with Experimental mode, on non-release branches.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable experimental longitudinal control to allow Experimental mode.</source>
+        <translation>実験段階のopenpilotによるアクセル制御を有効にしてください。</translation>
     </message>
 </context>
 <context>

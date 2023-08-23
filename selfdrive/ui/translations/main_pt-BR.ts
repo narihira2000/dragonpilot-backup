@@ -255,19 +255,6 @@ Reboot required.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Volkswagen</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enable VAG Resume Fix</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enable this if your car does not auto resume (stop and go).
-Reboot required.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Mazda</source>
         <translation type="unfinished"></translation>
     </message>
@@ -288,13 +275,18 @@ Thanks to @TheCrowd</source>
         <source>Enable this to bypass dashcam mode.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Enable Reverse ACC Set speed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enabling this will reverse set acc short press +5 jump, Long press +1 Jump.
+Reboot Required.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>DPControlPanel</name>
-    <message>
-        <source>ALCA Delay</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Once the vehicle meets all ALCA criteria, it will wait for the seconds set here before performing lane change automatically.</source>
         <translation type="unfinished"></translation>
@@ -304,20 +296,12 @@ Thanks to @TheCrowd</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>ALCA Min Speed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>ALCA minimum engage speed in mph.
 1 mph = 1.61 km/h.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source> mph</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>LCA Min Speed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -335,15 +319,7 @@ Thanks to @TheCrowd</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Camera Offset</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Adjust your camera position if your device is not mounted as per guidance.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Driving Path Offset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -468,50 +444,52 @@ Reboot required.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>when acc set speed below the setting and there is no lead car, e2e will be turned on automatically. 
-1 km/h = 0.62 mph</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> km/h</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>when lead car is going below the setting, e2e will be turned on automatically. 
-1 km/h = 0.62 mph</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>DE2E When Car Set Speed Below (w/o Lead):</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>DE2E When Lead Car Speed Below:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>DE2E Adapt Following Mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Enable this if you wish to use following dist. mode in DE2E.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>DE2E Adapt Accel Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Enable this if you wish to use accel mode in DE2E.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Enable this if your vehicles is in VOACC (e.g. Honda Bosch / VAG).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>    ALCA Delay</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>    ALCA Min Speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>    LCA Min Speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>   Camera Offset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>   Driving Path Offset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>    DE2E Adapt Following Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>    DE2E Adapt Accel Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>   DE2E w/ VOACC</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>DPGeneralPanel</name>
-    <message>
-        <source>Auto Shutdown In</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Adjust your shutdown waiting period.
 0 = shutdown immediately.</source>
@@ -657,6 +635,10 @@ Reboot required.</source>
         <source>Are you sure delete all media?</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>    Auto Shutdown In</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>DPMapsPanel</name>
@@ -749,17 +731,6 @@ Please note:
 4. Not connecting to the internet for while might feel up device storage from all the gps traces. </source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Use Mapd without data.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>You need minimum of 50 gb storage in /data/media/0/.
- Run df -h /data/media/0/ to see how much space you have available.
- Strongly recommend getting 1 TB ssd.
- If you decide not to upgrade you can delete all logs under dp-general </source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>DPUIPanel</name>
@@ -782,14 +753,6 @@ Please note:
     </message>
     <message>
         <source>AUTO</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Alert Volume</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Adjust your alert volume.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -852,6 +815,14 @@ Please note:
         <source>Display Driver Camera when reversing.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Rainbow Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>for all the tesla fanboy&apos;s.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>DeclinePage</name>
@@ -884,19 +855,19 @@ Please note:
     </message>
     <message>
         <source>Driver Camera</source>
-        <translation>Câmera voltada para o Motorista</translation>
+        <translation>Câmera do Motorista</translation>
     </message>
     <message>
         <source>PREVIEW</source>
-        <translation>PREVISUAL</translation>
+        <translation>VER</translation>
     </message>
     <message>
         <source>Preview the driver facing camera to ensure that driver monitoring has good visibility. (vehicle must be off)</source>
-        <translation>Pré-visualizar a câmera voltada para o motorista para garantir que monitor tem uma boa visibilidade (veículo precisa estar desligado)</translation>
+        <translation>Pré-visualizar a câmera voltada para o motorista para garantir que o monitoramento do sistema tenha uma boa visibilidade (veículo precisa estar desligado)</translation>
     </message>
     <message>
         <source>Reset Calibration</source>
-        <translation>Resetar Calibragem</translation>
+        <translation>Reinicializar Calibragem</translation>
     </message>
     <message>
         <source>RESET</source>
@@ -952,7 +923,7 @@ Please note:
     </message>
     <message>
         <source>openpilot requires the device to be mounted within 4° left or right and within 5° up or 8° down. openpilot is continuously calibrating, resetting is rarely required.</source>
-        <translation>o openpilot requer que o dispositivo seja montado dentro de 4° esquerda ou direita e dentro de 5° para cima ou 8° para baixo. o openpilot está continuamente calibrando, resetar raramente é necessário.</translation>
+        <translation>O openpilot requer que o dispositivo seja montado dentro de 4° esquerda ou direita e dentro de 5° para cima ou 8° para baixo. O openpilot está continuamente calibrando, resetar raramente é necessário.</translation>
     </message>
     <message>
         <source> Your device is pointed %1° %2 and %3° %4.</source>
@@ -1068,18 +1039,6 @@ Please note:
         <source>Installing...</source>
         <translation>Instalando...</translation>
     </message>
-    <message>
-        <source>Receiving objects: </source>
-        <translation>Recebendo objetos: </translation>
-    </message>
-    <message>
-        <source>Resolving deltas: </source>
-        <translation>Resolvendo deltas: </translation>
-    </message>
-    <message>
-        <source>Updating files: </source>
-        <translation>Atualizando arquivos: </translation>
-    </message>
 </context>
 <context>
     <name>MapETA</name>
@@ -1144,8 +1103,8 @@ Please note:
     <message>
         <source>Get turn-by-turn directions displayed and more with a comma
 prime subscription. Sign up now: https://connect.comma.ai</source>
-        <translation>Obtenha instruções passo a passo exibidas e muito mais com 
-uma assinatura prime Inscreva-se agora:  https://connect.comma.ai</translation>
+        <translation>Obtenha instruções passo a passo exibidas e muito mais com
+uma assinatura prime. Inscreva-se agora:  https://connect.comma.ai</translation>
     </message>
     <message>
         <source>No home
@@ -1258,7 +1217,7 @@ trabalho definido</translation>
     </message>
     <message>
         <source>Become a comma prime member at connect.comma.ai</source>
-        <translation>Torne-se um membro comma prime em connect.comma.ai</translation>
+        <translation>Seja um membro comma prime em connect.comma.ai</translation>
     </message>
     <message>
         <source>PRIME FEATURES:</source>
@@ -1270,11 +1229,11 @@ trabalho definido</translation>
     </message>
     <message>
         <source>1 year of storage</source>
-        <translation>1 ano de armazenamento</translation>
+        <translation>1 ano na nuvem</translation>
     </message>
     <message>
         <source>Developer perks</source>
-        <translation>Benefícios para desenvolvedor</translation>
+        <translation>Benefícios para devs</translation>
     </message>
 </context>
 <context>
@@ -1469,18 +1428,6 @@ trabalho definido</translation>
         <translation>Esperando pela internet</translation>
     </message>
     <message>
-        <source>Choose Software to Install</source>
-        <translation>Escolher Software para Instalar</translation>
-    </message>
-    <message>
-        <source>Dashcam</source>
-        <translation>Dashcam</translation>
-    </message>
-    <message>
-        <source>Custom Software</source>
-        <translation>Sofware Customizado</translation>
-    </message>
-    <message>
         <source>Enter URL</source>
         <translation>Preencher URL</translation>
     </message>
@@ -1606,6 +1553,10 @@ trabalho definido</translation>
         <source>5G</source>
         <translation>5G</translation>
     </message>
+    <message>
+        <source>%1 m</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SoftwarePanel</name>
@@ -1615,7 +1566,7 @@ trabalho definido</translation>
     </message>
     <message>
         <source>Current Version</source>
-        <translation>Versao Atual</translation>
+        <translation>Versão Atual</translation>
     </message>
     <message>
         <source>Download</source>
@@ -1643,11 +1594,11 @@ trabalho definido</translation>
     </message>
     <message>
         <source>UNINSTALL</source>
-        <translation>DESINSTAL</translation>
+        <translation>REMOVER</translation>
     </message>
     <message>
         <source>Uninstall %1</source>
-        <translation>Desintalar o %1</translation>
+        <translation>Desinstalar o %1</translation>
     </message>
     <message>
         <source>Are you sure you want to uninstall?</source>
@@ -1791,7 +1742,7 @@ Reboot now?</source>
     </message>
     <message>
         <source>Disengage on Accelerator Pedal</source>
-        <translation>Desacionar Com Pedal Do Acelerador</translation>
+        <translation>Desacionar com Pedal do Acelerador</translation>
     </message>
     <message>
         <source>When enabled, pressing the accelerator pedal will disengage openpilot.</source>
@@ -1799,7 +1750,7 @@ Reboot now?</source>
     </message>
     <message>
         <source>Show ETA in 24h Format</source>
-        <translation>Mostrar ETA em formato 24h</translation>
+        <translation>Mostrar ETA em Formato 24h</translation>
     </message>
     <message>
         <source>Use 24h format instead of am/pm</source>
@@ -1826,14 +1777,6 @@ Reboot now?</source>
         <translation>Neste carro o penpilot por padrão utiliza o ACC nativo do veículo ao invés de controlar longitudinalmente. Ative isto para mudar para o controle longitudinal do openpilot. Ativar o Modo Experimental é recomendado quando em uso do controle longitudinal experimental do openpilot.</translation>
     </message>
     <message>
-        <source>Experimental mode is currently unavailable on this car, since the car&apos;s stock ACC is used for longitudinal control.</source>
-        <translation>O Modo Experimental está atualmente indisponível para este carro, já que o ACC original do carro é usado para controle longitudinal.</translation>
-    </message>
-    <message>
-        <source>Enable experimental longitudinal control to allow experimental mode.</source>
-        <translation>Ative o controle longitudinal experimental para permitir o modo experimental.</translation>
-    </message>
-    <message>
         <source>openpilot defaults to driving in &lt;b&gt;chill mode&lt;/b&gt;. Experimental mode enables &lt;b&gt;alpha-level features&lt;/b&gt; that aren&apos;t ready for chill mode. Experimental features are listed below:</source>
         <translation>openpilot por padrão funciona em &lt;b&gt;modo chill&lt;/b&gt;. modo Experimental ativa &lt;b&gt;recursos de nível-alfa&lt;/b&gt; que não estão prontos para o modo chill. Recursos experimentais estão listados abaixo:</translation>
     </message>
@@ -1852,6 +1795,22 @@ Reboot now?</source>
     <message>
         <source>The driving visualization will transition to the road-facing wide-angle camera at low speeds to better show some turns. The Experimental mode logo will also be shown in the top right corner.</source>
         <translation>A visualização da direção fará a transição para a câmera grande angular voltada para a estrada em baixas velocidades para mostrar melhor algumas curvas. O logotipo do modo Experimental também será exibido no canto superior direito.</translation>
+    </message>
+    <message>
+        <source>Experimental mode is currently unavailable on this car since the car&apos;s stock ACC is used for longitudinal control.</source>
+        <translation>O modo Experimental está atualmente indisponível para este carro já que o ACC original do carro é usado para controle longitudinal.</translation>
+    </message>
+    <message>
+        <source>openpilot longitudinal control may come in a future update.</source>
+        <translation>O controle longitudinal openpilot pode vir em uma atualização futura.</translation>
+    </message>
+    <message>
+        <source>An experimental version of openpilot longitudinal control can be tested, along with Experimental mode, on non-release branches.</source>
+        <translation>Uma versão experimental do controle longitudinal openpilot pode ser testada, juntamente com o modo Experimental, em branches de desenvolvimento.</translation>
+    </message>
+    <message>
+        <source>Enable experimental longitudinal control to allow Experimental mode.</source>
+        <translation>Ative o controle longitudinal experimental para permitir o modo Experimental.</translation>
     </message>
 </context>
 <context>

@@ -89,9 +89,9 @@ function launch {
   export PYTHONPATH="$PWD:$PWD/pyextra"
 
   # dp - apply custom patch
-  if [ -f "/data/media/0/dp_patcher.py" ]; then
-    python /data/media/0/dp_patcher.py
-  fi
+  #if [ -f "/data/media/0/dp_patcher.py" ]; then
+  #  python /data/media/0/dp_patcher.py
+  #fi
   # dp - install default ssh key
   python /data/openpilot/scripts/sshkey_installer.py
 

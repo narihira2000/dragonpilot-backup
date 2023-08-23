@@ -19,7 +19,7 @@ class CarController:
     self.packer = CANPacker(dbc_name)
     self.params = CarControllerParams(CP)
 
-  def update(self, CC, CS):
+  def update(self, CC, CS, now_nanos):
     can_sends = []
 
     lkas_active = CC.latActive and self.lkas_control_bit_prev
@@ -45,7 +45,7 @@ class CarController:
         self.hud_count += 1
 
     # steering
-    if self.frame % 2 == 0:
+    if self.frame % self.params.STEER_STEP == 0:
 
       # TODO: can we make this more sane? why is it different for all the cars?
       lkas_control_bit = self.lkas_control_bit_prev

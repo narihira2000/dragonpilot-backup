@@ -166,7 +166,7 @@ struct FrameData {
   sensor @26 :ImageSensor;
   enum ImageSensor {
     unknown @0;
-    ar0321 @1;
+    ar0231 @1;
     ox03c10 @2;
   }
 
@@ -544,7 +544,6 @@ struct PeripheralState {
 }
 
 struct RadarState @0x9a185389d6fdd05f {
-  canMonoTimes @10 :List(UInt64);
   mdMonoTime @6 :UInt64;
   carStateMonoTime @11 :UInt64;
   radarErrors @12 :List(Car.RadarData.Error);
@@ -579,6 +578,7 @@ struct RadarState @0x9a185389d6fdd05f {
   calStatusDEPRECATED @2 :Int8;
   calCycleDEPRECATED @8 :Int32;
   calPercDEPRECATED @9 :Int8;
+  canMonoTimesDEPRECATED @10 :List(UInt64);
 }
 
 struct LiveCalibrationData {
@@ -615,7 +615,6 @@ struct LiveTracks {
 
 struct ControlsState @0x97ff69c53601abf1 {
   startMonoTime @48 :UInt64;
-  canMonoTimes @21 :List(UInt64);
   longitudinalPlanMonoTime @28 :UInt64;
   lateralPlanMonoTime @50 :UInt64;
 
@@ -794,6 +793,7 @@ struct ControlsState @0x97ff69c53601abf1 {
   jerkFactorDEPRECATED @12 :Float32;
   steerOverrideDEPRECATED @20 :Bool;
   steeringAngleDesiredDegDEPRECATED @29 :Float32;
+  canMonoTimesDEPRECATED @21 :List(UInt64);
 }
 
 struct ModelDataV2 {
@@ -1210,16 +1210,16 @@ struct ProcLog {
 }
 
 struct GnssMeasurements {
-  ubloxMonoTime @0 :UInt64;
+  measTime @0 :UInt64;
   gpsWeek @1 :Int16;
   gpsTimeOfWeek @2 :Float64;
 
   correctedMeasurements @3 :List(CorrectedMeasurement);
 
-  positionECEF @4 :LiveLocationKalman.Measurement;
-  velocityECEF @5 :LiveLocationKalman.Measurement;
-  # Used for debugging:
-  positionFixECEF @6 :LiveLocationKalman.Measurement;
+  kalmanPositionECEF @4 :LiveLocationKalman.Measurement;
+  kalmanVelocityECEF @5 :LiveLocationKalman.Measurement;
+  positionECEF @6 :LiveLocationKalman.Measurement;
+  velocityECEF @7 :LiveLocationKalman.Measurement;
   # Todo sync this with timing pulse of ublox
 
   struct CorrectedMeasurement {
@@ -1245,14 +1245,14 @@ struct GnssMeasurements {
   }
 
   enum ConstellationId {
-      # Satellite Constellation using the Ublox gnssid as index
-      gps @0;
-      sbas @1;
-      galileo @2;
-      beidou @3;
-      imes @4;
-      qznss @5;
-      glonass @6;
+    # Satellite Constellation using the Ublox gnssid as index
+    gps @0;
+    sbas @1;
+    galileo @2;
+    beidou @3;
+    imes @4;
+    qznss @5;
+    glonass @6;
   }
 
   enum EphemerisSourceType {
@@ -1271,6 +1271,7 @@ struct UbloxGnss {
     ionoData @2 :IonoData;
     hwStatus @3 :HwStatus;
     hwStatus2 @4 :HwStatus2;
+    glonassEphemeris @5 :GlonassEphemeris;
   }
 
   struct MeasurementReport {
@@ -1381,6 +1382,7 @@ struct UbloxGnss {
     ionoAlpha @38 :List(Float64);
     ionoBeta @39 :List(Float64);
 
+    towCount @40 :UInt32;
   }
 
   struct IonoData {
@@ -1434,6 +1436,44 @@ struct UbloxGnss {
       configpins @3;
       flash @4;
     }
+  }
+
+  struct GlonassEphemeris {
+    svId @0 :UInt16;
+    year @1 :UInt16;
+    dayInYear @2 :UInt16;
+    hour @3 :UInt16;
+    minute @4 :UInt16;
+    second @5 :Float32;
+
+    x @6 :Float64;
+    xVel @7 :Float64;
+    xAccel @8 :Float64;
+    y @9 :Float64;
+    yVel @10 :Float64;
+    yAccel @11 :Float64;
+    z @12 :Float64;
+    zVel @13 :Float64;
+    zAccel @14 :Float64;
+
+    svType @15 :UInt8;
+    svURA @16 :Float32;
+    age @17 :UInt8;
+
+    svHealth @18 :UInt8;
+    tk @19 :UInt16;
+    tb @20 :UInt16;
+
+    tauN @21 :Float64;
+    deltaTauN @22 :Float64;
+    gammaN @23 :Float64;
+
+    p1 @24 :UInt8;
+    p2 @25 :UInt8;
+    p3 @26 :UInt8;
+    p4 @27 :UInt8;
+
+    freqNum @28 :UInt32;
   }
 }
 

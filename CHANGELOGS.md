@@ -1,3 +1,18 @@
+dragonpilot [2023.2.15]
+=======================
+* Synced with openpilot master 2022.12.14 commits.
+* Comma 0.9.1 release
+  * New driving model
+    * 30% improved height estimation resulting in better driving performance for tall cars
+  * UI updates
+    * Adjust alert volume using ambient noise level
+    * Driver monitoring icon shows driver's head pose
+* NEW: Always On Lateral v2 (For Toyota/VAG/HKG/Honda).
+* NEW: Block ALC if it's close to the road edges.
+* NEW: Rinbow path toggle. (This effect is purely cosmetic)
+* IMPROVEMENT: Better TSS2 Long and DF tune. @cgw1968-5779
+* Bug fixes and improvement.
+
 dragonpilot [2023.1.10]
 =======================
 * Synced with openpilot master 2023.1.3 commits.

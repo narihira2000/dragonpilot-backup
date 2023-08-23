@@ -19,7 +19,7 @@ class CarInterface(CarInterfaceBase):
     ret.steerRatio = 17
 
     ret.steerControlType = car.CarParams.SteerControlType.angle
-    ret.radarOffCan = True
+    ret.radarUnavailable = True
 
     if candidate in (CAR.ROGUE, CAR.XTRAIL):
       ret.mass = 1610 + STD_CARGO_KG
@@ -43,7 +43,6 @@ class CarInterface(CarInterfaceBase):
   # returns a car.CarState
   def _update(self, c):
     ret = self.CS.update(self.cp, self.cp_adas, self.cp_cam)
-    ret.cruiseState.enabled, ret.cruiseState.available = self.dp_atl_mode(ret)
 
     buttonEvents = []
     be = car.CarState.ButtonEvent.new_message()
@@ -51,7 +50,6 @@ class CarInterface(CarInterfaceBase):
     buttonEvents.append(be)
 
     events = self.create_common_events(ret)
-    events = self.dp_atl_warning(ret, events)
 
     if self.CS.lkas_enabled:
       events.add(car.CarEvent.EventName.invalidLkasSetting)
@@ -60,5 +58,5 @@ class CarInterface(CarInterfaceBase):
 
     return ret
 
-  def apply(self, c):
-    return self.CC.update(c, self.CS)
+  def apply(self, c, now_nanos):
+    return self.CC.update(c, self.CS, now_nanos)

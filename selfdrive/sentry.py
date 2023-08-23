@@ -43,6 +43,15 @@ except Exception:
   ip = "255.255.255.255"
 error_tags = {'dirty': is_dirty(), 'dongle_id': dongle_id, 'branch': get_branch(), 'remote': get_origin(), 'fingerprintedAs': candidate, 'gitname':gitname}
 
+try:
+  cached_params = params.get("CarParams")
+  if cached_params is not None:
+    cached_params = car.CarParams.from_bytes(cached_params)
+    car_name = cached_params.carFingerprint
+  else:
+    car_name = "None"
+except Exception:
+  car_name = "None"
 
 def report_tombstone(fn: str, message: str, contents: str) -> None:
   cloudlog.error({'tombstone': message})
@@ -118,6 +127,7 @@ def init(project: SentryProject) -> None:
   sentry_sdk.set_tag("branch", get_branch())
   sentry_sdk.set_tag("commit", get_commit())
   sentry_sdk.set_tag("device", HARDWARE.get_device_type())
+  sentry_sdk.set_tag("model", car_name)
 
   if project == SentryProject.SELFDRIVE:
     sentry_sdk.Hub.current.start_session()

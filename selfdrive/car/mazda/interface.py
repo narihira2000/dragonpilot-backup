@@ -45,7 +45,8 @@ class CarInterface(CarInterfaceBase):
     if candidate not in (CAR.CX5_2022, ):
       ret.minSteerSpeed = LKAS_LIMITS.DISABLE_SPEED * CV.KPH_TO_MS
 
-    CarInterfaceBase.configure_dp_tune(candidate, ret.lateralTuning)
+    CarInterfaceBase.dp_lat_tune_collection(candidate, ret.latTuneCollection)
+    CarInterfaceBase.configure_dp_tune(ret.lateralTuning, ret.latTuneCollection)
 
     ret.centerToFront = ret.wheelbase * 0.41
 

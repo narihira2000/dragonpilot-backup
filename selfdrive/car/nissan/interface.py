@@ -36,7 +36,8 @@ class CarInterface(CarInterfaceBase):
       ret.wheelbase = 2.824
       ret.centerToFront = ret.wheelbase * 0.44
 
-    CarInterfaceBase.configure_dp_tune(candidate, ret.lateralTuning)
+    CarInterfaceBase.dp_lat_tune_collection(candidate, ret.latTuneCollection)
+    CarInterfaceBase.configure_dp_tune(ret.lateralTuning, ret.latTuneCollection)
 
     return ret
 

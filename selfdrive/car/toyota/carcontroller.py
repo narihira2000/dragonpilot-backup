@@ -1,6 +1,6 @@
 from cereal import car
 from common.numpy_fast import clip, interp
-from selfdrive.car import apply_toyota_steer_torque_limits, create_gas_interceptor_command, make_can_msg
+from selfdrive.car import apply_meas_steer_torque_limits, create_gas_interceptor_command, make_can_msg
 from selfdrive.car.toyota.toyotacan import create_steer_command, create_ui_command, \
                                            create_accel_command, create_acc_cancel_command, \
                                            create_fcw_command, create_lta_steer_command
@@ -49,12 +49,18 @@ class CarController:
     self.dp_toyota_auto_unlock = False
     self.last_gear = GearShifter.park
     self.lock_once = False
+    self.lat_controller_type = None
+    self.lat_controller_type_prev = None
 
   def update(self, CC, CS, now_nanos, dragonconf):
     if dragonconf is not None:
       self.dp_toyota_sng = dragonconf.dpToyotaSng
       self.dp_toyota_auto_lock = dragonconf.dpToyotaAutoLock
       self.dp_toyota_auto_unlock = dragonconf.dpToyotaAutoUnlock
+    self.lat_controller_type = CC.latController
+    if self.lat_controller_type != self.lat_controller_type_prev:
+      self.torque_rate_limits.update(CC.latController)
+    self.lat_controller_type_prev = self.lat_controller_type
 
     self.dp_toyota_change5speed = Params().get_bool("dp_toyota_change5speed")
     actuators = CC.actuators
@@ -82,7 +88,7 @@ class CarController:
 
     # steer torque
     new_steer = int(round(actuators.steer * CarControllerParams.STEER_MAX))
-    apply_steer = apply_toyota_steer_torque_limits(new_steer, self.last_steer, CS.out.steeringTorqueEps, self.torque_rate_limits)
+    apply_steer = apply_meas_steer_torque_limits(new_steer, self.last_steer, CS.out.steeringTorqueEps, self.torque_rate_limits)
 
     # Count up to MAX_STEER_RATE_FRAMES, at which point we need to cut torque to avoid a steering fault
     if lat_active and abs(CS.out.steeringRateDeg) >= MAX_STEER_RATE:
@@ -91,13 +97,17 @@ class CarController:
       self.steer_rate_counter = 0
 
     apply_steer_req = 1
-
     if not lat_active:
       apply_steer = 0
       apply_steer_req = 0
     elif self.steer_rate_counter > MAX_STEER_RATE_FRAMES:
       apply_steer_req = 0
       self.steer_rate_counter = 0
+
+    # Never actuate with LKA on cars that only support LTA
+    if self.CP.steerControlType == car.CarParams.SteerControlType.angle:
+      apply_steer = 0
+      apply_steer_req = 0
 
     # TODO: probably can delete this. CS.pcm_acc_status uses a different signal
     # than CS.cruiseState.enabled. confirm they're not meaningfully different
@@ -127,7 +137,7 @@ class CarController:
           can_sends.append(make_can_msg(0x750, UNLOCK_CMD, 0))
         if self.dp_toyota_auto_lock:
           self.lock_once = False
-      elif self.dp_toyota_auto_lock and gear == GearShifter.drive and not self.lock_once and CS.out.vEgo >= LOCK_AT_SPEED:
+      elif self.dp_toyota_auto_lock and not CS.out.doorOpen and gear == GearShifter.drive and not self.lock_once and CS.out.vEgo >= LOCK_AT_SPEED:
         can_sends.append(make_can_msg(0x750, LOCK_CMD, 0))
         self.lock_once = True
       self.last_gear = gear

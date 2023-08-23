@@ -1,7 +1,6 @@
 from cereal import log
 from common.conversions import Conversions as CV
 from common.realtime import DT_MDL, sec_since_boot
-from common.numpy_fast import interp
 
 LaneChangeState = log.LateralPlan.LaneChangeState
 LaneChangeDirection = log.LateralPlan.LaneChangeDirection
@@ -48,6 +47,7 @@ class DesireHelper:
     self.dp_lc_min_mph = LANE_CHANGE_SPEED_MIN
     self.dp_lc_auto_min_mph = LANE_CHANGE_SPEED_MIN + 10
     self.dp_lc_auto_delay = 3 # secs
+    self.dp_lateral_road_edge_detected = False
 
   def update(self, carstate, lateral_active, lane_change_prob, dragonconf, md):
     # dp - sync with dragonConf
@@ -56,15 +56,12 @@ class DesireHelper:
     self.dp_lc_auto_min_mph = dragonconf.dpLcAutoMinMph * CV.MPH_TO_MS
     self.dp_lc_auto_min_mph = self.dp_lc_min_mph if self.dp_lc_auto_min_mph < self.dp_lc_min_mph else self.dp_lc_auto_min_mph
     self.dp_lc_auto_delay = dragonconf.dpLcAutoDelay
+    self.dp_lateral_road_edge_detected = dragonconf.dpLateralRoadEdgeDetected
 
     v_ego = carstate.vEgo
     one_blinker = carstate.leftBlinker != carstate.rightBlinker
     below_lane_change_speed = v_ego < self.dp_lc_min_mph
     below_alc_speed = v_ego < self.dp_lc_auto_min_mph
-
-    #dp
-    left_road_edge = -md.roadEdges[0].y[0]
-    right_road_edge = md.roadEdges[1].y[0]
 
     if not lateral_active or self.lane_change_timer > LANE_CHANGE_TIME_MAX:
       self.lane_change_state = LaneChangeState.off
@@ -100,8 +97,14 @@ class DesireHelper:
                               (carstate.rightBlindspot and self.lane_change_direction == LaneChangeDirection.right))
 
         #dp
-        road_edge_detected = (((left_road_edge < 3.5) and self.lane_change_direction == LaneChangeDirection.left) or
-                              ((right_road_edge < 3.5) and self.lane_change_direction == LaneChangeDirection.right))
+        if self.dp_lateral_road_edge_detected:
+          left_road_edge = -md.roadEdges[0].y[0]
+          right_road_edge = md.roadEdges[1].y[0]
+
+          road_edge_detected = (((left_road_edge < 3.5) and self.lane_change_direction == LaneChangeDirection.left) or
+                                ((right_road_edge < 3.5) and self.lane_change_direction == LaneChangeDirection.right))
+        else:
+          road_edge_detected = False
 
         if not one_blinker or below_lane_change_speed:
           self.lane_change_state = LaneChangeState.off

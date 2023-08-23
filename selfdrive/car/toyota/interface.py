@@ -2,7 +2,8 @@
 from cereal import car
 from common.conversions import Conversions as CV
 from panda import Panda
-from selfdrive.car.toyota.values import Ecu, CAR, ToyotaFlags, TSS2_CAR, RADAR_ACC_CAR, NO_DSU_CAR, MIN_ACC_SPEED, EPS_SCALE, EV_HYBRID_CAR, UNSUPPORTED_DSU_CAR, CarControllerParams, NO_STOP_TIMER_CAR
+from selfdrive.car.toyota.values import Ecu, CAR, DBC, ToyotaFlags, CarControllerParams, TSS2_CAR, RADAR_ACC_CAR, NO_DSU_CAR, \
+                                        MIN_ACC_SPEED, EPS_SCALE, EV_HYBRID_CAR, UNSUPPORTED_DSU_CAR, NO_STOP_TIMER_CAR, ANGLE_CONTROL_CAR
 from selfdrive.car import STD_CARGO_KG, scale_tire_stiffness, get_safety_config
 from selfdrive.car.interfaces import CarInterfaceBase
 from common.params import Params
@@ -30,16 +31,22 @@ class CarInterface(CarInterfaceBase):
     ret.safetyConfigs = [get_safety_config(car.CarParams.SafetyModel.toyota)]
     ret.safetyConfigs[0].safetyParam = EPS_SCALE[candidate]
 
-    if candidate in (CAR.RAV4, CAR.PRIUS_V, CAR.COROLLA, CAR.LEXUS_ESH, CAR.LEXUS_CTH):
+    # BRAKE_MODULE is on a different address for these cars
+    if DBC[candidate]["pt"] == "toyota_new_mc_pt_generated":
       ret.safetyConfigs[0].safetyParam |= Panda.FLAG_TOYOTA_ALT_BRAKE
+
+    if candidate in ANGLE_CONTROL_CAR:
+      ret.dashcamOnly = True
+      ret.steerControlType = car.CarParams.SteerControlType.angle
+      ret.safetyConfigs[0].safetyParam |= Panda.FLAG_TOYOTA_LTA
+    else:
+      CarInterfaceBase.configure_torque_tune(candidate, ret.lateralTuning)
 
     ret.steerActuatorDelay = 0.12  # Default delay, Prius has larger delay
     ret.steerLimitTimer = 0.4
     ret.stoppingControl = False  # Toyota starts braking more when it thinks you want to stop
 
     stop_and_go = False
-    steering_angle_deadzone_deg = 0.0
-    CarInterfaceBase.configure_torque_tune(candidate, ret.lateralTuning, steering_angle_deadzone_deg)
 
     params = Params()
     if candidate == CAR.PRIUS:
@@ -50,15 +57,13 @@ class CarInterface(CarInterfaceBase):
       ret.mass = 3045. * CV.LB_TO_KG + STD_CARGO_KG
       # Only give steer angle deadzone to for bad angle sensor prius
       if params.get_bool("dp_toyota_prius_bad_angle_tune"):
-        steering_angle_deadzone_deg = 0.2
         ret.steerActuatorDelay = 0.25
-        CarInterfaceBase.configure_torque_tune(candidate, ret.lateralTuning, steering_angle_deadzone_deg)
+        CarInterfaceBase.configure_torque_tune(candidate, ret.lateralTuning, steering_angle_deadzone_deg=0.2)
       else:
         for fw in car_fw:
           if fw.ecu == "eps" and not fw.fwVersion == b'8965B47060\x00\x00\x00\x00\x00\x00':
-            steering_angle_deadzone_deg = 0.2
             ret.steerActuatorDelay = 0.25
-            CarInterfaceBase.configure_torque_tune(candidate, ret.lateralTuning, steering_angle_deadzone_deg)
+            CarInterfaceBase.configure_torque_tune(candidate, ret.lateralTuning, steering_angle_deadzone_deg=0.2)
 
     elif candidate == CAR.PRIUS_V:
       stop_and_go = True
@@ -118,7 +123,8 @@ class CarInterface(CarInterfaceBase):
       tire_stiffness_factor = 0.7983
       ret.mass = 3505. * CV.LB_TO_KG + STD_CARGO_KG  # mean between normal and hybrid
 
-    elif candidate in (CAR.RAV4_TSS2, CAR.RAV4_TSS2_2022, CAR.RAV4H_TSS2, CAR.RAV4H_TSS2_2022):
+    elif candidate in (CAR.RAV4_TSS2, CAR.RAV4_TSS2_2022, CAR.RAV4H_TSS2, CAR.RAV4H_TSS2_2022,
+                       CAR.RAV4_TSS2_2023, CAR.RAV4H_TSS2_2023):
       stop_and_go = True
       ret.wheelbase = 2.68986
       ret.steerRatio = 14.3
@@ -202,7 +208,8 @@ class CarInterface(CarInterfaceBase):
       tire_stiffness_factor = 0.444
       ret.mass = 4305. * CV.LB_TO_KG + STD_CARGO_KG
 
-    CarInterfaceBase.configure_dp_tune(candidate, ret.lateralTuning, steering_angle_deadzone_deg)
+    CarInterfaceBase.dp_lat_tune_collection(candidate, ret.latTuneCollection, steering_angle_deadzone_deg = 0.0)
+    CarInterfaceBase.configure_dp_tune(ret.lateralTuning, ret.latTuneCollection)
 
     ret.centerToFront = ret.wheelbase * 0.44
 
@@ -244,15 +251,15 @@ class CarInterface(CarInterfaceBase):
     tune.deadzoneBP = [0., 9.]
     tune.deadzoneV = [.0, .15]
     if candidate in TSS2_CAR or ret.enableGasInterceptor:
-      tune.kpBP = [0., 5., 20., 30.]
-      tune.kpV = [1.3, 1.0, 0.7, 0.1]
-      tune.kiBP = [0.,   3.1,  13.9,  19.4,   30.,  33.,  40.]
-      tune.kiV =  [.032, .073, .16,   .176,   .01,  .005, .0005]
+      tune.kpBP = [0., 5., 20.]
+      tune.kpV = [1.3, 1.0, 0.7]
+      tune.kiBP = [0., 3., 4., 5., 12., 20., 23., 40.]
+      tune.kiV = [.08, .16, .26, .215, .20, .166, .1, .006]
       if candidate in TSS2_CAR:
         #ret.vEgoStopping = 0.3  # car is near 0.1 to 0.2 when car starts requesting stopping accel
         ret.vEgoStarting = 0.1 # needs to be > or == vEgoStopping
         #ret.stopAccel = -0.1  # Toyota requests -0.4 when stopped
-        ret.stoppingDecelRate = 0.01  # reach stopping target smoothly - seems to take 0.5 seconds to go from 0 to -0.4
+        ret.stoppingDecelRate = 0.04  # reach stopping target smoothly - seems to take 0.5 seconds to go from 0 to -0.4
         #ret.longitudinalActuatorDelayLowerBound = 0.3
         #ret.longitudinalActuatorDelayUpperBound = 0.3
         ### stock ###
@@ -276,7 +283,7 @@ class CarInterface(CarInterfaceBase):
       if self.dragonconf.dpToyotaCruiseOverrideSpeed != self.dp_override_speed_last:
         self.dp_override_speed = self.dragonconf.dpToyotaCruiseOverrideSpeed * CV.KPH_TO_MS
         self.dp_override_speed_last = self.dragonconf.dpToyotaCruiseOverrideSpeed
-      if self.CP.openpilotLongitudinalControl and ret.cruiseActualEnabled and ret.cruiseState.speed <= self.dp_override_speed:
+      if self.CP.openpilotLongitudinalControl and ret.cruiseState.speed <= self.dp_override_speed:
         if self.dp_cruise_speed == 0.:
           self.dp_cruise_speed = self.dp_cruise_speed = max(CRUISE_OVERRIDE_SPEED_MIN, ret.vEgo)
         else:

@@ -40,14 +40,14 @@ DP_ACCEL_NORMAL = 1
 DP_ACCEL_SPORT = 2
 
 # accel profile by @arne182 modified by cgw
-_DP_CRUISE_MIN_V =       [-0.50,  -0.50,  -0.50, -0.50,  -0.50, -0.45, -0.45]
-_DP_CRUISE_MIN_V_ECO =   [-0.40,  -0.40,  -0.40, -0.40,  -0.40, -0.40, -0.40]
-_DP_CRUISE_MIN_V_SPORT = [-0.52,  -0.52,  -0.52, -0.52,  -0.52, -0.47, -0.47]
-_DP_CRUISE_MIN_BP =      [0.,     0.07,   3.1,   10.,   20.,    30.,   55.]
+_DP_CRUISE_MIN_V =       [-0.6,  -0.6,  -0.7,  -0.8,  -0.8,  -0.5]
+_DP_CRUISE_MIN_V_ECO =   [-0.5,  -0.5,  -0.6,  -0.7,  -0.7,  -0.45]
+_DP_CRUISE_MIN_V_SPORT = [-0.7,  -0.7,  -0.8,  -0.9,  -0.9,  -0.6]
+_DP_CRUISE_MIN_BP =      [0.,    8.3,   14,    20.,   30.,   55.]
 
-_DP_CRUISE_MAX_V =       [3.5, 3.4, 2.1, 1.6, 1.1, 0.91, 0.69, 0.45, 0.34, 0.13]
+_DP_CRUISE_MAX_V =       [3.5, 3.4, 2.1, 1.6, 1.1, 0.91, 0.69, 0.44, 0.34, 0.13]
 _DP_CRUISE_MAX_V_ECO =   [3.0, 1.8, 1.3, 1.0, 0.71, 0.59, 0.45, 0.36, 0.28, 0.09]
-_DP_CRUISE_MAX_V_SPORT = [3.5, 3.5, 3.4, 3.0, 2.1, 1.61, 1.1,  0.63, 0.50, 0.33]
+_DP_CRUISE_MAX_V_SPORT = [3.5, 3.5, 3.4, 3.0, 2.1, 1.7, 1.3,  0.9, 0.7, 0.5]
 _DP_CRUISE_MAX_BP =      [0.,  3,   6.,  8.,  11., 15.,  20.,  25.,  30.,  55.]
 
 # d-e2e, from modeldata.h
@@ -123,15 +123,13 @@ class LongitudinalPlanner:
     self.dp_e2e_tf = T_FOLLOW
     self.dp_e2e_tf_count = 0
 
-
     self.CP = CP
-
     self.mpc = LongitudinalMpc()
-
     self.fcw = False
 
     self.a_desired = init_a
     self.v_desired_filter = FirstOrderFilter(init_v, 2.0, DT_MDL)
+    self.v_model_error = 0.0
 
     self.v_desired_trajectory = np.zeros(CONTROL_N)
     self.a_desired_trajectory = np.zeros(CONTROL_N)
@@ -221,12 +219,12 @@ class LongitudinalPlanner:
     return self._set_dp_e2e_mode('acc')
 
   @staticmethod
-  def parse_model(model_msg):
+  def parse_model(model_msg, model_error):
     if (len(model_msg.position.x) == 33 and
       len(model_msg.velocity.x) == 33 and
       len(model_msg.acceleration.x) == 33):
-      x = np.interp(T_IDXS_MPC, T_IDXS, model_msg.position.x)
-      v = np.interp(T_IDXS_MPC, T_IDXS, model_msg.velocity.x)
+      x = np.interp(T_IDXS_MPC, T_IDXS, model_msg.position.x) - model_error * T_IDXS_MPC
+      v = np.interp(T_IDXS_MPC, T_IDXS, model_msg.velocity.x) - model_error
       a = np.interp(T_IDXS_MPC, T_IDXS, model_msg.acceleration.x)
       j = np.zeros(len(T_IDXS_MPC))
     else:
@@ -242,8 +240,8 @@ class LongitudinalPlanner:
       return desired_tf
     if self.dp_following_profile_ctrl:
       if self.dp_following_profile == 0:
-        x_vel =  [1.1,   13.89,  25.0,   41.67]
-        y_dist = [1.35,  1.35,   1.27,   1.32]
+        x_vel =  [1.1,  3.3,  5.5,    13.89,  19.7,   25.0,   41.67]
+        y_dist = [1.0,  1.2,  1.3,    1.34,    1.34,   1.23,   1.34]
         desired_tf = np.interp(v_ego, x_vel, y_dist)
       elif self.dp_following_profile == 1:
         x_vel =  [5.556, 19.7,   41.67]
@@ -307,15 +305,15 @@ class LongitudinalPlanner:
     # Prevent divergence, smooth in current v_ego
     self.v_desired_filter.x = max(0.0, self.v_desired_filter.update(v_ego))
     # Compute model v_ego error
-    # if len(sm['modelV2'].temporalPose.trans):
-    #   self.v_model_error = sm['modelV2'].temporalPose.trans[0] - v_ego
+    if len(sm['modelV2'].temporalPose.trans):
+      self.v_model_error = sm['modelV2'].temporalPose.trans[0] - v_ego
 
     # Get acceleration and active solutions for custom long mpc.
     self.cruise_source, a_min_sol, v_cruise_sol = self.cruise_solutions(not reset_state, self.v_desired_filter.x,
                                                                         self.a_desired, v_cruise, sm)
 
     if force_slow_decel:
-      v_cruise = 0.0
+      v_cruise_sol = 0.0
     # clip limits, cannot init MPC outside of bounds
     accel_limits_turns[0] = min(accel_limits_turns[0], self.a_desired + 0.05, a_min_sol)
     accel_limits_turns[1] = max(accel_limits_turns[1], self.a_desired - 0.05)
@@ -324,12 +322,14 @@ class LongitudinalPlanner:
     # self.mpc.set_weights(prev_accel_constraint)
     self.mpc.set_accel_limits(accel_limits_turns[0], accel_limits_turns[1])
     self.mpc.set_cur_state(self.v_desired_filter.x, self.a_desired)
-    x, v, a, j = self.parse_model(sm['modelV2'])
+    x, v, a, j = self.parse_model(sm['modelV2'], self.v_model_error)
     self.dp_e2e_tf = self.get_df(v_ego)
     self.mpc.update(sm['radarState'], v_cruise_sol, x, v, a, j, prev_accel_constraint, self.dp_e2e_tf)
 
-    self.v_desired_trajectory = np.interp(T_IDXS[:CONTROL_N], T_IDXS_MPC, self.mpc.v_solution)
-    self.a_desired_trajectory = np.interp(T_IDXS[:CONTROL_N], T_IDXS_MPC, self.mpc.a_solution)
+    self.v_desired_trajectory_full = np.interp(T_IDXS, T_IDXS_MPC, self.mpc.v_solution)
+    self.a_desired_trajectory_full = np.interp(T_IDXS, T_IDXS_MPC, self.mpc.a_solution)
+    self.v_desired_trajectory = self.v_desired_trajectory_full[:CONTROL_N]
+    self.a_desired_trajectory = self.a_desired_trajectory_full[:CONTROL_N]
     self.j_desired_trajectory = np.interp(T_IDXS[:CONTROL_N], T_IDXS_MPC[:-1], self.mpc.j_solution)
 
     # TODO counter is only needed because radar is glitchy, remove once radar is gone

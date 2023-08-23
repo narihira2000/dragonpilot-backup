@@ -20,7 +20,7 @@ from selfdrive.car.lat_controller_helper import configure_pid_tune, configure_lq
 ButtonType = car.CarState.ButtonEvent.Type
 GearShifter = car.CarState.GearShifter
 EventName = car.CarEvent.EventName
-TorqueFromLateralAccelCallbackType = Callable[[float, car.CarParams.LateralTorqueTuning, float, float, float, bool], float]
+TorqueFromLateralAccelCallbackType = Callable[[float, car.CarParams.LateralTorqueTuning, float, float, bool], float]
 
 MAX_CTRL_SPEED = (V_CRUISE_MAX + 4) * CV.KPH_TO_MS
 ACCEL_MAX = 2.0
@@ -137,7 +137,7 @@ class CarInterfaceBase(ABC):
     return self.get_steer_feedforward_default
 
   @staticmethod
-  def torque_from_lateral_accel_linear(lateral_accel_value, torque_params, lateral_accel_error, lateral_accel_deadzone, vego, friction_compensation):
+  def torque_from_lateral_accel_linear(lateral_accel_value, torque_params, lateral_accel_error, lateral_accel_deadzone, friction_compensation):
     # The default is a linear relationship between torque and lateral acceleration (accounting for road roll and steering friction)
     friction_interp = interp(
       apply_center_deadzone(lateral_accel_error, lateral_accel_deadzone),
@@ -202,21 +202,45 @@ class CarInterfaceBase(ABC):
     tune.torque.steeringAngleDeadzoneDeg = steering_angle_deadzone_deg
 
   @staticmethod
-  def configure_dp_tune(candidate, tune, steering_angle_deadzone_deg=0.0, use_steering_angle=True):
+  def configure_dp_tune(stock, collection):
     try:
       dp_lateral_tune = int(Params().get("dp_lateral_tune").decode('utf-8'))
     except:
       dp_lateral_tune = 0
 
-    # pid - car specific
-    if dp_lateral_tune == 1:
-      configure_pid_tune(candidate, tune)
-    # lqr - all uses RAV4 one
-    elif dp_lateral_tune == 2:
-      configure_lqr_tune(candidate, tune)
-    # torque - car specific as per lookup table
-    elif dp_lateral_tune == 3:
-      CarInterfaceBase.configure_torque_tune(candidate, tune, steering_angle_deadzone_deg, use_steering_angle)
+    stock_tune = 0
+    if stock.which() == 'pid':
+      stock_tune = 1
+      collection.pid = stock.pid
+    elif stock.which() == 'lqr':
+      stock_tune = 2
+      collection.lqr = stock.lqr
+    elif stock.which() == 'torque':
+      stock_tune = 3
+      collection.torque = stock.torque
+    elif stock.which() == 'indi':
+      stock_tune = 4
+
+    if dp_lateral_tune > 0 and dp_lateral_tune != stock_tune:
+      if dp_lateral_tune == 1 and collection.pid is not None:
+        stock.pid = collection.pid
+      elif dp_lateral_tune == 2 and collection.lqr is not None:
+        stock.lqr = collection.lqr
+      elif dp_lateral_tune == 3 and collection.torque is not None:
+        stock.torque = collection.torque
+
+  @staticmethod
+  def dp_lat_tune_collection(candidate, collection, steering_angle_deadzone_deg=0.0, use_steering_angle=True):
+    for i in range(1, 4):
+      # pid - car specific
+      if i == 1:
+        configure_pid_tune(candidate, collection)
+      # lqr - all uses RAV4 one
+      elif i == 2:
+        configure_lqr_tune(candidate, collection)
+      # torque - car specific as per lookup table
+      elif i == 3:
+        CarInterfaceBase.configure_torque_tune(candidate, collection, steering_angle_deadzone_deg, use_steering_angle)
 
   @abstractmethod
   def _update(self, c: car.CarControl) -> car.CarState:
@@ -326,6 +350,7 @@ class CarInterfaceBase(ABC):
         events.add(EventName.pcmDisable)
 
     return events
+
 
 class RadarInterfaceBase(ABC):
   def __init__(self, CP):

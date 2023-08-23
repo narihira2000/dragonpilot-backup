@@ -17,10 +17,12 @@ V_CRUISE_INITIAL_EXPERIMENTAL_MODE = 105
 IMPERIAL_INCREMENT = 1.6  # should be CV.MPH_TO_KPH, but this causes rounding errors
 
 MIN_SPEED = 1.0
-LAT_MPC_N = 16
-LON_MPC_N = 32
 CONTROL_N = 17
 CAR_ROTATION_RADIUS = 0.0
+
+# dp - needed for 0813/0816 controller
+LAT_MPC_N = 16
+LON_MPC_N = 32
 
 # EU guidelines
 MAX_LATERAL_JERK = 5.0
@@ -271,8 +273,8 @@ def get_0816_lag_adjusted_curvature(CP, v_ego, psis, curvatures, curvature_rates
   return safe_desired_curvature, safe_desired_curvature_rate
 
 def get_lane_laneless_mode(lll_prob, rll_prob, mode):
-  if (lll_prob + rll_prob)/2 < 0.3:
+  if lll_prob < 0.3 and rll_prob < 0.3:
     mode = False
-  elif (lll_prob + rll_prob)/2 > 0.5:
+  elif lll_prob > 0.5 or rll_prob > 0.5:
     mode = True
   return mode

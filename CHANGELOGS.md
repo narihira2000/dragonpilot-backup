@@ -1,3 +1,17 @@
+dragonpilot [2023.3.27]
+=======================
+* Synced with openpilot master 2023.03.26 commits.
+* comma 0.9.2 release
+  * Draw MPC path instead of model predicted path, this is a more accurate representation of what the car will do.
+* DP Highlight
+  * Dynamic Rainbow mode. (fancy lol)
+  * Different color when Always On Lateral is enabled.
+  * RoadEdge detection has it's own toggle now.
+  * IMPROVEMENT: Better TSS2 Long and DF tune. @cgw1968-5779
+  * NEW: Alternative Lateral Controller
+    * Ability to switch to another lateral controller when SET speed is higher than configure speed.
+    * E.g. Use Torque + Laneless when belows 80kph and use PID + Laneline when above.
+
 dragonpilot [2023.2.15]
 =======================
 * Synced with openpilot master 2022.12.14 commits.

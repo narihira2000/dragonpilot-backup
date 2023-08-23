@@ -297,7 +297,7 @@ def calibration_invalid_alert(CP: car.CarParams, CS: car.CarState, sm: messaging
   rpy = sm['liveCalibration'].rpyCalib
   yaw = math.degrees(rpy[2] if len(rpy) == 3 else math.nan)
   pitch = math.degrees(rpy[1] if len(rpy) == 3 else math.nan)
-  angles = f"Pitch: {pitch:.1f}°, Yaw: {yaw:.1f}°"
+  angles = f"Remount Device (Pitch: {pitch:.1f}°, Yaw: {yaw:.1f}°)"
   return NormalPermanentAlert(_("Calibration Invalid"), angles)
 
 
@@ -322,9 +322,9 @@ def modeld_lagging_alert(CP: car.CarParams, CS: car.CarState, sm: messaging.SubM
 
 
 def wrong_car_mode_alert(CP: car.CarParams, CS: car.CarState, sm: messaging.SubMaster, metric: bool, soft_disable_time: int) -> Alert:
-  text = _("Cruise Mode Disabled")
+  text = _("Enable Adaptive Cruise to Engage")
   if CP.carName == "honda":
-    text = _("Main Switch Off")
+    text = _("Enable Main Switch to Engage")
   return NoEntryAlert(text)
 
 
@@ -449,7 +449,7 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
   },
 
   EventName.steerTempUnavailableSilent: {
-    ET.PERMANENT: Alert(
+    ET.WARNING: Alert(
       _("Steering Temporarily Unavailable"),
       "",
       AlertStatus.userPrompt, AlertSize.small,
@@ -515,7 +515,7 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
   EventName.resumeRequired: {
     ET.WARNING: Alert(
       _("Press Resume to Exit Standstill"),
-      _(""),
+      "",
       AlertStatus.userPrompt, AlertSize.small,
       Priority.LOW, VisualAlert.none, AudibleAlert.none, .2),
   },
@@ -545,7 +545,7 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
       _("Car Detected in Blindspot or RoadEdge"),
       "",
       AlertStatus.userPrompt, AlertSize.small,
-      Priority.LOW, VisualAlert.none, AudibleAlert.prompt, .1),
+      Priority.LOW, VisualAlert.none, AudibleAlert.prompt, .2),
   },
 
   EventName.laneChange: {

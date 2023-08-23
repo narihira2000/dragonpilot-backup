@@ -94,10 +94,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>RAM PER</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>OFF</source>
         <translation type="unfinished"></translation>
     </message>
@@ -135,6 +131,10 @@
     </message>
     <message>
         <source>ACCEL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lat Ctrl</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -487,6 +487,59 @@ Reboot required.</source>
         <source>   DE2E w/ VOACC</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>ALC RoadEdge Detection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enabling this will prevent lane change when you are too close to road edge.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>      Camera Offset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>      Driving Path Offset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>   When Set Speed Above:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>when acc SET speed above the setting, it will switch to alternative controller. 
+1 km/h = 0.62 mph</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> km/h</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>   Alternative Controller</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>
+1 = PID
+2 = LQR
+3 = Torque
+Your Vehicle may not support all the options, YMMV.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>   Use Lanelines</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use Alternative Controller</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This feature will let you use alternative lateral controller at higher set speed.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>DPGeneralPanel</name>
@@ -711,14 +764,6 @@ Reboot required.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Show debug UI elements</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show UI elements that aid debugging.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Enable MapD</source>
         <translation type="unfinished"></translation>
     </message>
@@ -729,6 +774,38 @@ Please note:
 2. MapD will contribute your route to OSM for future improvement automatically.
 3. You can add your own offset for mapd just follow the readme under /selfdrive/mapd.
 4. Not connecting to the internet for while might feel up device storage from all the gps traces. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>OpenStreetMap Database Update</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CHECK</source>
+        <translation type="unfinished">확인</translation>
+    </message>
+    <message>
+        <source>&quot;OpenStreetMap Database Update&quot;
+Your device will reboot and perform a database update based on the region you have selected.
+Reboot now?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>OpenStreetMap Database</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SELECT</source>
+        <translation type="unfinished">선택</translation>
+    </message>
+    <message>
+        <source>Select your location</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&quot;OpenStreetMap Database&quot;
+Restart your device to start downloading the selected database. Dragonpilot will only start downloading the database on reboot.
+Reboot now?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -769,10 +846,6 @@ Please note:
     </message>
     <message>
         <source>Enable this to display your current speed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Display Event / Steer Icon</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1130,7 +1203,7 @@ location set</source>
     </message>
     <message>
         <source>Waiting for GPS</source>
-        <translation>GPS를 기다리는 중</translation>
+        <translation>GPS 수신중 입니다</translation>
     </message>
 </context>
 <context>
@@ -1302,16 +1375,8 @@ location set</source>
         <translation>장치를 초기화 하시겠습니까?</translation>
     </message>
     <message>
-        <source>Resetting device...</source>
-        <translation>장치 초기화중...</translation>
-    </message>
-    <message>
         <source>System Reset</source>
         <translation>장치 초기화</translation>
-    </message>
-    <message>
-        <source>System reset triggered. Press confirm to erase all content and settings. Press cancel to resume boot.</source>
-        <translation>장치를 초기화 합니다. 확인버튼을 누르면 모든 내용과 설정이 초기화됩니다. 부팅을 재개하려면 취소를 누르세요.</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -1326,8 +1391,18 @@ location set</source>
         <translation>확인</translation>
     </message>
     <message>
-        <source>Unable to mount data partition. Press confirm to reset your device.</source>
-        <translation>데이터 파티션을 마운트할 수 없습니다. 확인 버튼을 눌러 장치를 리셋합니다.</translation>
+        <source>Unable to mount data partition. Partition may be corrupted. Press confirm to erase and reset your device.</source>
+        <translation>데이터 파티션을 마운트할 수 없습니다. 파티션이 손상되었을 수 있습니다. 장치를 초기화하려면 확인을 누르세요.</translation>
+    </message>
+    <message>
+        <source>Press confirm to erase all content and settings. Press cancel to resume boot.</source>
+        <translation>모든 콘텐츠와 설정을 지우려면 확인을 누르세요. 부팅을 재개하려면 취소를 누르세요.</translation>
+    </message>
+    <message>
+        <source>Resetting device...
+This may take up to a minute.</source>
+        <translation>장치 초기화 중...
+최대 1분이 소요될 수 있습니다.</translation>
     </message>
 </context>
 <context>
@@ -1450,6 +1525,14 @@ location set</source>
     <message>
         <source>Start over</source>
         <translation>다시 시작</translation>
+    </message>
+    <message>
+        <source>Something went wrong. Reboot the device.</source>
+        <translation>문제가 발생했습니다. 장치를 재부팅하세요.</translation>
+    </message>
+    <message>
+        <source>No custom software found at this URL.</source>
+        <translation>이 URL에서 커스텀 소프트웨어를 찾을 수 없습니다.</translation>
     </message>
 </context>
 <context>
@@ -1607,30 +1690,6 @@ location set</source>
     <message>
         <source>Uninstall</source>
         <translation>제거</translation>
-    </message>
-    <message>
-        <source>OpenStreetMap Database Update</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&quot;OpenStreetMap Database Update&quot;
-Your device will reboot and perform a database update based on the region you have selected.
-Reboot now?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>OpenStreetMap Database</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select your location</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&quot;OpenStreetMap Database&quot;
-Restart your device to start downloading the selected database. Dragonpilot will only start downloading the database on reboot.
-Reboot now?</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

@@ -146,6 +146,8 @@ def conditional_speed_limit_for_osm_tag_limit_string(limit_string):
 def speed_limit_value_for_highway_type(areas, tags):
   max_speed = None
   try:
+    geocode_country = ''
+    geocode_region = ''
     for area in areas:
       if area.tags.get('admin_level', '') == "2":
         if area.tags.get('ISO3166-1:alpha2', '') != '':
@@ -174,10 +176,8 @@ def speed_limit_value_for_highway_type(areas, tags):
       if rule_valid:
         max_speed = rule['speed']
         break #stop searching region
-  except KeyError as e:
-    print(e)
-  except TypeError as e:
-    print(f"TypeError: {e} object is not iterable.")
+  except Exception:
+    return None
   if max_speed is None:
     return 0
   v = re.match(r'^\s*([0-9]{1,3})\s*?(mph)?\s*$', str(max_speed))

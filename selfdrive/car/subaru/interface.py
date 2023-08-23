@@ -102,7 +102,8 @@ class CarInterface(CarInterfaceBase):
     else:
       raise ValueError(f"unknown car: {candidate}")
 
-    CarInterfaceBase.configure_dp_tune(candidate, ret.lateralTuning)
+    CarInterfaceBase.dp_lat_tune_collection(candidate, ret.latTuneCollection)
+    CarInterfaceBase.configure_dp_tune(ret.lateralTuning, ret.latTuneCollection)
     Params().put("dp_lateral_steer_rate_cost", "0.7")
     return ret
 
@@ -112,10 +113,6 @@ class CarInterface(CarInterfaceBase):
     ret = self.CS.update(self.cp, self.cp_cam, self.cp_body)
 
     ret.events = self.create_common_events(ret).to_msg()
-
-    events = self.create_common_events(ret)
-
-    ret.events = events.to_msg()
 
     return ret
 

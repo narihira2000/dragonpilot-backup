@@ -1,37 +1,37 @@
 import overpy
 import subprocess
-import requests
 import email.utils as eut
 import time
 
 from common.params import Params
 from selfdrive.hardware import TICI
+from system.version import get_version
+from urllib.request import Request, urlopen
 
 OSM_LOCAL_PATH = "/data/media/0/osm"
 OSM_DB_STAMP_FILE = OSM_LOCAL_PATH + "/db_stamp"
 OSM_VERSION = "0.7.57" if TICI else "0.7.56"
 OSM_QUERY = [f"{OSM_LOCAL_PATH}/v{OSM_VERSION}/bin/osm3s_query", f"--db-dir={OSM_LOCAL_PATH}/db"]
+OSM_DB_STAMP_REMOTE = "https://sunnypilot-osm.s3.us-east-2.amazonaws.com/osm-db/timestamps"
 
 def get_current_s3_osm_db_timestamp():
-  local_osm_db_name = Params().get("OsmLocationName")
-  if local_osm_db_name is None:
-    return None
-  local_osm_db_name = local_osm_db_name.decode("utf-8")
-  r = requests.head(f"https://mkumard.synology.me/osm/{local_osm_db_name}.txt")
-  if r.status_code != 200:
-    print(f'Failed to fetch HEAD for S3 OSM db.\n\n{r.status_code}')
-    return None
-
-  timestamp_string = r.headers.get('Last-Modified', None)
-  if timestamp_string is None:
-    print(f'HEAD for S3 OSM db contained no "Last-Modified" value.\n\n{r.headers}')
-    return None
-
   try:
+    local_osm_db_name = Params().get("OsmLocationName", encoding="utf8")
+    req = Request(url=f"{OSM_DB_STAMP_REMOTE}/{local_osm_db_name}.txt", headers={"User-Agent": f"dragonpilot-{get_version()}"})
+    r = urlopen(req)
+    if r.status != 200:
+      print(f'Failed to fetch timestamp for S3 OSM db.\n\n{r.status}')
+      return None
+
+    timestamp_string = r.read().decode("utf-8").strip()
+    if timestamp_string is None:
+      print('Timestamp file for S3 OSM db contained no value.')
+      return None
+
     parsed_date = eut.parsedate(timestamp_string)
     return time.mktime(parsed_date)
   except Exception as e:
-    print(f'Could not parse last modified timestamp for S3 local osm db.\n\n{e}')
+    print(f'Could not parse timestamp for S3 local osm db.\n\n{e}')
     return None
 
 
@@ -70,12 +70,11 @@ def timestamp_local_osm_db():
     persist_s3_osm_db_timestamp(current_s3_osm_ts)
 
 
-def is_local_osm_installed():
+def is_local_osm_installed(params=Params()):
   api = overpy.Overpass()
-  waypoint = Params().get("OsmWayTest")
+  waypoint = params.get("OsmWayTest", encoding="utf8")
   if waypoint is None:
     return False
-  waypoint = waypoint.decode("utf-8")
   q = f"""
       way({waypoint});
       (._;>;);
@@ -83,9 +82,7 @@ def is_local_osm_installed():
       """
 
   try:
-    cmd = OSM_QUERY
-    cmd.append(f"--request={q}")
-    completion = subprocess.run(cmd, check=True, capture_output=True)
+    completion = subprocess.run(OSM_QUERY + [f"--request={q}"], check=True, capture_output=True)
     print(f'OSM local query returned with exit code: {completion.returncode}')
 
     if completion.returncode != 0:

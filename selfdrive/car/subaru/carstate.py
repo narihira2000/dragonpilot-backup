@@ -83,7 +83,6 @@ class CarState(CarStateBase):
     self.es_distance_msg = copy.copy(cp_es_distance.vl["ES_Distance"])
     self.es_dashstatus_msg = copy.copy(cp_cam.vl["ES_DashStatus"])
 
-    ret.cruiseActualEnabled = ret.cruiseState.enabled
     return ret
 
   @staticmethod

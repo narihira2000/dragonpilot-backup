@@ -118,7 +118,7 @@ class PowerMonitoring:
     should_shutdown = False
     offroad_time = (now - offroad_timestamp)
 
-    if self.dp_auto_shutdown and offroad_time > self.dp_auto_shutdown_in:
+    if started_seen and self.dp_auto_shutdown and offroad_time > self.dp_auto_shutdown_in:
       return True
 
     low_voltage_shutdown = (self.car_voltage_mV < (VBATT_PAUSE_CHARGING * 1e3) and

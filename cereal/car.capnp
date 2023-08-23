@@ -118,6 +118,8 @@ struct CarEvent @0x9b1657f34caf3ad3 {
     #dp
     speedLimitActive @116;
     speedLimitValueChange @117;
+    leadMovingAlertSilent @118;
+    leadMovingAlert @119;
 
     radarCanErrorDEPRECATED @15;
     communityFeatureDisallowedDEPRECATED @62;
@@ -217,9 +219,13 @@ struct CarState {
   charging @43 :Bool;
 
   # dp
-  cruiseActualEnabled @46 :Bool;
-  engineRPM @47 :Float32;
-  distanceLines @48:UInt8;
+  engineRPM @46 :Float32;
+  distanceLines @47 :UInt8;
+  rightBlindspotD1 @48 :Float32;
+  rightBlindspotD2 @49 :Float32;
+  leftBlindspotD1 @50 :Float32;
+  leftBlindspotD2 @51 :Float32;
+  blindspotside @52 :Float32;
 
   struct WheelSpeeds {
     # optional wheel speeds
@@ -340,6 +346,8 @@ struct CarControl {
   cruiseControl @4 :CruiseControl;
   hudControl @5 :HUDControl;
 
+  latController @17 :Text;
+
   struct Actuators {
     # range from 0.0 - 1.0
     gas @0: Float32;
@@ -436,6 +444,15 @@ struct CarParams {
   enableBsm @56 :Bool;       # blind spot monitoring
   flags @64 :UInt32;         # flags for car specific quirks
   experimentalLongitudinalAvailable @71 :Bool;
+  #dp: enable torque interceptor
+  enableTorqueInterceptor @72 :Bool;
+  #dp: alt tune collection
+  latTuneCollection @73 :LatTunes;
+  struct LatTunes {
+    pid @0 :LateralPIDTuning;
+    lqr @1 :LateralLQRTuning;
+    torque @2 :LateralTorqueTuning;
+  }
 
   minEnableSpeed @7 :Float32;
   minSteerSpeed @8 :Float32;
@@ -622,6 +639,7 @@ struct CarParams {
     brand @6 :Text;
     bus @7 :UInt8;
     logging @8 :Bool;
+    obdMultiplexing @9 :Bool;
   }
 
   enum Ecu {
@@ -640,6 +658,7 @@ struct CarParams {
     shiftByWire @16;
     adas @19;
     cornerRadar @21;
+    hvac @20;
 
     # Toyota only
     dsu @6;
@@ -653,7 +672,7 @@ struct CarParams {
     hcp @18;  # Hybrid Control Processor
 
     # Hyundai only
-    vcu @20;  # Vehicle (Motor) Control Unit
+    parking @22;  # ADAS parking ECU
 
     debug @17;
   }

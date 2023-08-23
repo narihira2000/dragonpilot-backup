@@ -2,6 +2,8 @@
 import math
 import numpy as np
 from common.numpy_fast import clip, interp
+from common.params import Params
+from cereal import log
 
 import cereal.messaging as messaging
 from common.conversions import Conversions as CV
@@ -40,17 +42,17 @@ DP_ACCEL_NORMAL = 1
 DP_ACCEL_SPORT = 2
 
 # accel profile by @arne182 modified by cgw
-_DP_CRUISE_MIN_V =       [-0.53, -0.53, -0.55, -0.65, -0.65, -0.60,  -0.43]
-_DP_CRUISE_MIN_V_ECO =   [-0.50, -0.50, -0.53, -0.60, -0.60, -0.55,  -0.40]
-_DP_CRUISE_MIN_V_SPORT = [-0.60, -0.60, -0.65, -0.70, -0.80, -0.70,  -0.50]
-_DP_CRUISE_MIN_BP =      [0.,    3.,    8.3,   14,    20.,   30.,   55.]
-#DP_CRUISE_MIN_BP in mph=[0.,    2,     18,    31,    44,    67,    94]
+_DP_CRUISE_MIN_V =       [-0.765, -0.765,  -0.80, -0.80, -0.75, -0.70]
+_DP_CRUISE_MIN_V_ECO =   [-0.760, -0.760,  -0.76, -0.76, -0.70, -0.65]
+_DP_CRUISE_MIN_V_SPORT = [-0.770, -0.770,  -0.90, -1.00, -0.90, -0.80]
+_DP_CRUISE_MIN_BP =      [0.,     15.66,  17.88, 20.,   30.,   55.]
+#DP_CRUISE_MIN_BP in mph=[0.,     18,     35,    40,    45,    67,    123]
 
-_DP_CRUISE_MAX_V =       [3.5, 3.4, 2.1, 1.6, 1.1,  0.91, 0.69, 0.44, 0.34, 0.14]
-_DP_CRUISE_MAX_V_ECO =   [3.0, 1.8, 1.3, 1.0, 0.71, 0.59, 0.45, 0.36, 0.28, 0.09]
-_DP_CRUISE_MAX_V_SPORT = [3.5, 3.5, 3.4, 3.0, 2.1,  1.7,  1.3,  0.9,  0.7,  0.5]
-_DP_CRUISE_MAX_BP =      [0.,  3,   6.,  8.,  11.,  15.,  20.,  25.,  30.,  42.]
-#DP_CRUISE_MAX_BP in mph=[0.,  6.7, 13,  18,  25,   33,   45,   56,   67,   94]
+_DP_CRUISE_MAX_V =       [3.4, 2.8, 1.8, 1.4, 1.06, .88, .68,  .46, .35, .13]
+_DP_CRUISE_MAX_V_ECO =   [3.2, 2.6, 1.6, 1.2, .76,  .62, .48,  .36, .28, .09]
+_DP_CRUISE_MAX_V_SPORT = [3.5, 3.0, 2.4, 2.9, 2.1,  1.7,  1.3, .9,  .7,  .5]
+_DP_CRUISE_MAX_BP =      [0.,  3,   6.,  8.,  11.,  15.,  20., 25., 30., 55.]
+#DP_CRUISE_MAX_BP in mph=[0.,  6.7, 13,  18,  25,   33,   45,  56,  67,  123]
 
 # d-e2e, from modeldata.h
 TRAJECTORY_SIZE = 33
@@ -59,14 +61,13 @@ _DP_E2E_LEAD_COUNT = 5
 
 _DP_E2E_STOP_BP = [0., 10., 20., 30., 40., 50., 55.]
 _DP_E2E_STOP_DIST = [10, 30., 50., 70., 80., 90., 120.]
-_DP_E2E_STOP_COUNT = 5
+_DP_E2E_STOP_COUNT = 3
 
-_DP_E2E_SNG_COUNT = 5
+_DP_E2E_SNG_COUNT = 3
 _DP_E2E_SNG_ACC_COUNT = 5
 _DP_E2E_SWAP_COUNT = 10
 
 _DP_E2E_TF_COUNT = 5
-
 def dp_calc_cruise_accel_limits(v_ego, dp_profile):
   if dp_profile == DP_ACCEL_ECO:
     a_cruise_min = interp(v_ego, _DP_CRUISE_MIN_BP, _DP_CRUISE_MIN_V_ECO)
@@ -122,8 +123,8 @@ class LongitudinalPlanner:
     self.dp_e2e_standstill_last = False
     self.dp_e2e_swap_count = 0
     self.dp_e2e_stop_count = 0
-    self.dp_e2e_tf = T_FOLLOW
     self.dp_e2e_tf_count = 0
+    self.dp_e2e_tf = T_FOLLOW
 
     self.CP = CP
     self.mpc = LongitudinalMpc()
@@ -137,6 +138,16 @@ class LongitudinalPlanner:
     self.a_desired_trajectory = np.zeros(CONTROL_N)
     self.j_desired_trajectory = np.zeros(CONTROL_N)
     self.solverExecutionTime = 0.0
+    #self.params = Params()
+    #self.param_read_counter = 0
+    #self.read_param()
+    #self.personality = log.LongitudinalPersonality.standard
+
+  #def read_param(self):
+    #try:
+    #  self.personality = int(self.params.get('LongitudinalPersonality'))
+    #except (ValueError, TypeError):
+    #  self.personality = log.LongitudinalPersonality.standard
 
   def _set_dp_e2e_mode(self, mode, force=False):
     reset_state = False
@@ -242,20 +253,23 @@ class LongitudinalPlanner:
       return desired_tf
     if self.dp_following_profile_ctrl:
       if self.dp_following_profile == 0:
-        x_vel =  [1.1,  3.3,   5.5,    19.7,   22.0,   25.0,   42]
-        y_dist = [1.0,  1.24,  1.31,   1.33,   1.3,    1.24,   1.25]
+        x_vel =  [0,    11,   13,   15,   25,   40]
+        y_dist = [1.12, 1.12, 1.13, 1.12, 1.22, 1.22]
         desired_tf = np.interp(v_ego, x_vel, y_dist)
       elif self.dp_following_profile == 1:
-        x_vel =  [1.1,  5.556, 19.7,   42]
-        y_dist = [1.0,  1.35,  1.6,    1.6 ]
+        x_vel =  [0,    11,   13,   15,   25,   40]
+        y_dist = [1.5,  1.5,  1.51,  1.5,  1.5,  1.45]
         desired_tf = np.interp(v_ego, x_vel, y_dist)
       elif self.dp_following_profile == 2:
-        x_vel =  [1.1,  5.556, 19.7,   42]
-        y_dist = [1.0,  1.4,   2.0,    2.0]
+        x_vel =  [0,    11,   13,   15,   25,   40]
+        y_dist = [1.75, 1.75, 1.77, 1.75, 1.8,  1.8]
         desired_tf = np.interp(v_ego, x_vel, y_dist)
     return desired_tf
 
   def update(self, sm):
+    #if self.param_read_counter % 50 == 0:
+    #  self.read_param()
+    #self.param_read_counter += 1
     # dp
     self.dp_accel_profile_ctrl = sm['dragonConf'].dpAccelProfileCtrl
     self.dp_accel_profile = sm['dragonConf'].dpAccelProfile
@@ -320,7 +334,7 @@ class LongitudinalPlanner:
     accel_limits_turns[1] = max(accel_limits_turns[1], self.a_desired - 0.05)
 
     # dp - mpc.set_weights calls moved to mpc.update function because we need lead0 and lead1 data
-    # self.mpc.set_weights(prev_accel_constraint)
+    #self.mpc.set_weights(prev_accel_constraint)
     self.mpc.set_accel_limits(accel_limits_turns[0], accel_limits_turns[1])
     self.mpc.set_cur_state(self.v_desired_filter.x, self.a_desired)
     x, v, a, j = self.parse_model(sm['modelV2'], self.v_model_error)
@@ -363,6 +377,7 @@ class LongitudinalPlanner:
     longitudinalPlan.fcw = self.fcw
 
     longitudinalPlan.solverExecutionTime = self.mpc.solve_time
+    #longitudinalPlan.personality = self.personality
 
     longitudinalPlan.visionTurnControllerState = self.vision_turn_controller.state
     longitudinalPlan.visionTurnSpeed = float(self.vision_turn_controller.v_turn)

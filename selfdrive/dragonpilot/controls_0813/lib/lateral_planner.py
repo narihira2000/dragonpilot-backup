@@ -14,7 +14,7 @@ from common.params import Params
 
 class LateralPlanner:
   def __init__(self, CP):
-    self.LP = LanePlanner(False if not TICI else Params().get_bool('WideCameraOnly'))
+    self.LP = LanePlanner()
     self.DH = DesireHelper()
 
     self.last_cloudlog_t = 0

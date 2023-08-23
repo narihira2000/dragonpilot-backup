@@ -3,6 +3,7 @@ $Cxx.namespace("cereal");
 
 using Car = import "car.capnp";
 using Legacy = import "legacy.capnp";
+using Custom = import "custom.capnp";
 using Dp = import "dp.capnp";
 
 @0xf3b1f17e25a4285b;
@@ -15,6 +16,12 @@ struct Map(Key, Value) {
     key @0 :Key;
     value @1 :Value;
   }
+}
+
+enum LongitudinalPersonality {
+  aggressive @0;
+  standard @1;
+  relaxed @2;
 }
 
 struct InitData {
@@ -126,7 +133,6 @@ struct FrameData {
   frameIdSensor @25 :UInt32;
 
   frameType @7 :FrameType;
-  frameLength @3 :Int32;
 
   # Timestamps
   timestampEof @2 :UInt64;
@@ -161,6 +167,7 @@ struct FrameData {
     ox03c10 @2;
   }
 
+  frameLengthDEPRECATED @3 :Int32;
   globalGainDEPRECATED @5 :Int32;
   androidCaptureResultDEPRECATED @9 :AndroidCaptureResult;
   lensPosDEPRECATED @11 :Int32;
@@ -327,6 +334,7 @@ struct DeviceState @0xa4d8b5af2aa492eb {
   nvmeTempC @35 :List(Float32);
   modemTempC @36 :List(Float32);
   pmicTempC @39 :List(Float32);
+  maxTempC @44 :Float32;  # max of other temps, used to control fan
   thermalZones @38 :List(ThermalZone);
   thermalStatus @14 :ThermalStatus;
 
@@ -517,6 +525,10 @@ struct PandaState @0xa7649e2575e4591e {
     canfdEnabled @18 :Bool;
     brsEnabled @19 :Bool;
     canfdNonIso @20 :Bool;
+    irq0CallRate @21 :UInt32;
+    irq1CallRate @22 :UInt32;
+    irq2CallRate @23 :UInt32;
+    canCoreResetCnt @24 :UInt32;
 
     enum LecErrorCode {
       noError @0;
@@ -592,7 +604,7 @@ struct RadarState @0x9a185389d6fdd05f {
 }
 
 struct LiveCalibrationData {
-  calStatus @1 :Int8;
+  calStatus @11 :Status;
   calCycle @2 :Int32;
   calPerc @3 :Int8;
   validBlocks @9 :Int32;
@@ -604,10 +616,19 @@ struct LiveCalibrationData {
   rpyCalib @7 :List(Float32);
   rpyCalibSpread @8 :List(Float32);
   wideFromDeviceEuler @10 :List(Float32);
+  height @12 :List(Float32);
 
   warpMatrixDEPRECATED @0 :List(Float32);
+  calStatusDEPRECATED @1 :Int8;
   warpMatrix2DEPRECATED @5 :List(Float32);
   warpMatrixBigDEPRECATED @6 :List(Float32);
+
+  enum Status {
+    uncalibrated @0;
+    calibrated @1;
+    invalid @2;
+    recalibrating @3;
+  }
 }
 
 struct LiveTracks {
@@ -849,9 +870,12 @@ struct ModelDataV2 {
   leadsV3 @18 :List(LeadDataV3);
 
   meta @12 :MetaData;
+  confidence @23: ConfidenceClass;
 
   # Model perceived motion
   temporalPose @21 :Pose;
+
+  navEnabled @22 :Bool;
 
 
   struct LeadDataV2 {
@@ -897,6 +921,12 @@ struct ModelDataV2 {
     steerOverrideProbDEPRECATED @4 :Float32;
   }
 
+  enum ConfidenceClass {
+    red @0;
+    yellow @1;
+    green @2;
+  }
+
   struct DisengagePredictions {
     t @0 :List(Float32);
     brakeDisengageProbs @1 :List(Float32);
@@ -935,13 +965,17 @@ struct EncodeIndex {
   len @9 :UInt32;
 
   enum Type {
-    bigBoxLossless @0;   # rcamera.mkv
-    fullHEVC @1;         # fcamera.hevc
-    bigBoxHEVC @2;       # bcamera.hevc
-    chffrAndroidH264 @3; # acamera
-    fullLosslessClip @4; # prcamera.mkv
-    front @5;            # dcamera.hevc
-    qcameraH264 @6;      # qcamera.ts
+    bigBoxLossless @0;
+    fullHEVC @1;
+    qcameraH264 @6;
+    livestreamH264 @7;
+
+    # deprecated
+    bigBoxHEVCDEPRECATED @2;
+    chffrAndroidH264DEPRECATED @3;
+    fullLosslessClipDEPRECATED @4;
+    frontDEPRECATED @5;
+
   }
 }
 
@@ -962,30 +996,32 @@ struct LongitudinalPlan @0xe00b5b3eba12876c {
   longitudinalPlanSource @15 :LongitudinalPlanSource;
   processingDelay @29 :Float32;
 
-  # desired speed/accel/jerk over next 2.5s
+  # desired distances/speed/accel/jerk over next 2.5s
+  distances @51 :List(Float32);
   accels @32 :List(Float32);
   speeds @33 :List(Float32);
   jerks @34 :List(Float32);
 
   solverExecutionTime @35 :Float32;
+  personality @36 :LongitudinalPersonality;
 
   #dp
-  visionTurnControllerState @36 :VisionTurnControllerState;
-  visionTurnSpeed @37 :Float32;
-  speedLimitControlState @38 :SpeedLimitControlState;
-  speedLimit @39 :Float32;
-  speedLimitOffset @40 :Float32;
-  distToSpeedLimit @41 :Float32;
-  isMapSpeedLimit @42 :Bool;
-  speedLimitPercOffset @47 :Bool;
-  speedLimitValueOffset @48 :Float32;
+  visionTurnControllerState @37 :VisionTurnControllerState;
+  visionTurnSpeed @38 :Float32;
+  speedLimitControlState @39 :SpeedLimitControlState;
+  speedLimit @40 :Float32;
+  speedLimitOffset @41 :Float32;
+  distToSpeedLimit @42 :Float32;
+  isMapSpeedLimit @43 :Bool;
+  speedLimitPercOffset @44 :Bool;
+  speedLimitValueOffset @45 :Float32;
 
-  distToTurn @43 :Float32;
-  turnSpeed @44 :Float32;
-  turnSpeedControlState @45 :SpeedLimitControlState;
-  turnSign @46 :Int16;
+  distToTurn @46 :Float32;
+  turnSpeed @47 :Float32;
+  turnSpeedControlState @48 :SpeedLimitControlState;
+  turnSign @49 :Int16;
 
-  dpE2EIsBlended @49 :Bool;
+  dpE2EIsBlended @50 :Bool;
 
   enum LongitudinalPlanSource {
     cruise @0;
@@ -1042,8 +1078,8 @@ struct LongitudinalPlan @0xe00b5b3eba12876c {
   }
 
   enum VisionTurnControllerState {
-    disabled @0; # No predicted substancial turn on vision range or feature disabled.
-    entering @1; # A subsantial turn is predicted ahead, adapting speed to turn confort levels.
+    disabled @0; # No predicted substantial turn on vision range or feature disabled.
+    entering @1; # A substantial turn is predicted ahead, adapting speed to turn comfort levels.
     turning @2; # Actively turning. Managing acceleration to provide a roll on turn feeling.
     leaving @3; # Road ahead straightens. Start to allow positive acceleration.
   }
@@ -1063,8 +1099,8 @@ struct LateralPlan @0xe1e9318e2ae8b51e {
   dProbDEPRECATED @21 :Float32;
 
   #dp
-  dPathWLinesX @32 :List(Float32);
-  dPathWLinesY @33 :List(Float32);
+  dPathWLinesX @34 :List(Float32);
+  dPathWLinesY @35 :List(Float32);
 
   mpcSolutionValid @9 :Bool;
   desire @17 :Desire;
@@ -1078,6 +1114,13 @@ struct LateralPlan @0xe1e9318e2ae8b51e {
   curvatureRates @28 :List(Float32);
 
   solverExecutionTime @30 :Float32;
+  solverCost @32 :Float32;
+  solverState @33 :SolverState;
+
+  struct SolverState {
+    x @0 :List(List(Float32));
+    u @1 :List(Float32);
+  }
 
   enum Desire {
     none @0;
@@ -1164,6 +1207,8 @@ struct LiveLocationKalman {
   excessiveResets @24 :Bool;
   timeToFirstFix @25 :Float32;
 
+  filterState @26 : Measurement;
+
   enum Status {
     uninitialized @0;
     uncalibrated @1;
@@ -1249,6 +1294,8 @@ struct GnssMeasurements {
     svId @1 :UInt8;
     type @2 :EphemerisType;
     source @3 :EphemerisSource;
+    gpsWeek @4 : UInt16;
+    tow @5 :Float64;
   }
 
   struct CorrectedMeasurement {
@@ -1821,6 +1868,9 @@ struct QcomGnss @0xde94674b07ae51c1 {
     elevationDot @20 :Float32;
     elevationUncertainty @21 :Float32;
     velocityCoeff @22 :List(Float64);
+
+    gpsWeek @23 :UInt16;
+    gpsTow @24 :Float64;
   }
 }
 
@@ -1970,6 +2020,7 @@ struct LiveParametersData {
   stiffnessFactorStd @12 :Float32;
   steerRatioStd @13 :Float32;
   roll @14 :Float32;
+  filterState @15 :LiveLocationKalman.Measurement;
 
   yawRateDEPRECATED @7 :Float32;
 }
@@ -2019,6 +2070,8 @@ struct CameraOdometry {
   rotStd @3 :List(Float32); # std rad/s in device frame
   wideFromDeviceEuler @6 :List(Float32);
   wideFromDeviceEulerStd @7 :List(Float32);
+  roadTransformTrans @8 :List(Float32);
+  roadTransformTransStd @9 :List(Float32);
 }
 
 struct LiveMapData {
@@ -2232,6 +2285,10 @@ struct Event {
     wideRoadEncodeIdx @77 :EncodeIndex;
     qRoadEncodeIdx @90 :EncodeIndex;
 
+    livestreamRoadEncodeIdx @117 :EncodeIndex;
+    livestreamWideRoadEncodeIdx @118 :EncodeIndex;
+    livestreamDriverEncodeIdx @119 :EncodeIndex;
+
     # microphone data
     microphone @103 :Microphone;
 
@@ -2262,8 +2319,25 @@ struct Event {
     wideRoadEncodeData @88 :EncodeData;
     qRoadEncodeData @89 :EncodeData;
 
-    dragonConf @107 :Dp.DragonConf;
-    liveMapData @108 :LiveMapData;
+    livestreamRoadEncodeData @120 :EncodeData;
+    livestreamWideRoadEncodeData @121 :EncodeData;
+    livestreamDriverEncodeData @122 :EncodeData;
+
+    # *********** Custom: reserved for forks ***********
+    customReserved0 @107 :Custom.CustomReserved0;
+    customReserved1 @108 :Custom.CustomReserved1;
+    customReserved2 @109 :Custom.CustomReserved2;
+    customReserved3 @110 :Custom.CustomReserved3;
+    customReserved4 @111 :Custom.CustomReserved4;
+    customReserved5 @112 :Custom.CustomReserved5;
+    customReserved6 @113 :Custom.CustomReserved6;
+    customReserved7 @114 :Custom.CustomReserved7;
+    customReserved8 @115 :Custom.CustomReserved8;
+    customReserved9 @116 :Custom.CustomReserved9;
+
+    #dp
+    dragonConf @123 :Dp.DragonConf;
+    liveMapData @124 :LiveMapData;
 
     # *********** legacy + deprecated ***********
     model @9 :Legacy.ModelData; # TODO: rename modelV2 and mark this as deprecated

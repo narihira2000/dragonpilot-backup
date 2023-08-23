@@ -79,6 +79,7 @@ class ManagerProcess(ABC):
 
   last_watchdog_time = 0
   watchdog_max_dt: Optional[int] = None
+  always_watchdog = False
   watchdog_seen = False
   shutting_down = False
 
@@ -91,10 +92,10 @@ class ManagerProcess(ABC):
     pass
 
   def restart(self) -> None:
-    self.stop()
+    self.stop(sig=signal.SIGKILL)
     self.start()
 
-  def check_watchdog(self, started: bool) -> None:
+  def check_watchdog(self, started: bool, params: Params) -> None:
     if self.watchdog_max_dt is None or self.proc is None:
       return
 
@@ -107,22 +108,24 @@ class ManagerProcess(ABC):
 
     dt = sec_since_boot() - self.last_watchdog_time / 1e9
 
+    always_watchdog = self.always_watchdog and params.get_bool("IsOffroad") and self.proc.exitcode is not None
+
     if dt > self.watchdog_max_dt:
-      # Only restart while offroad for now
-      if self.watchdog_seen and ENABLE_WATCHDOG:
+      if (self.watchdog_seen or always_watchdog) and ENABLE_WATCHDOG:
         cloudlog.error(f"Watchdog timeout for {self.name} (exitcode {self.proc.exitcode}) restarting ({started=})")
         self.restart()
     else:
       self.watchdog_seen = True
 
-  def stop(self, retry: bool=True, block: bool=True) -> Optional[int]:
+  def stop(self, retry: bool = True, block: bool = True, sig: Optional[signal.Signals] = None) -> Optional[int]:
     if self.proc is None:
       return None
 
     if self.proc.exitcode is None:
       if not self.shutting_down:
         cloudlog.info(f"killing {self.name}")
-        sig = signal.SIGKILL if self.sigkill else signal.SIGINT
+        if sig is None:
+          sig = signal.SIGKILL if self.sigkill else signal.SIGINT
         self.signal(sig)
         self.shutting_down = True
 
@@ -184,7 +187,7 @@ class ManagerProcess(ABC):
 
 
 class NativeProcess(ManagerProcess):
-  def __init__(self, name, cwd, cmdline, enabled=True, onroad=True, offroad=False, callback=None, unkillable=False, sigkill=False, watchdog_max_dt=None):
+  def __init__(self, name, cwd, cmdline, enabled=True, onroad=True, offroad=False, callback=None, unkillable=False, sigkill=False, watchdog_max_dt=None, always_watchdog=False):
     self.name = name
     self.cwd = cwd
     self.cmdline = cmdline
@@ -195,6 +198,7 @@ class NativeProcess(ManagerProcess):
     self.unkillable = unkillable
     self.sigkill = sigkill
     self.watchdog_max_dt = watchdog_max_dt
+    self.always_watchdog = always_watchdog
 
   def prepare(self) -> None:
     pass
@@ -216,7 +220,7 @@ class NativeProcess(ManagerProcess):
 
 
 class PythonProcess(ManagerProcess):
-  def __init__(self, name, module, enabled=True, onroad=True, offroad=False, callback=None, unkillable=False, sigkill=False, watchdog_max_dt=None):
+  def __init__(self, name, module, enabled=True, onroad=True, offroad=False, callback=None, unkillable=False, sigkill=False, watchdog_max_dt=None, always_watchdog=False):
     self.name = name
     self.module = module
     self.enabled = enabled
@@ -226,6 +230,7 @@ class PythonProcess(ManagerProcess):
     self.unkillable = unkillable
     self.sigkill = sigkill
     self.watchdog_max_dt = watchdog_max_dt
+    self.always_watchdog = always_watchdog
 
   def prepare(self) -> None:
     if self.enabled:
@@ -285,7 +290,7 @@ class DaemonProcess(ManagerProcess):
 
     params.put(self.param_name, str(proc.pid))
 
-  def stop(self, retry=True, block=True) -> None:
+  def stop(self, retry=True, block=True, sig=None) -> None:
     pass
 
 
@@ -316,6 +321,6 @@ def ensure_running(procs: ValuesView[ManagerProcess], started: bool, params=None
     else:
       p.stop(block=False)
 
-    p.check_watchdog(started)
+    p.check_watchdog(started, params)
 
   return running

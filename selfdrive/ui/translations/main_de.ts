@@ -94,6 +94,10 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Lat Ctrl</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>OFF</source>
         <translation type="unfinished"></translation>
     </message>
@@ -133,8 +137,11 @@
         <source>ACCEL</source>
         <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>CarSelectionPanel</name>
     <message>
-        <source>Lat Ctrl</source>
+        <source>[AUTO SELECT]</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -206,6 +213,24 @@ Reboot required.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Enable Enhance BSM Requests.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enabling this will block alc for all the car&apos;s that has stock factor BSM that openpilot currently do not support. (Prius TSS2 and Rav4 TSS1 has been fully tested and working) but also allow&apos;s your toyota/lexus see more object&apos;s.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Turn it on at your own risk, user is responsible to pay attention at all time.
+Reboot recommended.
+Reboot?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reboot</source>
+        <translation type="unfinished">Neustart</translation>
+    </message>
+    <message>
         <source>Enable Door Auto Lock</source>
         <translation type="unfinished"></translation>
     </message>
@@ -238,6 +263,15 @@ Reboot Required.</source>
     </message>
     <message>
         <source>Enable this to use a special Torque tune on PRIUS 2017 w/ bad angle sensor.
+Reboot Required.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable Reverse ACC Set speed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enabling this will reverse set acc short press +5 jump, Long press +1 Jump.
 Reboot Required.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -275,36 +309,13 @@ Thanks to @TheCrowd</source>
         <source>Enable this to bypass dashcam mode.</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Enable Reverse ACC Set speed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enabling this will reverse set acc short press +5 jump, Long press +1 Jump.
-Reboot Required.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enable Enhance BSM Requests.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enabling this will block alc for all the car&apos;s that has stock factor BSM that openpilot currently do not support. (Prius TSS2 and Rav4 TSS1 has been fully tested and working) but also allow&apos;s your toyota/lexus see more object&apos;s.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Turn it on at your own risk, user is responsible to pay attention at all time.
-Reboot recommended.
-Reboot?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reboot</source>
-        <translation type="unfinished">Neustart</translation>
-    </message>
 </context>
 <context>
     <name>DPControlPanel</name>
+    <message>
+        <source>ALCA Delay</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Once the vehicle meets all ALCA criteria, it will wait for the seconds set here before performing lane change automatically.</source>
         <translation type="unfinished"></translation>
@@ -314,12 +325,20 @@ Reboot?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>ALCA Min Speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>ALCA minimum engage speed in mph.
 1 mph = 1.61 km/h.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source> mph</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>LCA Min Speed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -337,7 +356,15 @@ Reboot?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Camera Offset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Adjust your camera position if your device is not mounted as per guidance.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Driving Path Offset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -387,11 +414,23 @@ When on close will be dynamic but get closer in traffic. Normal is also dynamic 
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>DE2E Adapt Following Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Enable this if you wish to use following dist. mode in DE2E.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>DE2E Adapt Accel Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Enable this if you wish to use accel mode in DE2E.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>DE2E w/ VOACC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -407,7 +446,59 @@ When on close will be dynamic but get closer in traffic. Normal is also dynamic 
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>When Set Speed Above:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>when acc SET speed above the setting, it will switch to alternative controller. 
+1 km/h = 0.62 mph</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> km/h</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Alternative Controller</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>
+1 = PID
+2 = LQR
+3 = Torque
+Your Vehicle may not support all the options, YMMV.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>DEFAULT</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use Alternative Controller</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This feature will let you use alternative lateral controller at higher set speed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Lateral</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Always On Lateral</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use at your own risk!
+1 = Stock Long
+2 = OP Long
+Reboot required.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>OFF</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -437,10 +528,6 @@ Your Vehicle may not support all the options, YMMV.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>DEFAULT</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Enable Torque Ctrl Auto Tune</source>
         <translation type="unfinished"></translation>
     </message>
@@ -451,99 +538,11 @@ More linear steering experience.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Always On Lateral</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>OFF</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enable Device Temp Check</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enable Max Ctrl Speed Check</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>ALC RoadEdge Detection</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Enabling this will prevent lane change when you are too close to road edge.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ALCA Delay</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ALCA Min Speed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>LCA Min Speed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Camera Offset</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Driving Path Offset</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>DE2E Adapt Following Mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>DE2E Adapt Accel Mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>DE2E w/ VOACC</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>When Set Speed Above:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>when acc SET speed above the setting, it will switch to alternative controller. 
-1 km/h = 0.62 mph</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> km/h</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Alternative Controller</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>
-1 = PID
-2 = LQR
-3 = Torque
-Your Vehicle may not support all the options, YMMV.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Use Alternative Controller</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>This feature will let you use alternative lateral controller at higher set speed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Use at your own risk!
-1 = Stock Long
-2 = OP Long
-Reboot required.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -556,9 +555,21 @@ NOTES: Once LCA/ALCA is enabled, those settings will override manual lane change
 e.g. If you have this option on and LCA at 20km/hr, ALCA at 40km/hr, speed below 20km/hr will be manual lane change.<byte value="x8"/> If you disable LCA/ALCA and have this option on, manual lane change will apply to ALL SPEED.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Enable Device Temp Check</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable Max Ctrl Speed Check</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>DPGeneralPanel</name>
+    <message>
+        <source>Auto Shutdown In</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Adjust your shutdown waiting period.
 0 = shutdown immediately.</source>
@@ -625,17 +636,33 @@ Reboot required.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Enable Driver Monitor (Front Cam)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable this option if you wish to use front camera for driver monitoring.
+On = Front Cam Monitor + Steering Monitor
+Off = Steering Monitor only.
+Enable this will increase device temp a lot, use at your own risk.
+Reboot Required.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reboot recommended.
+Reboot?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reboot</source>
+        <translation type="unfinished">Neustart</translation>
+    </message>
+    <message>
         <source>Enable Jetson Support</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Enable this option if you intend to run dp on Nvidia Jetson.
 Reboot required.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reboot recommended.
-Reboot?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -703,26 +730,6 @@ Reboot required.</source>
     <message>
         <source>Are you sure delete all media?</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Auto Shutdown In</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enable Driver Monitor (Front Cam)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enable this option if you wish to use front camera for driver monitoring.
-On = Front Cam Monitor + Steering Monitor
-Off = Steering Monitor only.
-Enable this will increase device temp a lot, use at your own risk.
-Reboot Required.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reboot</source>
-        <translation type="unfinished">Neustart</translation>
     </message>
 </context>
 <context>
@@ -796,19 +803,6 @@ Reboot required.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enable MapD</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Use OSM to assist lateral/longitudinal control.
-Please note:
-1. This feature will works only when your car support OP longitudinal.
-2. MapD will contribute your route to OSM for future improvement automatically.
-3. You can add your own offset for mapd just follow the readme under /selfdrive/mapd.
-4. Not connecting to the internet for while might feel up device storage from all the gps traces. </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>OpenStreetMap Database Update</source>
         <translation type="unfinished"></translation>
     </message>
@@ -840,16 +834,52 @@ Restart your device to start downloading the selected database. Dragonpilot will
 Reboot now?</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Enable MapD</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use OSM to assist lateral/longitudinal control.
+Please note:
+1. This feature will works only when your car support OP longitudinal.
+2. MapD will contribute your route to OSM for future improvement automatically.
+3. You can add your own offset for mapd just follow the readme under /selfdrive/mapd.
+4. Not connecting to the internet for while might feel up device storage from all the gps traces. </source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>DPUIPanel</name>
     <message>
-        <source>Display Mode</source>
+        <source>Standard</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>0 = Default
-1 = Screen Off While Driving</source>
+        <source>On-Road</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MAIN</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>OP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Off</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Display Mode:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audible Alert Mode:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -865,14 +895,6 @@ Reboot now?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Quiet Drive</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Display alert and play important warning sound. Thanks @sunnyhaibin.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Display Speed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -881,11 +903,11 @@ Reboot now?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enable this to display the icon.</source>
+        <source>Display Driver Monitor Indicator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Display Driver Monitor Indicator</source>
+        <source>Enable this to display the icon.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -929,7 +951,18 @@ Reboot now?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>DEFAULT</source>
+        <source>On-Road - The display will be off when driving (excluding warnings).
+MAIN - The display will be off when ACC Main is on (excluding warnings).
+OP - The display will be off when OP is enabled (excluding warnings).
+Off - The display will be off completely (including warnings).
+Reboot required.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The audible alert mode determines whether or not the device will emit a sound when there is an alert.
+Standard: The device will emit a sound for all alerts.
+Warning: The device will only emit a sound for warnings.
+Off: The device will not emit any sound.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -946,6 +979,33 @@ Reboot now?</source>
     <message>
         <source>Decline, uninstall %1</source>
         <translation>Ablehnen, deinstallieren %1</translation>
+    </message>
+</context>
+<context>
+    <name>DestinationWidget</name>
+    <message>
+        <source>Home</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Work</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No destination set</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No %1 location set</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>home</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>work</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1200,42 +1260,14 @@ Reboot now?</source>
     </message>
 </context>
 <context>
-    <name>MapPanel</name>
+    <name>MapSettings</name>
     <message>
-        <source>Current Destination</source>
-        <translation>Aktuelles Ziel</translation>
+        <source>NAVIGATION</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>CLEAR</source>
-        <translation>LÖSCHEN</translation>
-    </message>
-    <message>
-        <source>Recent Destinations</source>
-        <translation>Letzte Ziele</translation>
-    </message>
-    <message>
-        <source>Try the Navigation Beta</source>
-        <translation>Beta Navigation ausprobieren</translation>
-    </message>
-    <message>
-        <source>Get turn-by-turn directions displayed and more with a comma
-prime subscription. Sign up now: https://connect.comma.ai</source>
-        <translation>Erhalte echtzeit Wegführung und mehr mit dem comma prime
-Abonnement. Melde dich jetzt an: https://connect.comma.ai</translation>
-    </message>
-    <message>
-        <source>No home
-location set</source>
-        <translation>Keine Heimadresse gesetzt</translation>
-    </message>
-    <message>
-        <source>No work
-location set</source>
-        <translation>Keine Arbeitsadresse gesetzt</translation>
-    </message>
-    <message>
-        <source>no recent destinations</source>
-        <translation>Keine kürzlich gewählten Ziele</translation>
+        <source>Manage at connect.comma.ai</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1277,6 +1309,62 @@ location set</source>
     <message>
         <source>Wrong password</source>
         <translation>Falsches Passwort</translation>
+    </message>
+</context>
+<context>
+    <name>OffroadAlert</name>
+    <message>
+        <source>Immediately connect to the internet to check for updates. If you do not connect to the internet, openpilot won&apos;t engage in %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connect to internet to check for updates. openpilot won&apos;t automatically start until it connects to internet to check for updates.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to download updates
+%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invalid date and time settings, system won&apos;t start. Connect to internet to set time.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Taking camera snapshots. System won&apos;t start until finished.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An update to your device&apos;s operating system is downloading in the background. You will be prompted to update when it&apos;s ready to install.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Device failed to register. It will not connect to or upload to comma.ai servers, and receives no support from comma.ai. If this is an official device, visit https://comma.ai/support.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>NVMe drive not mounted.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unsupported NVMe drive detected. Device may draw significantly more power and overheat due to the unsupported NVMe.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>openpilot was unable to identify your car. Your car is either unsupported or its ECUs are not recognized. Please submit a pull request to add the firmware versions to the proper vehicle. Need help? Join discord.comma.ai.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>openpilot was unable to identify your car. Check integrity of cables and ensure all connections are secure, particularly that the comma power is fully inserted in the OBD-II port of the vehicle. Need help? Join discord.comma.ai.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>openpilot detected a change in the device&apos;s mounting position. Ensure the device is fully seated in the mount and the mount is firmly secured to the windshield.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Device temperature too high. System cooling down before starting. Current internal component temperature: %1</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1360,14 +1448,6 @@ location set</source>
     <message>
         <source>comma prime</source>
         <translation>comma prime</translation>
-    </message>
-    <message>
-        <source>CONNECT.COMMA.AI</source>
-        <translation>CONNECT.COMMA.AI</translation>
-    </message>
-    <message>
-        <source>COMMA POINTS</source>
-        <translation>COMMA PUNKTE</translation>
     </message>
 </context>
 <context>
@@ -1473,10 +1553,6 @@ This may take up to a minute.</source>
         <translation>Software</translation>
     </message>
     <message>
-        <source>Navigation</source>
-        <translation>Navigation</translation>
-    </message>
-    <message>
         <source>BACK</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1498,6 +1574,14 @@ This may take up to a minute.</source>
     </message>
     <message>
         <source>DP - Maps</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Vehicle Model:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>[AUTO SELECT]</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1738,6 +1822,26 @@ This may take up to a minute.</source>
         <source>Uninstall</source>
         <translation>Deinstallieren</translation>
     </message>
+    <message>
+        <source>failed to check for update</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>up to date, last checked %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>DOWNLOAD</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>update available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>never</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SshControl</name>
@@ -1897,10 +2001,6 @@ This may take up to a minute.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>An experimental version of openpilot longitudinal control can be tested, along with Experimental mode, on non-release branches.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Enable experimental longitudinal control to allow Experimental mode.</source>
         <translation>Aktiviere den experimentellen Openpilot Tempomaten für experimentelle Funktionen.</translation>
     </message>
@@ -1914,6 +2014,10 @@ This may take up to a minute.</source>
     </message>
     <message>
         <source>On this car, openpilot defaults to the car&apos;s built-in ACC instead of openpilot&apos;s longitudinal control. Enable this to switch to openpilot longitudinal control. Enabling Experimental mode is recommended when enabling openpilot longitudinal control alpha.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An alpha version of openpilot longitudinal control can be tested, along with Experimental mode, on non-release branches.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1950,6 +2054,29 @@ This may take up to a minute.</source>
     <message>
         <source>Update failed</source>
         <translation>Aktualisierung fehlgeschlagen</translation>
+    </message>
+</context>
+<context>
+    <name>WiFiPromptWidget</name>
+    <message>
+        <source>Setup Wi-Fi</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connect to Wi-Fi to upload driving data and help improve openpilot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Uploading training data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Your data is used to train driving models and help improve openpilot</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

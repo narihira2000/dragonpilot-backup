@@ -37,10 +37,6 @@ try:
   gitname = Params().get("GithubUsername", encoding='utf-8')
 except Exception:
   gitname = ""
-try:
-  ip = requests.get('https://checkip.amazonaws.com/').text.strip()
-except Exception:
-  ip = "255.255.255.255"
 error_tags = {'dirty': is_dirty(), 'dongle_id': dongle_id, 'branch': get_branch(), 'remote': get_origin(), 'fingerprintedAs': candidate, 'gitname':gitname}
 
 try:
@@ -86,15 +82,28 @@ def bind_user(**kwargs) -> None:
     sentry_sdk.set_user(kwargs)
 
 def capture_warning(warning_string):
-  bind_user(id=dongle_id, ip_address=ip, name=gitname)
+  bind_user(id=dongle_id, name=gitname)
   sentry_sdk.capture_message(warning_string, level='warning')
 
 def capture_info(info_string):
-  bind_user(id=dongle_id, ip_address=ip, name=gitname)
+  bind_user(id=dongle_id, name=gitname)
   sentry_sdk.capture_message(info_string, level='info')
+
+def get_ip_address():
+  try:
+    ip = requests.get('https://checkip.amazonaws.com/').text.strip()
+  except Exception:
+    ip = "255.255.255.255"
+  return ip
 
 def set_tag(key: str, value: str) -> None:
   sentry_sdk.set_tag(key, value)
+
+def before_send_event(event, hint):
+  if "user" in event and "ip_address" in event["user"]:
+    event["user"]["ip_address"] = "[Filtered]"  # Replace the IP address with "[Filtered]"
+  return event
+
 
 
 def init(project: SentryProject) -> None:
@@ -106,6 +115,7 @@ def init(project: SentryProject) -> None:
   env = "release" if is_tested_branch() else "master"
   dongle_id = Params().get("DongleId", encoding='utf-8')
   gitname = Params().get("GithubUsername", encoding='utf-8')
+  ip = get_ip_address()
 
   integrations = []
   if project == SentryProject.SELFDRIVE:
@@ -118,16 +128,20 @@ def init(project: SentryProject) -> None:
                   release=get_version(),
                   integrations=integrations,
                   traces_sample_rate=1.0,
-                  environment=env)
+                  environment=env,
+                  send_default_pii=True,  # Enable sending personally identifiable information (PII)
+                  before_send=before_send_event,  # Attach a custom before_send event handler
+                )
 
-  sentry_sdk.set_user({"id": dongle_id})
-  sentry_sdk.set_user({"gitname": gitname})
-  sentry_sdk.set_tag("dirty", is_dirty())
-  sentry_sdk.set_tag("origin", get_origin())
-  sentry_sdk.set_tag("branch", get_branch())
-  sentry_sdk.set_tag("commit", get_commit())
-  sentry_sdk.set_tag("device", HARDWARE.get_device_type())
-  sentry_sdk.set_tag("model", car_name)
+  with sentry_sdk.configure_scope() as scope:
+    scope.set_user({"id": dongle_id, "gitname": gitname})
+    scope.set_tag("dirty", is_dirty())
+    scope.set_tag("origin", get_origin())
+    scope.set_tag("branch", get_branch())
+    scope.set_tag("commit", get_commit())
+    scope.set_tag("device", HARDWARE.get_device_type())
+    scope.set_tag("model", car_name)
+    scope.set_extra("ip_address", ip)
 
   if project == SentryProject.SELFDRIVE:
     sentry_sdk.Hub.current.start_session()

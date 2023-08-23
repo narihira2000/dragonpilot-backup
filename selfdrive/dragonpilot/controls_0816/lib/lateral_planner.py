@@ -14,7 +14,7 @@ from common.params import Params
 
 class LateralPlanner:
   def __init__(self, CP):
-    self.LP = LanePlanner(False if not TICI else Params().get_bool('WideCameraOnly'))
+    self.LP = LanePlanner()
     self.DH = DesireHelper()
 
     # Vehicle model parameters used to calculate lateral movement of car

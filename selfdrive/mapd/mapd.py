@@ -15,6 +15,8 @@ from system.swaglog import cloudlog
 from common.params import Params
 import json
 
+ROAD_NAME_TIMEOUT = 30 # secs
+
 _DEBUG = False
 _CLOUDLOG_DEBUG = True
 
@@ -54,6 +56,20 @@ class MapD():
     self._disengaging = False
     self._query_thread = None
     self._lock = threading.RLock()
+    self._road_name_last = ""
+    self._road_name_last_timed_out = 0.
+
+    # dp - use LastGPSPosition as init position (if we are in a undercover car park?)
+    # this way we can prefetch osm data before we get a fix.
+    last_pos = Params().get("LastGPSPosition")
+    if last_pos is not None and last_pos != "":
+      l = json.loads(last_pos)
+      lat = float(l["latitude"])
+      lon = float(l["longitude"])
+      self.location_rad = np.radians(np.array([lat, lon], dtype=float))
+      self.location_deg = (lat, lon)
+      self.bearing_rad = np.radians(0, dtype=float)
+      _debug("Use LastGPSPosition position - lat: %s, lon: %s" % (lat, lon))
 
   def udpate_state(self, sm):
     sock = 'controlsState'
@@ -234,6 +250,19 @@ class MapD():
     map_data_msg.liveMapData.turnSpeedLimitsAhead = [float(s.value) for s in next_turn_speed_limit_sections]
     map_data_msg.liveMapData.turnSpeedLimitsAheadDistances = [float(s.start) for s in next_turn_speed_limit_sections]
     map_data_msg.liveMapData.turnSpeedLimitsAheadSigns = [float(s.curv_sign) for s in next_turn_speed_limit_sections]
+
+    # dp - cache road name to avoid name display blinking
+    if current_road_name == "":
+      sec = sec_since_boot()
+      if self._road_name_last_timed_out == 0.:
+        self._road_name_last_timed_out = sec + ROAD_NAME_TIMEOUT
+
+      if sec < self._road_name_last_timed_out:
+        current_road_name = self._road_name_last
+    else:
+      self._road_name_last_timed_out = 0.
+      self._road_name_last = current_road_name
+
     map_data_msg.liveMapData.currentRoadName = current_road_name
 
     pm.send('liveMapData', map_data_msg)

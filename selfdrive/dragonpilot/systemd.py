@@ -36,7 +36,7 @@ from common.dp_helpers import get_last_modified, LAST_MODIFIED_TIMER_SYSTEMD
 import socket
 from common.realtime import Ratekeeper, config_realtime_process
 import threading
-from selfdrive.dragonpilot.gpx_uploader import gpx_uploader_thread
+#from selfdrive.dragonpilot.gpx_uploader import gpx_uploader_thread
 from typing import Dict, Any
 import capnp
 
@@ -63,13 +63,13 @@ def confd_thread():
   # dashcamd = Dashcamd()
   # is_eon = EON
   rk = Ratekeeper(HERTZ, print_delay_threshold=None)  # Keeps rate at 2 hz
-  uploader_thread = None
+  #uploader_thread = None
   dp_jetson = params.get_bool('dp_jetson')
 
   while True:
-    if uploader_thread is None:
-      uploader_thread = threading.Thread(target=gpx_uploader_thread)
-      uploader_thread.start()
+    #if uploader_thread is None:
+    #  uploader_thread = threading.Thread(target=gpx_uploader_thread)
+    #  uploader_thread.start()
 
     msg = messaging.new_message('dragonConf')
     if last_dp_msg is not None:

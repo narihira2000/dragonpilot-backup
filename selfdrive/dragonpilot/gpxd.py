@@ -25,17 +25,14 @@
 import cereal.messaging as messaging
 import os
 import datetime
-import signal
-import threading
-from common.realtime import Ratekeeper, config_realtime_process
-from cereal import log
+from common.realtime import set_core_affinity, set_realtime_priority
 from system.swaglog import cloudlog
 from pathlib import Path
 
 # customisable values
 GPX_LOG_PATH = '/data/media/0/gpx_logs/'
-LOG_HERTZ = 10 # 10 hz = 0.1 sec, higher for higher accuracy, 10hz seems fine
-LOG_LENGTH = 10 # mins, higher means it keeps more data in the memory, will take more time to write into a file too.
+LOG_HERTZ = 5 # 5 hz = 0.2 sec, higher for higher accuracy, 10hz seems fine
+LOG_LENGTH = 5 # mins, higher means it keeps more data in the memory, will take more time to write into a file too.
 LOST_SIGNAL_COUNT_LENGTH = 10 # secs, output log file if we lost signal for this long
 
 # do not change
@@ -52,59 +49,39 @@ def _debug(msg, log_to_cloud=True):
   if _DEBUG:
     print(msg)
 
-class WaitTimeHelper:
-
-  def __init__(self):
-    self.shutdown = False
-    self.ready_event = threading.Event()
-    signal.signal(signal.SIGUSR1, self.graceful_shutdown)
-    signal.signal(signal.SIGTERM, self.graceful_shutdown)
-    signal.signal(signal.SIGINT, self.graceful_shutdown)
-    signal.signal(signal.SIGHUP, self.graceful_shutdown)
-
-  def graceful_shutdown(self, signum, frame):
-    self.shutdown = True
-    self.ready_event.set()
-
 class GpxD():
   def __init__(self):
     self.log_count = 0
     self.logs = list()
     self.lost_signal_count = 0
-    self.wait_helper = WaitTimeHelper()
     self.started_time = datetime.datetime.utcnow().isoformat()
-    self.v_ego_prev = 0.
     self.pause = True
 
   def log(self, sm):
-    location = sm['liveLocationKalman']
     gps = sm['gpsLocationExternal']
-    v_ego = sm['carState'].vEgo
 
-    if abs(v_ego) > 0.01:
+    if gps.speed >= 0.1:
       self.pause = False
 
-    location_valid = (location.status == log.LiveLocationKalman.Status.valid) and location.positionGeodetic.valid
-    _debug("gpxd: location_valid - %s" % location_valid)
-    if not location_valid or self.pause:
+    location_not_valid = gps.flags % 2 == 0
+    if location_not_valid or self.pause:
       if self.log_count > 0:
         self.lost_signal_count += 1
     else:
-      lat = location.positionGeodetic.value[0]
-      lon = location.positionGeodetic.value[1]
+      lat = gps.latitude
+      lon = gps.longitude
       alt = gps.altitude
 
-      timestamp = datetime.datetime.utcfromtimestamp(location.unixTimestampMillis*0.001).isoformat()
-      _debug("gpxd: logged - %s %s %s %s" % (timestamp, str(lat), str(lon), str(alt)))
-      self.logs.append([timestamp, str(lat), str(lon), str(alt)])
+      timestamp = gps.unixTimestampMillis*0.001
+      _debug("gpxd: logged - %s %s %s %s" % (timestamp, lat, lon, alt))
+      self.logs.append([timestamp, lat, lon, alt])
       self.log_count += 1
       self.lost_signal_count = 0
 
-    if not self.pause and abs(v_ego) < 0.01:
+    if not self.pause and gps.speed < 0.1:
       _debug("gpxd: paused")
       self.pause = True
 
-    self.v_ego_prev = v_ego
 
   def write_log(self, force=False):
     if self.log_count == 0:
@@ -131,7 +108,7 @@ class GpxD():
         '<trkseg>',
       ]
       for trkpt in self.logs:
-        lines.append(self._trkpt_template(trkpt[1], trkpt[2], trkpt[3], trkpt[0]))
+        lines.append(self._trkpt_template(trkpt[0], trkpt[1], trkpt[2], trkpt[3]))
       lines.extend([
         '</trkseg>',
         '</trk>',
@@ -140,29 +117,24 @@ class GpxD():
       with open(Path(GPX_LOG_PATH) / filename, 'w') as f:
         f.write('\n'.join(lines))
 
-  def _trkpt_template(self, lat, lon, ele, time):
+  def _trkpt_template(self, time, lat, lon, alt):
     return f'<trkpt lat="{lat}" lon="{lon}">\n' \
-           f'<ele>{ele}</ele>\n' \
-           f'<time>{time}</time>\n' \
+           f'<time>{datetime.datetime.utcfromtimestamp(time).isoformat()}</time>\n' \
+           f'<ele>{alt}</ele>\n' \
            f'</trkpt>\n'
 
 def gpxd_thread(sm=None, pm=None):
+  set_core_affinity([1,])
+  set_realtime_priority(1)
   if sm is None:
-    sm = messaging.SubMaster(['liveLocationKalman', 'gpsLocationExternal', 'carState'])
+    sm = messaging.SubMaster(['gpsLocationExternal'])
 
-  wait_helper = WaitTimeHelper()
   gpxd = GpxD()
-  rk = Ratekeeper(LOG_HERTZ, print_delay_threshold=None)
-  config_realtime_process([2], 5)
 
   while True:
-    sm.update(0)
+    sm.update(1000)
     gpxd.log(sm)
     gpxd.write_log()
-    if wait_helper.shutdown:
-      gpxd.write_log(True)
-      break
-    rk.keep_time()
 
 def main(sm=None, pm=None):
   gpxd_thread(sm, pm)

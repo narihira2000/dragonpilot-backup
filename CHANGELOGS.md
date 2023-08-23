@@ -1,3 +1,8 @@
+HOTFIX:
+=======================
+* Allow Experimental Mode in release branch. (@Stupefacient)
+* Happy Holiday / New Years! Safe Travel, cya in 2023!
+
 dragonpilot 2022.12.13
 =======================
 * Synced with openpilot master 2022.12.13 commits.

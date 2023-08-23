@@ -1,11 +1,21 @@
+dragonpilot 2022.07.29
+========================
+* NEW: Synced to openpilot 2022.07.27 commits.
+* NEW: Included Mazda vehicles.
+* TWEAK: Only show road name bar when it's not empty.
+* TWEAK: Enlarged lead car distance text.
+* TWEAK: TOYOTA - Updated lowest speed override feature.
+* FIXED: Fixed Panda Flash/Recovery buttons.
+* FIXED: Included dp_patcher.py execution.
+
 dragonpilot 2022.07.01
 ========================
-* Synced up with openpilot master 2022.06.29 commits.
-* ADDED: MapD based off @move-fast. Thanks to @sunnyhaibin for mapbox as datapoint and ui refactor. (setting destination will use mapxbox speedlimit data which is more accurate. MapD priority: Mapbox(if nav active), OSM, RSA ) 
+* Synced with openpilot master 2022.06.29 commits.
+* ADDED: MapD based off @move-fast. Thanks to @sunnyhaibin for mapbox as datapoint and ui refactor. (setting destination will use mapxbox speedlimit data which is more accurate. MapD priority: Mapbox(if nav active), OSM, RSA )
 
 dragonpilot 2022.06.25
 ========================
-* Synced up with openpilot master 2022.06.25 commits.
+* Synced with openpilot master 2022.06.25 commits.
 * Updated zh-TW translation.
 * ADDED: Dynamid follow @krkeegan version. (press the distance button)
 * ADDED: dp ui vol.
@@ -15,7 +25,7 @@ dragonpilot 2022.06.25
 
 dragonpilot 2022.06.16
 ========================
-* Synced up with openpilot master 2022.06.16 commits.
+* Synced with openpilot master 2022.06.16 commits.
 * ADDED: Toyota SnG hack.
 * ADDED: Accel Profile.
 * FIXED: Car Selection.
@@ -24,7 +34,7 @@ dragonpilot 2022.06.16
 
 dragonpilot 2022.06.11
 ========================
-* Synced up with openpilot master 2022.06.07 commits
+* Synced with openpilot master 2022.06.07 commits
 * Migrating more features soon, stay tuned!
 
 dragonpilot 0.8.13-1

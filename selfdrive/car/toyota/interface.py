@@ -10,8 +10,17 @@ from common.params import Params
 
 EventName = car.CarEvent.EventName
 
+CRUISE_OVERRIDE_SPEED_MIN = 5 * CV.KPH_TO_MS
+
 
 class CarInterface(CarInterfaceBase):
+  def __init__(self, CP, CarController, CarState):
+    super().__init__(CP, CarController, CarState)
+
+    self.dp_cruise_speed = 0. # km/h
+    self.dp_override_speed_last = 0. # km/h
+    self.dp_override_speed = 0. # m/s
+
   @staticmethod
   def get_pid_accel_limits(CP, current_speed, cruise_speed):
     return CarControllerParams.ACCEL_MIN, CarControllerParams.ACCEL_MAX
@@ -94,20 +103,12 @@ class CarInterface(CarInterfaceBase):
       if candidate not in (CAR.CAMRY_TSS2, CAR.CAMRYH_TSS2):
         set_lat_tune(ret.lateralTuning, LatTunes.PID_C)
 
-    elif candidate in (CAR.HIGHLANDER_TSS2, CAR.HIGHLANDERH_TSS2):
+    elif candidate in (CAR.HIGHLANDER, CAR.HIGHLANDERH, CAR.HIGHLANDER_TSS2, CAR.HIGHLANDERH_TSS2):
       stop_and_go = True
-      ret.wheelbase = 2.84988  # 112.2 in = 2.84988 m
+      ret.wheelbase = 2.8194  # average of 109.8 and 112.2 in
       ret.steerRatio = 16.0
       tire_stiffness_factor = 0.8
-      ret.mass = 4700. * CV.LB_TO_KG + STD_CARGO_KG  # 4260 + 4-5 people
-      set_lat_tune(ret.lateralTuning, LatTunes.PID_G)
-
-    elif candidate in (CAR.HIGHLANDER, CAR.HIGHLANDERH):
-      stop_and_go = True
-      ret.wheelbase = 2.78
-      ret.steerRatio = 16.0
-      tire_stiffness_factor = 0.8
-      ret.mass = 4607. * CV.LB_TO_KG + STD_CARGO_KG  # mean between normal and hybrid limited
+      ret.mass = 4516. * CV.LB_TO_KG + STD_CARGO_KG  # mean between normal and hybrid
       set_lat_tune(ret.lateralTuning, LatTunes.PID_G)
 
     elif candidate in (CAR.AVALON, CAR.AVALON_2019, CAR.AVALONH_2019, CAR.AVALON_TSS2, CAR.AVALONH_TSS2):
@@ -268,9 +269,22 @@ class CarInterface(CarInterfaceBase):
   # returns a car.CarState
   def _update(self, c):
     ret = self.CS.update(self.cp, self.cp_cam)
+
+    # dp
     ret.cruiseState.enabled, ret.cruiseState.available = self.dp_atl_mode(ret)
 
-    ret.steeringRateLimited = self.CC.steer_rate_limited if self.CC is not None else False
+    # low speed re-write
+    if self.dragonconf.dpToyotaCruiseOverride:
+      if self.dragonconf.dpToyotaCruiseOverrideSpeed != self.dp_override_speed_last:
+        self.dp_override_speed = self.dragonconf.dpToyotaCruiseOverrideSpeed * CV.KPH_TO_MS
+        self.dp_override_speed_last = self.dragonconf.dpToyotaCruiseOverrideSpeed
+      if self.CP.openpilotLongitudinalControl and ret.cruiseActualEnabled and ret.cruiseState.speed <= self.dp_override_speed:
+        if self.dp_cruise_speed == 0.:
+          self.dp_cruise_speed = self.dp_cruise_speed = max(CRUISE_OVERRIDE_SPEED_MIN, ret.vEgo)
+        else:
+          ret.cruiseState.speed = self.dp_cruise_speed
+      else:
+        self.dp_cruise_speed = 0.
 
     # events
     events = self.create_common_events(ret)
@@ -294,5 +308,4 @@ class CarInterface(CarInterfaceBase):
   # pass in a car.CarControl
   # to be called @ 100hz
   def apply(self, c):
-    ret = self.CC.update(c, self.CS, self.dragonconf)
-    return ret
+    return self.CC.update(c, self.CS, self.dragonconf)

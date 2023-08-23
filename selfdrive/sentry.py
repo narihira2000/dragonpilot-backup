@@ -22,7 +22,7 @@ class SentryProject(Enum):
   # native project
   SELFDRIVE_NATIVE = "https://980a0cba712a4c3593c33c78a12446e1@o273754.ingest.sentry.io/1488600"
 
-CRASHES_DIR = '/data/community/crashes'
+CRASHES_DIR = '/data/media/0/crash_logs'
 
 ret = car.CarParams.new_message()
 candidate = ret.carFingerprint

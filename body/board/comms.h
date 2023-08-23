@@ -24,6 +24,8 @@ extern board_t board;
 extern uint32_t enter_bootloader_mode;
 extern volatile uint32_t torque_cmd_timeout;
 
+extern volatile uint32_t ignition_off_counter;
+
 const uint8_t crc_poly = 0xD5U;  // standard crc8
 uint32_t current_idx = 0;
 
@@ -149,6 +151,8 @@ void can_rx(void) {
       out_enable(LED_BLUE, true);
     } else if ((hw_type == HW_TYPE_BASE) && (address == 0x203U + KNEE_ADDR_OFFSET)) { // detect knee by body and set flag for use with UDS message
       knee_detected = 1;
+    } else if ((hw_type == HW_TYPE_KNEE) && (address == 0x202U)) { // CAN based ignition for knee
+      ignition_off_counter = 0;
     }
     // next
     board.CAN->RF0R |= CAN_RF0R_RFOM0;
@@ -158,7 +162,7 @@ void can_rx(void) {
 void CAN1_TX_IRQHandler(void) {
   // clear interrupt
   board.CAN->TSR |= CAN_TSR_RQCP0;
-  // process_can();
+  process_can();
 }
 
 void CAN1_SCE_IRQHandler(void) {
@@ -172,7 +176,7 @@ void CAN1_RX0_IRQHandler(void) {
 void CAN2_TX_IRQHandler(void) {
   // clear interrupt
   board.CAN->TSR |= CAN_TSR_RQCP0;
-  // process_can();
+  process_can();
 }
 
 void CAN2_SCE_IRQHandler(void) {

@@ -14,7 +14,7 @@ from selfdrive.controls.lib.longitudinal_mpc_lib.long_mpc import LongitudinalMpc
 from selfdrive.controls.lib.longitudinal_mpc_lib.long_mpc import T_IDXS as T_IDXS_MPC
 from selfdrive.controls.lib.drive_helpers import V_CRUISE_MAX, CONTROL_N
 from system.swaglog import cloudlog
-from selfdrive.controls.lib.vision_turn_controller import VisionTurnController
+#from selfdrive.controls.lib.vision_turn_controller import VisionTurnController
 from selfdrive.controls.lib.speed_limit_controller import SpeedLimitController, SpeedLimitResolver
 from selfdrive.controls.lib.turn_speed_controller import TurnSpeedController
 from selfdrive.controls.lib.events import Events
@@ -82,13 +82,14 @@ def limit_accel_in_turns(v_ego, angle_steers, a_target, CP):
   return [a_target[0], min(a_target[1], a_x_allowed)]
 
 
-class Planner:
+class LongitudinalPlanner:
   def __init__(self, CP, init_v=0.0, init_a=0.0):
     self.CP = CP
-    params = Params()
-    # TODO read param in the loop for live toggling
-    mode = 'blended' if params.get_bool('EndToEndLong') else 'acc'
-    self.mpc = LongitudinalMpc(mode=mode)
+    self.params = Params()
+    self.param_read_counter = 0
+
+    self.mpc = LongitudinalMpc()
+    self.read_param()
 
     self.fcw = False
 
@@ -105,10 +106,14 @@ class Planner:
     self.dp_accel_profile_ctrl = False
     self.dp_accel_profile = DP_ACCEL_ECO
     self.cruise_source = 'cruise'
-    self.vision_turn_controller = VisionTurnController(CP)
+    #self.vision_turn_controller = VisionTurnController(CP)
     self.speed_limit_controller = SpeedLimitController()
     self.events = Events()
     self.turn_speed_controller = TurnSpeedController()
+
+  def read_param(self):
+    e2e = self.params.get_bool('EndToEndLong') and self.CP.openpilotLongitudinalControl
+    self.mpc.mode = 'blended' if e2e else 'acc'
 
   def parse_model(self, model_msg):
     if (len(model_msg.position.x) == 33 and
@@ -129,12 +134,15 @@ class Planner:
     return x, v, a, j
 
   def update(self, sm):
-    v_ego = sm['carState'].vEgo
+    if self.param_read_counter % 50 == 0:
+      self.read_param()
+    self.param_read_counter += 1
 
     # dp
     self.dp_accel_profile_ctrl = sm['dragonConf'].dpAccelProfileCtrl
     self.dp_accel_profile = sm['dragonConf'].dpAccelProfile
 
+    v_ego = sm['carState'].vEgo
     v_cruise_kph = sm['controlsState'].vCruise
     v_cruise_kph = min(v_cruise_kph, V_CRUISE_MAX)
     v_cruise = v_cruise_kph * CV.KPH_TO_MS
@@ -176,7 +184,7 @@ class Planner:
     self.mpc.set_accel_limits(accel_limits_turns[0], accel_limits_turns[1])
     self.mpc.set_cur_state(self.v_desired_filter.x, self.a_desired)
     x, v, a, j = self.parse_model(sm['modelV2'])
-    self.mpc.update(sm['carState'], sm['radarState'], v_cruise_sol, x, v, a, j)
+    self.mpc.update(sm['carState'], sm['radarState'], v_cruise_sol, x, v, a, j, prev_accel_constraint)
 
     self.v_desired_trajectory = np.interp(T_IDXS[:CONTROL_N], T_IDXS_MPC, self.mpc.v_solution)
     self.a_desired_trajectory = np.interp(T_IDXS[:CONTROL_N], T_IDXS_MPC, self.mpc.a_solution)
@@ -212,8 +220,9 @@ class Planner:
 
     longitudinalPlan.solverExecutionTime = self.mpc.solve_time
 
-    longitudinalPlan.visionTurnControllerState = self.vision_turn_controller.state
-    longitudinalPlan.visionTurnSpeed = float(self.vision_turn_controller.v_turn)
+    #dp: mf modules
+    #longitudinalPlan.visionTurnControllerState = self.vision_turn_controller.state
+    #longitudinalPlan.visionTurnSpeed = float(self.vision_turn_controller.v_turn)
 
     longitudinalPlan.speedLimitControlState = self.speed_limit_controller.state
     longitudinalPlan.speedLimit = float(self.speed_limit_controller.speed_limit)
@@ -231,7 +240,7 @@ class Planner:
 
   def cruise_solutions(self, enabled, v_ego, a_ego, v_cruise, sm):
     # Update controllers
-    self.vision_turn_controller.update(enabled, v_ego, a_ego, v_cruise, sm)
+    #self.vision_turn_controller.update(enabled, v_ego, a_ego, v_cruise, sm)
     self.events = Events()
     self.speed_limit_controller.update(enabled, v_ego, a_ego, sm, v_cruise, self.events)
     self.turn_speed_controller.update(enabled, v_ego, a_ego, sm)
@@ -240,9 +249,9 @@ class Planner:
     a_solutions = {'cruise': float("inf")}
     v_solutions = {'cruise': v_cruise}
 
-    if self.vision_turn_controller.is_active:
-      a_solutions['turn'] = self.vision_turn_controller.a_target
-      v_solutions['turn'] = self.vision_turn_controller.v_turn
+    #if self.vision_turn_controller.is_active:
+    #  a_solutions['turn'] = self.vision_turn_controller.a_target
+    #  v_solutions['turn'] = self.vision_turn_controller.v_turn
 
     if self.speed_limit_controller.is_active:
       a_solutions['limit'] = self.speed_limit_controller.a_target

@@ -12,10 +12,10 @@ import cereal.messaging as messaging
 from common.conversions import Conversions as CV
 from panda import ALTERNATIVE_EXPERIENCE
 from system.swaglog import cloudlog
-from system.version import get_short_branch
+from system.version import is_tested_branch, get_short_branch
 from selfdrive.boardd.boardd import can_list_to_can_capnp
 from selfdrive.car.car_helpers import get_car, get_startup_event, get_one_can
-from selfdrive.controls.lib.lane_planner import CAMERA_OFFSET
+from selfdrive.controls.lib.lateral_planner import CAMERA_OFFSET
 from selfdrive.controls.lib.drive_helpers import V_CRUISE_INITIAL, update_v_cruise, initialize_v_cruise
 from selfdrive.controls.lib.drive_helpers import get_lag_adjusted_curvature
 from selfdrive.controls.lib.latcontrol import LatControl
@@ -39,7 +39,7 @@ LANE_DEPARTURE_THRESHOLD = 0.1
 REPLAY = "REPLAY" in os.environ
 SIMULATION = "SIMULATION" in os.environ
 NOSENSOR = "NOSENSOR" in os.environ
-IGNORE_PROCESSES = {"uploader", "deleter", "loggerd", "logmessaged", "tombstoned", "statsd", "mapd",
+IGNORE_PROCESSES = {"uploader", "deleter", "loggerd", "logmessaged", "tombstoned", "statsd", "mapd", "navd"
                     "logcatd", "proclogd", "clocksd", "updated", "timezoned", "manage_athenad", "laikad"} | \
                    {k for k, v in managed_processes.items() if not v.enabled}
 
@@ -117,9 +117,7 @@ class Controls:
 
     # dp
     self.sm['dragonConf'].dpAtl = int(Params().get('dp_atl', encoding='utf8'))
-    self.sm['dragonConf'].dpCameraOffset =  CAMERA_OFFSET * 100 # 0.04 x 100 = 4
-    self.dp_camera_offset_last = None
-    self.camera_offset = CAMERA_OFFSET
+    self.dp_temp_check = Params().get_bool('dp_temp_check')
 
     # set alternative experiences from parameters
     self.disengage_on_accelerator = params.get_bool("DisengageOnAccelerator")
@@ -150,10 +148,14 @@ class Controls:
       safety_config.safetyModel = car.CarParams.SafetyModel.noOutput
       self.CP.safetyConfigs = [safety_config]
 
+    if is_tested_branch():
+      self.CP.experimentalLongitudinalAvailable = False
+
     # Write CarParams for radard
     cp_bytes = self.CP.to_bytes()
     params.put("CarParams", cp_bytes)
     put_nonblocking("CarParamsCache", cp_bytes)
+    put_nonblocking("CarParamsPersistent", cp_bytes)
 
     self.CC = car.CarControl.new_message()
     self.CS_prev = car.CarState.new_message()
@@ -270,7 +272,7 @@ class Controls:
       self.events.add_from_msg(CS.events)
 
     # Create events for temperature, disk space, and memory
-    if self.sm['deviceState'].thermalStatus >= ThermalStatus.red:
+    if self.dp_temp_check and self.sm['deviceState'].thermalStatus >= ThermalStatus.red:
       self.events.add(EventName.overheat)
     if self.sm['deviceState'].freeSpacePercent < 7 and not SIMULATION:
       # under 7% of space free no enable allowed
@@ -697,9 +699,6 @@ class Controls:
         self.button_timers[b.type.raw] = 1 if b.pressed else 0
 
   def publish_logs(self, CS, start_time, CC, lac_log):
-    if self.sm['dragonConf'].dpCameraOffset != self.dp_camera_offset_last:
-      self.camera_offset = self.sm['dragonConf'].dpCameraOffset * 0.01
-      self.dp_camera_offset_last = self.sm['dragonConf'].dpCameraOffset
 
     """Send actuators and hud commands to the car, send controlsstate and MPC logging"""
 
@@ -716,11 +715,11 @@ class Controls:
     if self.joystick_mode and self.sm.rcv_frame['testJoystick'] > 0 and self.sm['testJoystick'].buttons[0]:
       CC.cruiseControl.cancel = True
 
-    speeds = self.sm['longitudinalPlan'].speeds
-    if len(speeds):
-      if self.sm['dragonConf'].dpAtl == 1 and self.sm['longitudinalPlan'].hasLead:
-        CC.cruiseControl.resume = CS.cruiseActualEnabled and CS.cruiseState.standstill and speeds[-1] > 0.1
-      else:
+    if self.sm['dragonConf'].dpAtl == 1:
+      CC.cruiseControl.resume = CS.cruiseActualEnabled and CS.cruiseState.standstill
+    else:
+      speeds = self.sm['longitudinalPlan'].speeds
+      if len(speeds):
         CC.cruiseControl.resume = self.enabled and CS.cruiseState.standstill and speeds[-1] > 0.1
 
     hudControl = CC.hudControl
@@ -739,14 +738,14 @@ class Controls:
     model_v2 = self.sm['modelV2']
     desire_prediction = model_v2.meta.desirePrediction
     if len(desire_prediction) and ldw_allowed:
-      right_lane_visible = self.sm['lateralPlan'].rProb > 0.5
-      left_lane_visible = self.sm['lateralPlan'].lProb > 0.5
+      right_lane_visible = model_v2.laneLineProbs[2] > 0.5
+      left_lane_visible = model_v2.laneLineProbs[1] > 0.5
       l_lane_change_prob = desire_prediction[Desire.laneChangeLeft - 1]
       r_lane_change_prob = desire_prediction[Desire.laneChangeRight - 1]
 
       lane_lines = model_v2.laneLines
-      l_lane_close = left_lane_visible and (lane_lines[1].y[0] > -(1.08 + self.camera_offset))
-      r_lane_close = right_lane_visible and (lane_lines[2].y[0] < (1.08 - self.camera_offset))
+      l_lane_close = left_lane_visible and (lane_lines[1].y[0] > -(1.08 + CAMERA_OFFSET))
+      r_lane_close = right_lane_visible and (lane_lines[2].y[0] < (1.08 - CAMERA_OFFSET))
 
       hudControl.leftLaneDepart = bool(l_lane_change_prob > LANE_DEPARTURE_THRESHOLD and l_lane_close)
       hudControl.rightLaneDepart = bool(r_lane_change_prob > LANE_DEPARTURE_THRESHOLD and r_lane_close)

@@ -4,6 +4,7 @@ from panda import Panda
 from selfdrive.car import STD_CARGO_KG, scale_rot_inertia, scale_tire_stiffness, gen_empty_fingerprint, get_safety_config
 from selfdrive.car.interfaces import CarInterfaceBase
 from selfdrive.car.subaru.values import CAR, GLOBAL_GEN2, PREGLOBAL_CARS
+from common.params import Params
 
 
 class CarInterface(CarInterfaceBase):
@@ -103,6 +104,8 @@ class CarInterface(CarInterfaceBase):
     else:
       raise ValueError(f"unknown car: {candidate}")
 
+    CarInterfaceBase.configure_dp_tune(candidate, ret.lateralTuning)
+
     # TODO: get actual value, for now starting with reasonable value for
     # civic and scaling by mass and wheelbase
     ret.rotationalInertia = scale_rot_inertia(ret.mass, ret.wheelbase)
@@ -111,7 +114,7 @@ class CarInterface(CarInterfaceBase):
     # mass and CG position, so all cars will have approximately similar dyn behaviors
     ret.tireStiffnessFront, ret.tireStiffnessRear = scale_tire_stiffness(ret.mass, ret.wheelbase, ret.centerToFront)
 
-    CarInterfaceBase.configure_lqr_tune(ret.lateralTuning)
+    Params().put("dp_lateral_steer_rate_cost", "0.7")
     return ret
 
   # returns a car.CarState

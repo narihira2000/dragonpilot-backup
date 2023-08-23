@@ -91,13 +91,10 @@ function launch {
 
   # start manager
   cd selfdrive/manager
-  if [ -f "/data/params/d/dp_local_db" ]; then
-    DP_LOCAL_DB=$(cat /data/params/d/dp_local_db)
-  fi
-  if [ "$DP_LOCAL_DB" == "1" ]; then
-    ./custom_dep.py && ./local_osm_install.py && ./build.py && ./manager.py
-  else
+  if [ ! -f "/data/params/d/OsmLocal" ]; then
     ./custom_dep.py && ./build.py && ./manager.py
+  else
+    ./custom_dep.py && ./build.py && ./local_osm_install.py && ./manager.py
   fi
 
   # if broken, keep on screen error

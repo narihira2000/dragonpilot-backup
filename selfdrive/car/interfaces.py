@@ -10,12 +10,13 @@ from common.conversions import Conversions as CV
 from common.kalman.simple_kalman import KF1D
 from common.numpy_fast import interp
 from common.realtime import DT_CTRL
-from selfdrive.car import apply_hysteresis, create_button_enable_events, gen_empty_fingerprint
+from selfdrive.car import apply_hysteresis, gen_empty_fingerprint
 from selfdrive.controls.lib.drive_helpers import V_CRUISE_MAX, apply_deadzone
 from selfdrive.controls.lib.events import Events
 from selfdrive.controls.lib.vehicle_model import VehicleModel
 from common.params import Params
 
+ButtonType = car.CarState.ButtonEvent.Type
 GearShifter = car.CarState.GearShifter
 EventName = car.CarEvent.EventName
 TorqueFromLateralAccelCallbackType = Callable[[float, car.CarParams.LateralTorqueTuning, float, float, bool], float]
@@ -162,17 +163,16 @@ class CarInterfaceBase(ABC):
 
   @staticmethod
   def configure_lqr_tune(tune):
-    if Params().get_bool("dp_lateral_lqr"):
-      tune.init('lqr')
-      tune.lqr.scale = 1500.0
-      tune.lqr.ki = 0.05
+    tune.init('lqr')
+    tune.lqr.scale = 1500.0
+    tune.lqr.ki = 0.05
 
-      tune.lqr.a = [0., 1., -0.22619643, 1.21822268]
-      tune.lqr.b = [-1.92006585e-04, 3.95603032e-05]
-      tune.lqr.c = [1., 0.]
-      tune.lqr.k = [-110.73572306, 451.22718255]
-      tune.lqr.l = [0.3233671, 0.3185757]
-      tune.lqr.dcGain = 0.002237852961363602
+    tune.lqr.a = [0., 1., -0.22619643, 1.21822268]
+    tune.lqr.b = [-1.92006585e-04, 3.95603032e-05]
+    tune.lqr.c = [1., 0.]
+    tune.lqr.k = [-110.73572306, 451.22718255]
+    tune.lqr.l = [0.3233671, 0.3185757]
+    tune.lqr.dcGain = 0.002237852961363602
 
   @staticmethod
   def configure_torque_tune(candidate, tune, steering_angle_deadzone_deg=0.0, use_steering_angle=True):
@@ -187,6 +187,14 @@ class CarInterfaceBase(ABC):
     tune.torque.latAccelFactor = params['LAT_ACCEL_FACTOR']
     tune.torque.latAccelOffset = 0.0
     tune.torque.steeringAngleDeadzoneDeg = steering_angle_deadzone_deg
+
+  @staticmethod
+  def configure_dp_tune(candidate, tune, steering_angle_deadzone_deg=0.0, use_steering_angle=True):
+    params = Params()
+    if params.get_bool('dp_lateral_lqr'):
+      CarInterfaceBase.configure_lqr_tune(tune)
+    elif params.get_bool('dp_lateral_torque'):
+      CarInterfaceBase.configure_torque_tune(candidate, tune, steering_angle_deadzone_deg, use_steering_angle)
 
   @abstractmethod
   def _update(self, c: car.CarControl) -> car.CarState:
@@ -230,7 +238,8 @@ class CarInterfaceBase(ABC):
   def apply(self, c: car.CarControl) -> Tuple[car.CarControl.Actuators, List[bytes]]:
     pass
 
-  def create_common_events(self, cs_out, extra_gears=None, pcm_enable=True, allow_enable=True):
+  def create_common_events(self, cs_out, extra_gears=None, pcm_enable=True, allow_enable=True,
+                           enable_buttons=(ButtonType.accelCruise, ButtonType.decelCruise)):
     events = Events()
 
     if cs_out.doorOpen:
@@ -264,7 +273,13 @@ class CarInterfaceBase(ABC):
       events.add(EventName.steerOverride)
 
     # Handle button presses
-    events.events.extend(create_button_enable_events(cs_out.buttonEvents, pcm_cruise=self.CP.pcmCruise))
+    for b in cs_out.buttonEvents:
+      # Enable OP long on falling edge of enable buttons (defaults to accelCruise and decelCruise, overridable per-port)
+      if not self.CP.pcmCruise and (b.type in enable_buttons and not b.pressed):
+        events.add(EventName.buttonEnable)
+      # Disable on rising edge of cancel for both stock and OP long
+      if b.type == ButtonType.cancel and b.pressed:
+        events.add(EventName.buttonCancel)
 
     # Handle permanent and temporary steering faults
     self.steering_unpressed = 0 if cs_out.steeringPressed else self.steering_unpressed + 1

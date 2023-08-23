@@ -1,8 +1,62 @@
-dragonpilot 2022.09.20
+dragonpilot 2022.11.01
+=======================
+* Synced with openpilot master 2022.11.01 commits.
+* COMMA: New Model.
+* ADDED: Multi Lateral Planner: Ability to choose different Lateral Planner (0 = LATEST, 1 = 0.8.13, 2 = 0.8.16).
+* READD: Toyota Prius ZSS support.
+* Improvement: Better User experience for installing mapd database.
+* Improvement: Turning on Lane Line will automatically will use DLP (Dynamic Lane Profile).
+* bug fix and improvement
+
+dragonpilot [2022.10.26]
+=======================
+* Synced with openpilot master 2022.10.26 commits.
+* COMMA: Torque controller used on all Toyota, Lexus, Hyundai, Kia, and Genesis models.
+* COMMA: New Model with much improved e2e long.
+* ADDED: Mapd Database selector menu to use mapd offline located in software. When installing Database it will take some time. It is not stuck just be patience run `tmux a` for more info. DO NOT RESTART When database is being installed.
+* ADDED: Better TSS2 Long and DF tune. @cgw1968-5779
+* ADDED: Toggle to bypass dashcam mode for Mazda.
+* Improvement: Dynamic End to End tune.
+* Improvement: Better Optimization for Vision Turn Controller with laneline mode.
+* bug fix and improvement
+
+dragonpilot [2022.10.18]
+=======================
+* Synced with openpilot master 2022.10.18 commits.
+* ADDED: Laneline toggle.
+* ADDED: Turn and BSM indicator. (turn = green, turn + bsm = yellow, bsm = red)
+* Improvement: Dynamic End to End tune.
+* bug fix and improvement
+
+
+dragonpilot [2022.10.04]
+=======================
+* Synced with openpilot master 2022.10.04 commits.
+* ADDED: Dynamic End to End long. For more detail read the setting description.
+* ADDED: Mpad now support's Stop Sign, Yield, Speed Bump, Sharp Curve. (For best experience map you area. https://www.openstreetmap.org/)
+* ADDED: Chevron can display either distance or speed.
+* ADDED: Toggles to force enabling torque control / torque tune for some vehicles
+* Improvement: Dynamic Follow, Toyota Longitudinal and Decel tune.
+* bug fix and improvement
+
+dragonpilot [2022.09.27]
+=======================
+* Synced with openpilot master 2022.09.27 commits.
+* ADDED: Always On Lateral toggle under dp-controls!
+* ADDED: Live torque fix pr#25868
+* ADDED: RAV4 and HIGHLANDER with sdsu can use follow distance button on the wheel.
+* bug fix and improvement
+
+dragonpilot [2022.09.19]
 ========================
 * Synced with openpilot master 2022.09.19 commits.
 * READD: refactored dyanmaic follow. support all car with op long.
 * ADDED: PRIUS_TSS2 (2020-2022) now uses torque as default and auto learns.
+* ADDED: Added a TSS2 RAV4 Special PID Tune toggle.
+* ADDED: Added a PRIUS 2017 Special Torque Tune toggle.
+* ADDED: Toggle to turn on and off Torque controller.
+* ADDED: Toggle to turn on and off auto tune torque controller.
+* ADDED: Vision Turn Controller.
 * bug fix and improvement
 
 dragonpilot [2022.09.09]

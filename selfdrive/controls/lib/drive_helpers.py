@@ -13,6 +13,7 @@ V_CRUISE_MIN = 8  # kph
 V_CRUISE_ENABLE_MIN = 40  # kph
 V_CRUISE_INITIAL = 255  # kph
 
+MIN_SPEED = 1.0
 LAT_MPC_N = 16
 LON_MPC_N = 32
 CONTROL_N = 17
@@ -40,12 +41,11 @@ LIMIT_MIN_SPEED = 8.33  # m/s, Minimum speed limit to provide as solution on lim
 LIMIT_SPEED_OFFSET_TH = -1.   # m/s Maximum offset between speed limit and current speed for adapting state.
 LIMIT_MAX_MAP_DATA_AGE = 10.  # s Maximum time to hold to map data, then consider it invalid inside limits controllers.
 
-
+# dp - used in some lateral planners
 class MPC_COST_LAT:
   PATH = 1.0
   HEADING = 1.0
   STEER_RATE = 1.0
-
 
 def apply_deadzone(error, deadzone):
   if error > deadzone:
@@ -111,12 +111,16 @@ def initialize_v_cruise(v_ego, buttonEvents, v_cruise_last):
   return int(round(clip(v_ego * CV.MS_TO_KPH, V_CRUISE_ENABLE_MIN, V_CRUISE_MAX)))
 
 
-def get_lag_adjusted_curvature(CP, v_ego, psis, curvatures, curvature_rates):
+def get_lag_adjusted_curvature(CP, v_ego, psis, curvatures, curvature_rates, dp_lat_version):
+  if dp_lat_version == 1: # 0813
+    return get_0813_lag_adjusted_curvature(CP, v_ego, psis, curvatures, curvature_rates)
+  elif dp_lat_version == 2: # 0816
+    return get_0816_lag_adjusted_curvature(CP, v_ego, psis, curvatures, curvature_rates)
   if len(psis) != CONTROL_N:
     psis = [0.0]*CONTROL_N
     curvatures = [0.0]*CONTROL_N
     curvature_rates = [0.0]*CONTROL_N
-  v_ego = max(v_ego, 0.1)
+  v_ego = max(MIN_SPEED, v_ego)
 
   # TODO this needs more thought, use .2s extra for now to estimate other delays
   delay = CP.steerActuatorDelay + .2
@@ -133,10 +137,77 @@ def get_lag_adjusted_curvature(CP, v_ego, psis, curvatures, curvature_rates):
   desired_curvature_rate = curvature_rates[0]
   max_curvature_rate = MAX_LATERAL_JERK / (v_ego**2) # inexact calculation, check https://github.com/commaai/openpilot/pull/24755
   safe_desired_curvature_rate = clip(desired_curvature_rate,
-                                          -max_curvature_rate,
-                                          max_curvature_rate)
+                                     -max_curvature_rate,
+                                     max_curvature_rate)
   safe_desired_curvature = clip(desired_curvature,
-                                     current_curvature_desired - max_curvature_rate * DT_MDL,
-                                     current_curvature_desired + max_curvature_rate * DT_MDL)
+                                current_curvature_desired - max_curvature_rate * DT_MDL,
+                                current_curvature_desired + max_curvature_rate * DT_MDL)
 
   return safe_desired_curvature, safe_desired_curvature_rate
+
+
+def get_0813_lag_adjusted_curvature(CP, v_ego, psis, curvatures, curvature_rates):
+  if len(psis) != CONTROL_N:
+    psis = [0.0]*CONTROL_N
+    curvatures = [0.0]*CONTROL_N
+    curvature_rates = [0.0]*CONTROL_N
+
+  # TODO this needs more thought, use .2s extra for now to estimate other delays
+  delay = CP.steerActuatorDelay + .2
+  current_curvature = curvatures[0]
+  psi = interp(delay, T_IDXS[:CONTROL_N], psis)
+  desired_curvature_rate = curvature_rates[0]
+
+  # MPC can plan to turn the wheel and turn back before t_delay. This means
+  # in high delay cases some corrections never even get commanded. So just use
+  # psi to calculate a simple linearization of desired curvature
+  curvature_diff_from_psi = psi / (max(v_ego, 1e-1) * delay) - current_curvature
+  desired_curvature = current_curvature + 2 * curvature_diff_from_psi
+
+  v_ego = max(v_ego, 0.1)
+  max_curvature_rate = MAX_LATERAL_JERK / (v_ego**2)
+  safe_desired_curvature_rate = clip(desired_curvature_rate,
+                                     -max_curvature_rate,
+                                     max_curvature_rate)
+  safe_desired_curvature = clip(desired_curvature,
+                                current_curvature - max_curvature_rate * DT_MDL,
+                                current_curvature + max_curvature_rate * DT_MDL)
+
+  return safe_desired_curvature, safe_desired_curvature_rate
+
+def get_0816_lag_adjusted_curvature(CP, v_ego, psis, curvatures, curvature_rates):
+  if len(psis) != CONTROL_N:
+    psis = [0.0]*CONTROL_N
+    curvatures = [0.0]*CONTROL_N
+    curvature_rates = [0.0]*CONTROL_N
+  v_ego = max(MIN_SPEED, v_ego)
+
+  # TODO this needs more thought, use .2s extra for now to estimate other delays
+  delay = CP.steerActuatorDelay + .2
+
+  # MPC can plan to turn the wheel and turn back before t_delay. This means
+  # in high delay cases some corrections never even get commanded. So just use
+  # psi to calculate a simple linearization of desired curvature
+  current_curvature_desired = curvatures[0]
+  psi = interp(delay, T_IDXS[:CONTROL_N], psis)
+  average_curvature_desired = psi / (v_ego * delay)
+  desired_curvature = 2 * average_curvature_desired - current_curvature_desired
+
+  # This is the "desired rate of the setpoint" not an actual desired rate
+  desired_curvature_rate = curvature_rates[0]
+  max_curvature_rate = MAX_LATERAL_JERK / (v_ego**2) # inexact calculation, check https://github.com/commaai/openpilot/pull/24755
+  safe_desired_curvature_rate = clip(desired_curvature_rate,
+                                     -max_curvature_rate,
+                                     max_curvature_rate)
+  safe_desired_curvature = clip(desired_curvature,
+                                current_curvature_desired - max_curvature_rate * DT_MDL,
+                                current_curvature_desired + max_curvature_rate * DT_MDL)
+
+  return safe_desired_curvature, safe_desired_curvature_rate
+
+def get_lane_laneless_mode(lll_prob, rll_prob, mode):
+  if (lll_prob + rll_prob)/2 < 0.3:
+    mode = False
+  elif (lll_prob + rll_prob)/2 > 0.5:
+    mode = True
+  return mode

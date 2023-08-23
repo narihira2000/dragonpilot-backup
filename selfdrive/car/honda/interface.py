@@ -221,23 +221,17 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.2], [0.06]]
       tire_stiffness_factor = 0.677
 
-    elif candidate == CAR.ODYSSEY:
-      ret.mass = 4471. * CV.LB_TO_KG + STD_CARGO_KG
+    elif candidate in (CAR.ODYSSEY, CAR.ODYSSEY_CHN):
+      ret.mass = 1900. + STD_CARGO_KG
       ret.wheelbase = 3.00
       ret.centerToFront = ret.wheelbase * 0.41
       ret.steerRatio = 14.35  # as spec
-      ret.lateralParams.torqueBP, ret.lateralParams.torqueV = [[0, 4096], [0, 4096]]  # TODO: determine if there is a dead zone at the top end
       tire_stiffness_factor = 0.82
       ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.28], [0.08]]
-
-    elif candidate == CAR.ODYSSEY_CHN:
-      ret.mass = 1849.2 + STD_CARGO_KG  # mean of 4 models in kg
-      ret.wheelbase = 2.90
-      ret.centerToFront = ret.wheelbase * 0.41  # from CAR.ODYSSEY
-      ret.steerRatio = 14.35
-      ret.lateralParams.torqueBP, ret.lateralParams.torqueV = [[0, 32767], [0, 32767]]  # TODO: determine if there is a dead zone at the top end
-      tire_stiffness_factor = 0.82
-      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.28], [0.08]]
+      if candidate == CAR.ODYSSEY_CHN:
+        ret.lateralParams.torqueBP, ret.lateralParams.torqueV = [[0, 32767], [0, 32767]]  # TODO: determine if there is a dead zone at the top end
+      else:
+        ret.lateralParams.torqueBP, ret.lateralParams.torqueV = [[0, 4096], [0, 4096]]  # TODO: determine if there is a dead zone at the top end
 
     elif candidate in (CAR.PILOT, CAR.PASSPORT):
       ret.mass = 4204. * CV.LB_TO_KG + STD_CARGO_KG  # average weight
@@ -278,7 +272,8 @@ class CarInterface(CarInterfaceBase):
     else:
       raise ValueError(f"unsupported car {candidate}")
 
-    if int(Params().get("dp_atl").decode('utf-8')) == 1:
+    params = Params()
+    if int(params.get("dp_atl").decode('utf-8')) == 1:
       ret.openpilotLongitudinalControl = False
 
     # These cars use alternate user brake msg (0x1BE)
@@ -313,7 +308,8 @@ class CarInterface(CarInterfaceBase):
     ret.steerActuatorDelay = 0.1
     ret.steerLimitTimer = 0.8
 
-    if Params().get_bool('dp_honda_eps_mod'):
+    params.put("dp_lateral_steer_rate_cost", "0.5")
+    if params.get_bool('dp_honda_eps_mod'):
       if candidate == CAR.CIVIC:
         # tuned by a-tao
         ret.lateralParams.torqueBP, ret.lateralParams.torqueV = [[0, 4096, 8000], [0, 4096, 4096]]
@@ -329,8 +325,8 @@ class CarInterface(CarInterfaceBase):
         ret.lateralParams.torqueBP, ret.lateralParams.torqueV = [[0x0, 0xB5, 0x161, 0x2D6, 0x4C0, 0x70D, 0xC42, 0x1058, 0x2C00], [0x0, 0x160, 0x1F0, 0x2E0, 0x378, 0x4A0, 0x5F0, 0x804, 0xF00]]
         ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.21], [0.07]] #still needs to finish tuning for the new car
         ret.lateralTuning.pid.kf = 0.00004
-
-    CarInterfaceBase.configure_lqr_tune(ret.lateralTuning)
+    else:
+      CarInterfaceBase.configure_dp_tune(candidate, ret.lateralTuning)
     return ret
 
   @staticmethod

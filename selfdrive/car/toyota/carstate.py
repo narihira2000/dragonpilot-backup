@@ -54,6 +54,12 @@ class CarState(CarStateBase):
     self.distance = 0
     self.dp_toyota_fp_btn_link = Params().get_bool('dp_toyota_fp_btn_link')
 
+    # zss
+    self.dp_toyota_zss = Params().get_bool('dp_toyota_zss')
+    self.dp_zss_compute = False
+    self.dp_zss_cruise_active_last = False
+    self.dp_zss_angle_offset = 0.
+
   def update(self, cp, cp_cam):
     ret = car.CarState.new_message()
 
@@ -101,6 +107,22 @@ class CarState(CarStateBase):
         ret.steeringAngleOffsetDeg = self.angle_offset.x
         ret.steeringAngleDeg = torque_sensor_angle_deg - self.angle_offset.x
 
+    # dp - toyota zss
+    if self.dp_toyota_zss:
+      zorro_steer = cp.vl["SECONDARY_STEER_ANGLE"]["ZORRO_STEER"]
+      # only compute zss offset when acc is active
+      if bool(cp.vl["PCM_CRUISE"]["CRUISE_ACTIVE"]) and not self.dp_zss_cruise_active_last:
+        self.dp_zss_compute = True # cruise was just activated, so allow offset to be recomputed
+      self.dp_zss_cruise_active_last = bool(cp.vl["PCM_CRUISE"]["CRUISE_ACTIVE"])
+
+      # compute zss offset
+      if self.dp_zss_compute:
+        if abs(ret.steeringAngleDeg) > 1e-3 and abs(zorro_steer) > 1e-3:
+          self.dp_toyota_zss = False
+          self.dp_zss_angle_offset = zorro_steer - ret.steeringAngleDeg
+      # apply offset
+      ret.steeringAngleDeg = zorro_steer - self.dp_zss_angle_offset
+
     ret.steeringRateDeg = cp.vl["STEER_ANGLE_SENSOR"]["STEER_RATE"]
 
     can_gear = int(cp.vl["GEAR_PACKET"]["GEAR"])
@@ -108,7 +130,7 @@ class CarState(CarStateBase):
 
     #dp: Thank you Arne (acceleration)
     if self.dp_toyota_ap_btn_link:
-      sport_on_sig = 'SPORT_ON_2' if CAR.RAV4_TSS2 else 'SPORT_ON'
+      sport_on_sig = 'SPORT_ON_2' if self.CP.carFingerprint in (CAR.RAV4_TSS2, CAR.LEXUS_ES_TSS2) else 'SPORT_ON'
       # check signal once
       if not self.dp_sig_check:
         self.dp_sig_check = True
@@ -142,6 +164,8 @@ class CarState(CarStateBase):
         self.dp_accel_profile_init = True
       self.dp_accel_profile_prev = self.dp_accel_profile
 
+    # distance button
+
     #dp: Thank you Arne (distance button)
     if self.dp_toyota_fp_btn_link:
       if not self.read_distance_lines_init or self.read_distance_lines != cp.vl["PCM_CRUISE_SM"]['DISTANCE_LINES']:
@@ -149,6 +173,11 @@ class CarState(CarStateBase):
         self.read_distance_lines = cp.vl["PCM_CRUISE_SM"]['DISTANCE_LINES']
         put_nonblocking('dp_following_profile', str(int(max(self.read_distance_lines - 1, 0)))) # Skipping one profile toyota mid is weird.
         put_nonblocking('dp_last_modified',str(floor(time.time())))
+
+    if self.CP.carFingerprint in (TSS2_CAR - RADAR_ACC_CAR):
+      self.distance = cp_cam.vl["ACC_CONTROL"]['DISTANCE']
+    elif self.CP.carFingerprint in [CAR.RAV4H, CAR.HIGHLANDER]:
+      self.distance = cp.vl["SDSU"]['FD_BUTTON']
 
     #dp
     ret.engineRPM = cp.vl["ENGINE_RPM"]['RPM']
@@ -215,8 +244,6 @@ class CarState(CarStateBase):
       ret.rightBlindspot = (cp.vl["BSM"]["R_ADJACENT"] == 1) or (cp.vl["BSM"]["R_APPROACHING"] == 1)
 
     ret.cruiseActualEnabled = ret.cruiseState.enabled
-    # distance button
-    # self.distance = cp_cam.vl["ACC_CONTROL"]['DISTANCE']
     self._update_traffic_signals(cp_cam)
     ret.cruiseState.speedLimit = self._calculate_speed_limit()
 
@@ -338,6 +365,7 @@ class CarState(CarStateBase):
       ("ECON_ON", "GEAR_PACKET"),
       ("RPM", "ENGINE_RPM"),
       ("BRAKE_LIGHTS_ACC", "ESP_CONTROL"),
+      ("DISTANCE_LINES", "PCM_CRUISE_SM"),
     ]
 
     checks = [
@@ -364,9 +392,11 @@ class CarState(CarStateBase):
     else:
       signals.append(("GAS_PEDAL", "GAS_PEDAL"))
       checks.append(("GAS_PEDAL", 33))
-
+    #arne
+    if CP.carFingerprint in [CAR.RAV4H, CAR.HIGHLANDER]:
+      signals.append(("FD_BUTTON", "SDSU", 0))
     #dp acceleration
-    if CP.carFingerprint == CAR.RAV4_TSS2:
+    if CP.carFingerprint in (CAR.RAV4_TSS2, CAR.LEXUS_ES_TSS2):
       signals.append(("SPORT_ON_2", "GEAR_PACKET"))
 
     if CP.carFingerprint in (CAR.ALPHARD_TSS2, CAR.ALPHARDH_TSS2, CAR.AVALON_TSS2, CAR.AVALONH_TSS2, CAR.CAMRY_TSS2, CAR.CAMRYH_TSS2, CAR.CHR_TSS2, CAR.COROLLA_TSS2, CAR.COROLLAH_TSS2, CAR.HIGHLANDER_TSS2, CAR.HIGHLANDERH_TSS2, CAR.PRIUS_TSS2, CAR.RAV4H_TSS2, CAR.MIRAI, CAR.LEXUS_ES_TSS2, CAR.LEXUS_ESH_TSS2, CAR.LEXUS_NX_TSS2, CAR.LEXUS_NXH_TSS2, CAR.LEXUS_RX_TSS2, CAR.LEXUS_RXH_TSS2, CAR.CHRH):
@@ -410,10 +440,6 @@ class CarState(CarStateBase):
         ("ACC_HUD", 1),
       ]
 
-    if CP.carFingerprint in TSS2_CAR:
-      signals.append(("DISTANCE_LINES", "PCM_CRUISE_SM"))
-      checks.append(("PCM_CRUISE_SM", 0))
-
     if CP.carFingerprint not in (TSS2_CAR - RADAR_ACC_CAR) and not CP.enableDsu:
       signals += [
         ("FORCE", "PRE_COLLISION"),
@@ -422,6 +448,11 @@ class CarState(CarStateBase):
       checks += [
         ("PRE_COLLISION", 33),
       ]
+
+    # dp - add zss signal check
+    if Params().get_bool('dp_toyota_zss'):
+      signals += [("ZORRO_STEER", "SECONDARY_STEER_ANGLE", 0)]
+      checks += [("SECONDARY_STEER_ANGLE", 0)]
 
     return CANParser(DBC[CP.carFingerprint]["pt"], signals, checks, 0)
 
@@ -453,13 +484,15 @@ class CarState(CarStateBase):
         ("FORCE", "PRE_COLLISION"),
         ("ACC_TYPE", "ACC_CONTROL"),
         ("FCW", "ACC_HUD"),
+        #dp
+        ("DISTANCE_LINES", "PCM_CRUISE_SM"),
+        ("DISTANCE", "ACC_CONTROL"),
       ]
       checks += [
         ("PRE_COLLISION", 33),
         ("ACC_CONTROL", 33),
         ("ACC_HUD", 1),
+        ("PCM_CRUISE_SM", 0),
       ]
-
-      signals.append(("DISTANCE", "ACC_CONTROL", 0))
 
     return CANParser(DBC[CP.carFingerprint]["pt"], signals, checks, 2)

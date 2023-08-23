@@ -7,6 +7,8 @@ from selfdrive.controls.lib.longitudinal_planner import LongitudinalPlanner
 from selfdrive.controls.lib.lateral_planner import LateralPlanner
 import cereal.messaging as messaging
 
+from selfdrive.dragonpilot.controls_0813.lib.lateral_planner import LateralPlanner as DPLateralPlanner
+from selfdrive.dragonpilot.controls_0816.lib.lateral_planner import LateralPlanner as FPLateralPlanner
 
 def plannerd_thread(sm=None, pm=None):
   config_realtime_process(5, Priority.CTRL_LOW)
@@ -17,7 +19,18 @@ def plannerd_thread(sm=None, pm=None):
   cloudlog.info("plannerd got CarParams: %s", CP.carName)
 
   longitudinal_planner = LongitudinalPlanner(CP)
-  lateral_planner = LateralPlanner(CP)
+  try:
+    lat_version = int(params.get('dp_lateral_version').decode('utf8'))
+  except:
+    # if we have trouble reading it, reset it to latest lateral planner
+    params.put('dp_lateral_version', "0")
+    lat_version = 0
+  if lat_version == 1: # 0813
+    lateral_planner = DPLateralPlanner(CP)
+  elif lat_version == 2: # 0816
+    lateral_planner = FPLateralPlanner(CP)
+  else:
+    lateral_planner = LateralPlanner(CP)
 
   if sm is None:
     sm = messaging.SubMaster(['carControl', 'carState', 'controlsState', 'radarState', 'modelV2', 'dragonConf', 'lateralPlan', 'navInstruction', 'liveMapData'],

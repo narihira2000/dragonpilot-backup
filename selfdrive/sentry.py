@@ -68,7 +68,7 @@ def save_exception(exc_text):
   if not os.path.exists(CRASHES_DIR):
     os.makedirs(CRASHES_DIR)
 
-  log_file = '{}/{}'.format(CRASHES_DIR, datetime.now().strftime('%m-%d-%Y--%I:%M.%S-%p.log'))
+  log_file = '{}/{}'.format(CRASHES_DIR, datetime.now().strftime('%Y-%m-%d-%H-%M-%S.log'))
   with open(log_file, 'w') as f:
     f.write(exc_text)
   print('Logged current crash to {}'.format(log_file))

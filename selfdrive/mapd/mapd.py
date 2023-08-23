@@ -108,13 +108,13 @@ class MapD():
     def query(osm, location_deg, location_rad, radius):
       _debug(f'Mapd: Start query for OSM map data at {location_deg}')
       lat, lon = location_deg
-      ways = osm.fetch_road_ways_around_location(lat, lon, radius)
+      areas, ways = osm.fetch_road_ways_around_location(lat, lon, radius)
       _debug(f'Mapd: Query to OSM finished with {len(ways)} ways')
 
       # Only issue an update if we received some ways. Otherwise it is most likely a conectivity issue.
       # Will retry on next loop.
       if len(ways) > 0:
-        new_way_collection = WayCollection(ways, location_rad)
+        new_way_collection = WayCollection(areas, ways, location_rad)
 
         # Use the lock to update the way_collection as it might be being used to update the route.
         _debug('Mapd: Locking to write results from osm.', log_to_cloud=False)

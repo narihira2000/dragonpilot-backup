@@ -13,7 +13,7 @@ from system.hardware import PC
 from selfdrive.controls.lib.alertmanager import set_offroad_alert
 from selfdrive.manager.process_config import managed_processes
 
-LM_THRESH = 120  # defined in selfdrive/camerad/imgproc/utils.h
+LM_THRESH = 120  # defined in system/camerad/imgproc/utils.h
 
 VISION_STREAMS = {
   "roadCameraState": VisionStreamType.VISION_STREAM_ROAD,
@@ -39,7 +39,7 @@ def yuv_to_rgb(y, u, v):
     [0.00000, -0.39465, 2.03211],
     [1.13983, -0.58060, 0.00000],
   ])
-  rgb = np.dot(yuv, m)
+  rgb = np.dot(yuv, m).clip(0, 255)
   return rgb.astype(np.uint8)
 
 

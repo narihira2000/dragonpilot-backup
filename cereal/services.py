@@ -56,14 +56,14 @@ services = {
   "roadCameraState": (True, 20., 20),
   "driverCameraState": (True, 20., 20),
   "driverEncodeIdx": (False, 20., 1),
-  "driverState": (True, 20., 10),
+  "driverStateV2": (True, 20., 10),
   "driverMonitoringState": (True, 20., 10),
   "wideRoadEncodeIdx": (False, 20., 1),
   "wideRoadCameraState": (True, 20., 20),
   "modelV2": (True, 20., 40),
   "managerState": (True, 2., 1),
   "uploaderState": (True, 0., 1),
-  "navInstruction": (True, 0., 10),
+  "navInstruction": (True, 1., 10),
   "navRoute": (True, 0.),
   "navThumbnail": (True, 0.),
   "qRoadEncodeIdx": (False, 20.),
@@ -77,6 +77,7 @@ services = {
 
   # dp
   "dragonConf": (False, 1.),
+  "liveMapData": (True, 0.),
 }
 service_list = {name: Service(new_port(idx), *vals) for  # type: ignore
                 idx, (name, vals) in enumerate(services.items())}

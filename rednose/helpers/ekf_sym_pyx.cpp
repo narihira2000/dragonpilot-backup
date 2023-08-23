@@ -9,7 +9,7 @@
         "language": "c++",
         "name": "helpers.ekf_sym_pyx",
         "sources": [
-            "/data/openpilot/rednose/helpers/ekf_sym_pyx.pyx"
+            "/data/testdevel/rednose/helpers/ekf_sym_pyx.pyx"
         ]
     },
     "module_name": "helpers.ekf_sym_pyx"
@@ -1303,7 +1303,7 @@ static CYTHON_INLINE __pyx_t_double_complex __pyx_t_double_complex_from_parts(do
 
 
 /*--- Type declarations ---*/
-struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym;
+struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx;
 struct __pyx_array_obj;
 struct __pyx_MemviewEnum_obj;
 struct __pyx_memoryview_obj;
@@ -1348,11 +1348,11 @@ typedef npy_cdouble __pyx_t_5numpy_complex_t;
 /* "helpers/ekf_sym_pyx.pyx":81
  *   return np.copy(np.asarray(mem_view, dtype=np.double, order="C"))
  * 
- * cdef class EKF_sym:             # <<<<<<<<<<<<<<
+ * cdef class EKF_sym_pyx:             # <<<<<<<<<<<<<<
  *   cdef EKFSym* ekf
  *   def __cinit__(self, str gen_dir, str name, np.ndarray[np.float64_t, ndim=2] Q,
  */
-struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym {
+struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx {
   PyObject_HEAD
   EKFS::EKFSym *ekf;
 };
@@ -2618,7 +2618,7 @@ static PyTypeObject *__pyx_ptype_5numpy_character = 0;
 static PyTypeObject *__pyx_ptype_5numpy_ufunc = 0;
 
 /* Module declarations from 'helpers.ekf_sym_pyx' */
-static PyTypeObject *__pyx_ptype_7helpers_11ekf_sym_pyx_EKF_sym = 0;
+static PyTypeObject *__pyx_ptype_7helpers_11ekf_sym_pyx_EKF_sym_pyx = 0;
 static PyTypeObject *__pyx_array_type = 0;
 static PyTypeObject *__pyx_MemviewEnum_type = 0;
 static PyTypeObject *__pyx_memoryview_type = 0;
@@ -2747,7 +2747,6 @@ static const char __pyx_k_reduce[] = "__reduce__";
 static const char __pyx_k_struct[] = "struct";
 static const char __pyx_k_unpack[] = "unpack";
 static const char __pyx_k_update[] = "update";
-static const char __pyx_k_EKF_sym[] = "EKF_sym";
 static const char __pyx_k_asarray[] = "asarray";
 static const char __pyx_k_augment[] = "augment";
 static const char __pyx_k_fortran[] = "fortran";
@@ -2773,6 +2772,7 @@ static const char __pyx_k_global_var[] = "global_var";
 static const char __pyx_k_norm_quats[] = "norm_quats";
 static const char __pyx_k_pyx_result[] = "__pyx_result";
 static const char __pyx_k_pyx_vtable[] = "__pyx_vtable__";
+static const char __pyx_k_EKF_sym_pyx[] = "EKF_sym_pyx";
 static const char __pyx_k_ImportError[] = "ImportError";
 static const char __pyx_k_MemoryError[] = "MemoryError";
 static const char __pyx_k_PickleError[] = "PickleError";
@@ -2831,7 +2831,7 @@ static PyObject *__pyx_kp_s_Can_only_create_a_buffer_that_is;
 static PyObject *__pyx_kp_s_Cannot_assign_to_read_only_memor;
 static PyObject *__pyx_kp_s_Cannot_create_writable_memory_vi;
 static PyObject *__pyx_kp_s_Cannot_index_with_type_s;
-static PyObject *__pyx_n_s_EKF_sym;
+static PyObject *__pyx_n_s_EKF_sym_pyx;
 static PyObject *__pyx_n_s_Ellipsis;
 static PyObject *__pyx_kp_s_Empty_shape_tuple_for_cython_arr;
 static PyObject *__pyx_n_s_ImportError;
@@ -2964,23 +2964,23 @@ static PyObject *__pyx_n_s_val;
 static PyObject *__pyx_n_s_x;
 static PyObject *__pyx_n_s_x_initial;
 static PyObject *__pyx_n_s_z;
-static int __pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym___cinit__(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v_gen_dir, PyObject *__pyx_v_name, PyArrayObject *__pyx_v_Q, PyArrayObject *__pyx_v_x_initial, PyArrayObject *__pyx_v_P_initial, int __pyx_v_dim_main, int __pyx_v_dim_main_err, int __pyx_v_N, int __pyx_v_dim_augment, int __pyx_v_dim_augment_err, PyObject *__pyx_v_maha_test_kinds, PyObject *__pyx_v_quaternion_idxs, PyObject *__pyx_v_global_vars, double __pyx_v_max_rewind_age, CYTHON_UNUSED PyObject *__pyx_v_logger); /* proto */
-static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_2init_state(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *__pyx_v_self, PyArrayObject *__pyx_v_state, PyArrayObject *__pyx_v_covs, PyObject *__pyx_v_filter_time); /* proto */
-static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_4state(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_6covs(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_8set_filter_time(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *__pyx_v_self, double __pyx_v_t); /* proto */
-static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_10get_filter_time(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_12set_global(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *__pyx_v_self, PyObject *__pyx_v_global_var, double __pyx_v_val); /* proto */
-static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_14reset_rewind(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_16predict(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *__pyx_v_self, double __pyx_v_t); /* proto */
-static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_18predict_and_update_batch(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *__pyx_v_self, double __pyx_v_t, int __pyx_v_kind, PyObject *__pyx_v_z, PyObject *__pyx_v_R, PyObject *__pyx_v_extra_args, bool __pyx_v_augment); /* proto */
-static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_20augment(CYTHON_UNUSED struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_22get_augment_times(CYTHON_UNUSED struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_24rts_smooth(CYTHON_UNUSED struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v_estimates, CYTHON_UNUSED PyObject *__pyx_v_norm_quats); /* proto */
-static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_26maha_test(CYTHON_UNUSED struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v_x, CYTHON_UNUSED PyObject *__pyx_v_P, CYTHON_UNUSED PyObject *__pyx_v_kind, CYTHON_UNUSED PyObject *__pyx_v_z, CYTHON_UNUSED PyObject *__pyx_v_R, CYTHON_UNUSED PyObject *__pyx_v_extra_args, CYTHON_UNUSED PyObject *__pyx_v_maha_thresh); /* proto */
-static void __pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_28__dealloc__(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_30__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_32__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
+static int __pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx___cinit__(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v_gen_dir, PyObject *__pyx_v_name, PyArrayObject *__pyx_v_Q, PyArrayObject *__pyx_v_x_initial, PyArrayObject *__pyx_v_P_initial, int __pyx_v_dim_main, int __pyx_v_dim_main_err, int __pyx_v_N, int __pyx_v_dim_augment, int __pyx_v_dim_augment_err, PyObject *__pyx_v_maha_test_kinds, PyObject *__pyx_v_quaternion_idxs, PyObject *__pyx_v_global_vars, double __pyx_v_max_rewind_age, CYTHON_UNUSED PyObject *__pyx_v_logger); /* proto */
+static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_2init_state(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *__pyx_v_self, PyArrayObject *__pyx_v_state, PyArrayObject *__pyx_v_covs, PyObject *__pyx_v_filter_time); /* proto */
+static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_4state(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_6covs(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_8set_filter_time(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *__pyx_v_self, double __pyx_v_t); /* proto */
+static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_10get_filter_time(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_12set_global(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *__pyx_v_self, PyObject *__pyx_v_global_var, double __pyx_v_val); /* proto */
+static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_14reset_rewind(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_16predict(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *__pyx_v_self, double __pyx_v_t); /* proto */
+static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_18predict_and_update_batch(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *__pyx_v_self, double __pyx_v_t, int __pyx_v_kind, PyObject *__pyx_v_z, PyObject *__pyx_v_R, PyObject *__pyx_v_extra_args, bool __pyx_v_augment); /* proto */
+static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_20augment(CYTHON_UNUSED struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_22get_augment_times(CYTHON_UNUSED struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_24rts_smooth(CYTHON_UNUSED struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v_estimates, CYTHON_UNUSED PyObject *__pyx_v_norm_quats); /* proto */
+static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_26maha_test(CYTHON_UNUSED struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v_x, CYTHON_UNUSED PyObject *__pyx_v_P, CYTHON_UNUSED PyObject *__pyx_v_kind, CYTHON_UNUSED PyObject *__pyx_v_z, CYTHON_UNUSED PyObject *__pyx_v_R, CYTHON_UNUSED PyObject *__pyx_v_extra_args, CYTHON_UNUSED PyObject *__pyx_v_maha_thresh); /* proto */
+static void __pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_28__dealloc__(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_30__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_32__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
 static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __pyx_array_obj *__pyx_v_self, PyObject *__pyx_v_shape, Py_ssize_t __pyx_v_itemsize, PyObject *__pyx_v_format, PyObject *__pyx_v_mode, int __pyx_v_allocate_buffer); /* proto */
 static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array_2__getbuffer__(struct __pyx_array_obj *__pyx_v_self, Py_buffer *__pyx_v_info, int __pyx_v_flags); /* proto */
 static void __pyx_array___pyx_pf_15View_dot_MemoryView_5array_4__dealloc__(struct __pyx_array_obj *__pyx_v_self); /* proto */
@@ -3023,7 +3023,7 @@ static PyObject *__pyx_pf_15View_dot_MemoryView_16_memoryviewslice_4base___get__
 static PyObject *__pyx_pf___pyx_memoryviewslice___reduce_cython__(CYTHON_UNUSED struct __pyx_memoryviewslice_obj *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf___pyx_memoryviewslice_2__setstate_cython__(CYTHON_UNUSED struct __pyx_memoryviewslice_obj *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
 static PyObject *__pyx_pf_15View_dot_MemoryView___pyx_unpickle_Enum(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v___pyx_type, long __pyx_v___pyx_checksum, PyObject *__pyx_v___pyx_state); /* proto */
-static PyObject *__pyx_tp_new_7helpers_11ekf_sym_pyx_EKF_sym(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
+static PyObject *__pyx_tp_new_7helpers_11ekf_sym_pyx_EKF_sym_pyx(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_array(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_Enum(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_memoryview(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
@@ -3279,7 +3279,7 @@ static PyArrayObject *__pyx_f_7helpers_11ekf_sym_pyx_vector_to_numpy(Eigen::Vect
  *   cdef double[:] mem_view = <double[:arr.rows()]>arr.data()
  *   return np.copy(np.asarray(mem_view, dtype=np.double, order="C"))             # <<<<<<<<<<<<<<
  * 
- * cdef class EKF_sym:
+ * cdef class EKF_sym_pyx:
  */
   __Pyx_XDECREF(((PyObject *)__pyx_r));
   __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 79, __pyx_L1_error)
@@ -3365,7 +3365,7 @@ static PyArrayObject *__pyx_f_7helpers_11ekf_sym_pyx_vector_to_numpy(Eigen::Vect
 }
 
 /* "helpers/ekf_sym_pyx.pyx":83
- * cdef class EKF_sym:
+ * cdef class EKF_sym_pyx:
  *   cdef EKFSym* ekf
  *   def __cinit__(self, str gen_dir, str name, np.ndarray[np.float64_t, ndim=2] Q,             # <<<<<<<<<<<<<<
  *       np.ndarray[np.float64_t, ndim=1] x_initial, np.ndarray[np.float64_t, ndim=2] P_initial, int dim_main,
@@ -3373,8 +3373,8 @@ static PyArrayObject *__pyx_f_7helpers_11ekf_sym_pyx_vector_to_numpy(Eigen::Vect
  */
 
 /* Python wrapper */
-static int __pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static int __pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static int __pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static int __pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   CYTHON_UNUSED PyObject *__pyx_v_gen_dir = 0;
   PyObject *__pyx_v_name = 0;
   PyArrayObject *__pyx_v_Q = 0;
@@ -3606,7 +3606,7 @@ static int __pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_1__cinit__(PyObject *__pyx_v
   __pyx_L5_argtuple_error:;
   __Pyx_RaiseArgtupleInvalid("__cinit__", 0, 7, 15, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 83, __pyx_L3_error)
   __pyx_L3_error:;
-  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym_pyx.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return -1;
   __pyx_L4_argument_unpacking_done:;
@@ -3618,10 +3618,10 @@ static int __pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_1__cinit__(PyObject *__pyx_v
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_maha_test_kinds), (&PyList_Type), 1, "maha_test_kinds", 1))) __PYX_ERR(0, 85, __pyx_L1_error)
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_quaternion_idxs), (&PyList_Type), 1, "quaternion_idxs", 1))) __PYX_ERR(0, 86, __pyx_L1_error)
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_global_vars), (&PyList_Type), 1, "global_vars", 1))) __PYX_ERR(0, 86, __pyx_L1_error)
-  __pyx_r = __pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym___cinit__(((struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *)__pyx_v_self), __pyx_v_gen_dir, __pyx_v_name, __pyx_v_Q, __pyx_v_x_initial, __pyx_v_P_initial, __pyx_v_dim_main, __pyx_v_dim_main_err, __pyx_v_N, __pyx_v_dim_augment, __pyx_v_dim_augment_err, __pyx_v_maha_test_kinds, __pyx_v_quaternion_idxs, __pyx_v_global_vars, __pyx_v_max_rewind_age, __pyx_v_logger);
+  __pyx_r = __pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx___cinit__(((struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *)__pyx_v_self), __pyx_v_gen_dir, __pyx_v_name, __pyx_v_Q, __pyx_v_x_initial, __pyx_v_P_initial, __pyx_v_dim_main, __pyx_v_dim_main_err, __pyx_v_N, __pyx_v_dim_augment, __pyx_v_dim_augment_err, __pyx_v_maha_test_kinds, __pyx_v_quaternion_idxs, __pyx_v_global_vars, __pyx_v_max_rewind_age, __pyx_v_logger);
 
   /* "helpers/ekf_sym_pyx.pyx":83
- * cdef class EKF_sym:
+ * cdef class EKF_sym_pyx:
  *   cdef EKFSym* ekf
  *   def __cinit__(self, str gen_dir, str name, np.ndarray[np.float64_t, ndim=2] Q,             # <<<<<<<<<<<<<<
  *       np.ndarray[np.float64_t, ndim=1] x_initial, np.ndarray[np.float64_t, ndim=2] P_initial, int dim_main,
@@ -3637,7 +3637,7 @@ static int __pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_1__cinit__(PyObject *__pyx_v
   return __pyx_r;
 }
 
-static int __pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym___cinit__(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v_gen_dir, PyObject *__pyx_v_name, PyArrayObject *__pyx_v_Q, PyArrayObject *__pyx_v_x_initial, PyArrayObject *__pyx_v_P_initial, int __pyx_v_dim_main, int __pyx_v_dim_main_err, int __pyx_v_N, int __pyx_v_dim_augment, int __pyx_v_dim_augment_err, PyObject *__pyx_v_maha_test_kinds, PyObject *__pyx_v_quaternion_idxs, PyObject *__pyx_v_global_vars, double __pyx_v_max_rewind_age, CYTHON_UNUSED PyObject *__pyx_v_logger) {
+static int __pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx___cinit__(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v_gen_dir, PyObject *__pyx_v_name, PyArrayObject *__pyx_v_Q, PyArrayObject *__pyx_v_x_initial, PyArrayObject *__pyx_v_P_initial, int __pyx_v_dim_main, int __pyx_v_dim_main_err, int __pyx_v_N, int __pyx_v_dim_augment, int __pyx_v_dim_augment_err, PyObject *__pyx_v_maha_test_kinds, PyObject *__pyx_v_quaternion_idxs, PyObject *__pyx_v_global_vars, double __pyx_v_max_rewind_age, CYTHON_UNUSED PyObject *__pyx_v_logger) {
   PyArrayObject *__pyx_v_Q_b = 0;
   PyArrayObject *__pyx_v_x_initial_b = 0;
   PyArrayObject *__pyx_v_P_initial_b = 0;
@@ -3950,7 +3950,7 @@ static int __pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym___cinit__(struct __pyx_obj_7
   __pyx_v_self->ekf = new EKFS::EKFSym(__pyx_t_9, Eigen::Map<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> >(((double *)__pyx_v_Q_b->data), (__pyx_v_Q->dimensions[0]), (__pyx_v_Q->dimensions[1])), Eigen::Map<Eigen::VectorXd>(((double *)__pyx_v_x_initial_b->data), (__pyx_v_x_initial->dimensions[0])), Eigen::Map<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> >(((double *)__pyx_v_P_initial_b->data), (__pyx_v_P_initial->dimensions[0]), (__pyx_v_P_initial->dimensions[1])), __pyx_v_dim_main, __pyx_v_dim_main_err, __pyx_v_N, __pyx_v_dim_augment, __pyx_v_dim_augment_err, __pyx_t_10, __pyx_t_11, __pyx_t_13, __pyx_v_max_rewind_age);
 
   /* "helpers/ekf_sym_pyx.pyx":83
- * cdef class EKF_sym:
+ * cdef class EKF_sym_pyx:
  *   cdef EKFSym* ekf
  *   def __cinit__(self, str gen_dir, str name, np.ndarray[np.float64_t, ndim=2] Q,             # <<<<<<<<<<<<<<
  *       np.ndarray[np.float64_t, ndim=1] x_initial, np.ndarray[np.float64_t, ndim=2] P_initial, int dim_main,
@@ -3977,7 +3977,7 @@ static int __pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym___cinit__(struct __pyx_obj_7
     __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_x_initial.rcbuffer->pybuffer);
     __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_x_initial_b.rcbuffer->pybuffer);
   __Pyx_ErrRestore(__pyx_type, __pyx_value, __pyx_tb);}
-  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym_pyx.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = -1;
   goto __pyx_L2;
   __pyx_L0:;
@@ -4006,8 +4006,8 @@ static int __pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym___cinit__(struct __pyx_obj_7
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_3init_state(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_3init_state(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_3init_state(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_3init_state(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyArrayObject *__pyx_v_state = 0;
   PyArrayObject *__pyx_v_covs = 0;
   PyObject *__pyx_v_filter_time = 0;
@@ -4069,13 +4069,13 @@ static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_3init_state(PyObject *
   __pyx_L5_argtuple_error:;
   __Pyx_RaiseArgtupleInvalid("init_state", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 108, __pyx_L3_error)
   __pyx_L3_error:;
-  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym.init_state", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym_pyx.init_state", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_state), __pyx_ptype_5numpy_ndarray, 1, "state", 0))) __PYX_ERR(0, 108, __pyx_L1_error)
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_covs), __pyx_ptype_5numpy_ndarray, 1, "covs", 0))) __PYX_ERR(0, 108, __pyx_L1_error)
-  __pyx_r = __pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_2init_state(((struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *)__pyx_v_self), __pyx_v_state, __pyx_v_covs, __pyx_v_filter_time);
+  __pyx_r = __pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_2init_state(((struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *)__pyx_v_self), __pyx_v_state, __pyx_v_covs, __pyx_v_filter_time);
 
   /* function exit code */
   goto __pyx_L0;
@@ -4086,7 +4086,7 @@ static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_3init_state(PyObject *
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_2init_state(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *__pyx_v_self, PyArrayObject *__pyx_v_state, PyArrayObject *__pyx_v_covs, PyObject *__pyx_v_filter_time) {
+static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_2init_state(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *__pyx_v_self, PyArrayObject *__pyx_v_state, PyArrayObject *__pyx_v_covs, PyObject *__pyx_v_filter_time) {
   PyArrayObject *__pyx_v_state_b = 0;
   PyArrayObject *__pyx_v_covs_b = 0;
   __Pyx_LocalBuf_ND __pyx_pybuffernd_covs;
@@ -4289,7 +4289,7 @@ static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_2init_state(struct __p
     __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_state.rcbuffer->pybuffer);
     __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_state_b.rcbuffer->pybuffer);
   __Pyx_ErrRestore(__pyx_type, __pyx_value, __pyx_tb);}
-  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym.init_state", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym_pyx.init_state", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   goto __pyx_L2;
   __pyx_L0:;
@@ -4315,19 +4315,19 @@ static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_2init_state(struct __p
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_5state(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_5state(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_5state(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_5state(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("state (wrapper)", 0);
-  __pyx_r = __pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_4state(((struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *)__pyx_v_self));
+  __pyx_r = __pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_4state(((struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_4state(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *__pyx_v_self) {
+static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_4state(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *__pyx_v_self) {
   PyArrayObject *__pyx_v_res = 0;
   PyObject *__pyx_r = NULL;
   __Pyx_TraceDeclarations
@@ -4374,7 +4374,7 @@ static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_4state(struct __pyx_ob
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym.state", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym_pyx.state", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF((PyObject *)__pyx_v_res);
@@ -4393,19 +4393,19 @@ static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_4state(struct __pyx_ob
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_7covs(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_7covs(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_7covs(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_7covs(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("covs (wrapper)", 0);
-  __pyx_r = __pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_6covs(((struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *)__pyx_v_self));
+  __pyx_r = __pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_6covs(((struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_6covs(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *__pyx_v_self) {
+static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_6covs(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
@@ -4441,7 +4441,7 @@ static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_6covs(struct __pyx_obj
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym.covs", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym_pyx.covs", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -4459,8 +4459,8 @@ static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_6covs(struct __pyx_obj
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_9set_filter_time(PyObject *__pyx_v_self, PyObject *__pyx_arg_t); /*proto*/
-static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_9set_filter_time(PyObject *__pyx_v_self, PyObject *__pyx_arg_t) {
+static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_9set_filter_time(PyObject *__pyx_v_self, PyObject *__pyx_arg_t); /*proto*/
+static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_9set_filter_time(PyObject *__pyx_v_self, PyObject *__pyx_arg_t) {
   double __pyx_v_t;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
@@ -4473,18 +4473,18 @@ static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_9set_filter_time(PyObj
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
-  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym.set_filter_time", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym_pyx.set_filter_time", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_8set_filter_time(((struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *)__pyx_v_self), ((double)__pyx_v_t));
+  __pyx_r = __pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_8set_filter_time(((struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *)__pyx_v_self), ((double)__pyx_v_t));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_8set_filter_time(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *__pyx_v_self, double __pyx_v_t) {
+static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_8set_filter_time(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *__pyx_v_self, double __pyx_v_t) {
   PyObject *__pyx_r = NULL;
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
@@ -4515,7 +4515,7 @@ static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_8set_filter_time(struc
   __pyx_r = Py_None; __Pyx_INCREF(Py_None);
   goto __pyx_L0;
   __pyx_L1_error:;
-  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym.set_filter_time", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym_pyx.set_filter_time", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -4533,19 +4533,19 @@ static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_8set_filter_time(struc
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_11get_filter_time(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_11get_filter_time(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_11get_filter_time(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_11get_filter_time(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("get_filter_time (wrapper)", 0);
-  __pyx_r = __pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_10get_filter_time(((struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *)__pyx_v_self));
+  __pyx_r = __pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_10get_filter_time(((struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_10get_filter_time(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *__pyx_v_self) {
+static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_10get_filter_time(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
@@ -4581,7 +4581,7 @@ static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_10get_filter_time(stru
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym.get_filter_time", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym_pyx.get_filter_time", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -4599,8 +4599,8 @@ static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_10get_filter_time(stru
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_13set_global(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_13set_global(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_13set_global(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_13set_global(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_global_var = 0;
   double __pyx_v_val;
   int __pyx_lineno = 0;
@@ -4651,12 +4651,12 @@ static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_13set_global(PyObject 
   __pyx_L5_argtuple_error:;
   __Pyx_RaiseArgtupleInvalid("set_global", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 130, __pyx_L3_error)
   __pyx_L3_error:;
-  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym.set_global", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym_pyx.set_global", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_global_var), (&PyUnicode_Type), 1, "global_var", 1))) __PYX_ERR(0, 130, __pyx_L1_error)
-  __pyx_r = __pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_12set_global(((struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *)__pyx_v_self), __pyx_v_global_var, __pyx_v_val);
+  __pyx_r = __pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_12set_global(((struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *)__pyx_v_self), __pyx_v_global_var, __pyx_v_val);
 
   /* function exit code */
   goto __pyx_L0;
@@ -4667,7 +4667,7 @@ static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_13set_global(PyObject 
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_12set_global(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *__pyx_v_self, PyObject *__pyx_v_global_var, double __pyx_v_val) {
+static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_12set_global(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *__pyx_v_self, PyObject *__pyx_v_global_var, double __pyx_v_val) {
   PyObject *__pyx_r = NULL;
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
@@ -4709,7 +4709,7 @@ static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_12set_global(struct __
   goto __pyx_L0;
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym.set_global", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym_pyx.set_global", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -4727,19 +4727,19 @@ static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_12set_global(struct __
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_15reset_rewind(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_15reset_rewind(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_15reset_rewind(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_15reset_rewind(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("reset_rewind (wrapper)", 0);
-  __pyx_r = __pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_14reset_rewind(((struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *)__pyx_v_self));
+  __pyx_r = __pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_14reset_rewind(((struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_14reset_rewind(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *__pyx_v_self) {
+static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_14reset_rewind(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
@@ -4770,7 +4770,7 @@ static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_14reset_rewind(struct 
   __pyx_r = Py_None; __Pyx_INCREF(Py_None);
   goto __pyx_L0;
   __pyx_L1_error:;
-  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym.reset_rewind", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym_pyx.reset_rewind", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -4788,8 +4788,8 @@ static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_14reset_rewind(struct 
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_17predict(PyObject *__pyx_v_self, PyObject *__pyx_arg_t); /*proto*/
-static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_17predict(PyObject *__pyx_v_self, PyObject *__pyx_arg_t) {
+static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_17predict(PyObject *__pyx_v_self, PyObject *__pyx_arg_t); /*proto*/
+static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_17predict(PyObject *__pyx_v_self, PyObject *__pyx_arg_t) {
   double __pyx_v_t;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
@@ -4802,18 +4802,18 @@ static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_17predict(PyObject *__
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
-  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym.predict", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym_pyx.predict", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_16predict(((struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *)__pyx_v_self), ((double)__pyx_v_t));
+  __pyx_r = __pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_16predict(((struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *)__pyx_v_self), ((double)__pyx_v_t));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_16predict(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *__pyx_v_self, double __pyx_v_t) {
+static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_16predict(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *__pyx_v_self, double __pyx_v_t) {
   PyObject *__pyx_r = NULL;
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
@@ -4844,7 +4844,7 @@ static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_16predict(struct __pyx
   __pyx_r = Py_None; __Pyx_INCREF(Py_None);
   goto __pyx_L0;
   __pyx_L1_error:;
-  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym.predict", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym_pyx.predict", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -4862,8 +4862,8 @@ static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_16predict(struct __pyx
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_19predict_and_update_batch(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_19predict_and_update_batch(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_19predict_and_update_batch(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_19predict_and_update_batch(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   double __pyx_v_t;
   int __pyx_v_kind;
   PyObject *__pyx_v_z = 0;
@@ -4967,18 +4967,18 @@ static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_19predict_and_update_b
   __pyx_L5_argtuple_error:;
   __Pyx_RaiseArgtupleInvalid("predict_and_update_batch", 0, 4, 6, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 139, __pyx_L3_error)
   __pyx_L3_error:;
-  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym.predict_and_update_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym_pyx.predict_and_update_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_18predict_and_update_batch(((struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *)__pyx_v_self), __pyx_v_t, __pyx_v_kind, __pyx_v_z, __pyx_v_R, __pyx_v_extra_args, __pyx_v_augment);
+  __pyx_r = __pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_18predict_and_update_batch(((struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *)__pyx_v_self), __pyx_v_t, __pyx_v_kind, __pyx_v_z, __pyx_v_R, __pyx_v_extra_args, __pyx_v_augment);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_18predict_and_update_batch(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *__pyx_v_self, double __pyx_v_t, int __pyx_v_kind, PyObject *__pyx_v_z, PyObject *__pyx_v_R, PyObject *__pyx_v_extra_args, bool __pyx_v_augment) {
+static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_18predict_and_update_batch(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *__pyx_v_self, double __pyx_v_t, int __pyx_v_kind, PyObject *__pyx_v_z, PyObject *__pyx_v_R, PyObject *__pyx_v_extra_args, bool __pyx_v_augment) {
   std::vector<Eigen::Map<Eigen::VectorXd>>  __pyx_v_z_map;
   PyArrayObject *__pyx_v_zi_b = 0;
   PyObject *__pyx_v_zi = NULL;
@@ -5664,7 +5664,7 @@ static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_18predict_and_update_b
     __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_Ri_b.rcbuffer->pybuffer);
     __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_zi_b.rcbuffer->pybuffer);
   __Pyx_ErrRestore(__pyx_type, __pyx_value, __pyx_tb);}
-  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym.predict_and_update_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym_pyx.predict_and_update_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   goto __pyx_L2;
   __pyx_L0:;
@@ -5692,19 +5692,19 @@ static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_18predict_and_update_b
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_21augment(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_21augment(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_21augment(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_21augment(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("augment (wrapper)", 0);
-  __pyx_r = __pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_20augment(((struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *)__pyx_v_self));
+  __pyx_r = __pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_20augment(((struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_20augment(CYTHON_UNUSED struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *__pyx_v_self) {
+static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_20augment(CYTHON_UNUSED struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
@@ -5739,7 +5739,7 @@ static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_20augment(CYTHON_UNUSE
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym.augment", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym_pyx.augment", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_TraceReturn(__pyx_r, 0);
@@ -5756,19 +5756,19 @@ static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_20augment(CYTHON_UNUSE
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_23get_augment_times(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_23get_augment_times(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_23get_augment_times(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_23get_augment_times(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("get_augment_times (wrapper)", 0);
-  __pyx_r = __pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_22get_augment_times(((struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *)__pyx_v_self));
+  __pyx_r = __pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_22get_augment_times(((struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_22get_augment_times(CYTHON_UNUSED struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *__pyx_v_self) {
+static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_22get_augment_times(CYTHON_UNUSED struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
@@ -5803,7 +5803,7 @@ static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_22get_augment_times(CY
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym.get_augment_times", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym_pyx.get_augment_times", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_TraceReturn(__pyx_r, 0);
@@ -5820,8 +5820,8 @@ static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_22get_augment_times(CY
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_25rts_smooth(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_25rts_smooth(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_25rts_smooth(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_25rts_smooth(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   CYTHON_UNUSED PyObject *__pyx_v_estimates = 0;
   CYTHON_UNUSED PyObject *__pyx_v_norm_quats = 0;
   int __pyx_lineno = 0;
@@ -5876,18 +5876,18 @@ static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_25rts_smooth(PyObject 
   __pyx_L5_argtuple_error:;
   __Pyx_RaiseArgtupleInvalid("rts_smooth", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 183, __pyx_L3_error)
   __pyx_L3_error:;
-  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym.rts_smooth", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym_pyx.rts_smooth", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_24rts_smooth(((struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *)__pyx_v_self), __pyx_v_estimates, __pyx_v_norm_quats);
+  __pyx_r = __pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_24rts_smooth(((struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *)__pyx_v_self), __pyx_v_estimates, __pyx_v_norm_quats);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_24rts_smooth(CYTHON_UNUSED struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v_estimates, CYTHON_UNUSED PyObject *__pyx_v_norm_quats) {
+static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_24rts_smooth(CYTHON_UNUSED struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v_estimates, CYTHON_UNUSED PyObject *__pyx_v_norm_quats) {
   PyObject *__pyx_r = NULL;
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
@@ -5922,7 +5922,7 @@ static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_24rts_smooth(CYTHON_UN
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym.rts_smooth", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym_pyx.rts_smooth", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_TraceReturn(__pyx_r, 0);
@@ -5939,8 +5939,8 @@ static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_24rts_smooth(CYTHON_UN
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_27maha_test(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_27maha_test(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_27maha_test(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_27maha_test(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   CYTHON_UNUSED PyObject *__pyx_v_x = 0;
   CYTHON_UNUSED PyObject *__pyx_v_P = 0;
   CYTHON_UNUSED PyObject *__pyx_v_kind = 0;
@@ -6052,18 +6052,18 @@ static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_27maha_test(PyObject *
   __pyx_L5_argtuple_error:;
   __Pyx_RaiseArgtupleInvalid("maha_test", 0, 5, 7, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 186, __pyx_L3_error)
   __pyx_L3_error:;
-  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym.maha_test", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym_pyx.maha_test", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_26maha_test(((struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *)__pyx_v_self), __pyx_v_x, __pyx_v_P, __pyx_v_kind, __pyx_v_z, __pyx_v_R, __pyx_v_extra_args, __pyx_v_maha_thresh);
+  __pyx_r = __pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_26maha_test(((struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *)__pyx_v_self), __pyx_v_x, __pyx_v_P, __pyx_v_kind, __pyx_v_z, __pyx_v_R, __pyx_v_extra_args, __pyx_v_maha_thresh);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_26maha_test(CYTHON_UNUSED struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v_x, CYTHON_UNUSED PyObject *__pyx_v_P, CYTHON_UNUSED PyObject *__pyx_v_kind, CYTHON_UNUSED PyObject *__pyx_v_z, CYTHON_UNUSED PyObject *__pyx_v_R, CYTHON_UNUSED PyObject *__pyx_v_extra_args, CYTHON_UNUSED PyObject *__pyx_v_maha_thresh) {
+static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_26maha_test(CYTHON_UNUSED struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v_x, CYTHON_UNUSED PyObject *__pyx_v_P, CYTHON_UNUSED PyObject *__pyx_v_kind, CYTHON_UNUSED PyObject *__pyx_v_z, CYTHON_UNUSED PyObject *__pyx_v_R, CYTHON_UNUSED PyObject *__pyx_v_extra_args, CYTHON_UNUSED PyObject *__pyx_v_maha_thresh) {
   PyObject *__pyx_r = NULL;
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
@@ -6098,7 +6098,7 @@ static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_26maha_test(CYTHON_UNU
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym.maha_test", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym_pyx.maha_test", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_TraceReturn(__pyx_r, 0);
@@ -6114,17 +6114,17 @@ static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_26maha_test(CYTHON_UNU
  */
 
 /* Python wrapper */
-static void __pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_29__dealloc__(PyObject *__pyx_v_self); /*proto*/
-static void __pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_29__dealloc__(PyObject *__pyx_v_self) {
+static void __pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_29__dealloc__(PyObject *__pyx_v_self); /*proto*/
+static void __pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_29__dealloc__(PyObject *__pyx_v_self) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__dealloc__ (wrapper)", 0);
-  __pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_28__dealloc__(((struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *)__pyx_v_self));
+  __pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_28__dealloc__(((struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
 }
 
-static void __pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_28__dealloc__(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *__pyx_v_self) {
+static void __pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_28__dealloc__(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *__pyx_v_self) {
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   int __pyx_lineno = 0;
@@ -6150,7 +6150,7 @@ static void __pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_28__dealloc__(struct __pyx_
   /* function exit code */
   goto __pyx_L0;
   __pyx_L1_error:;
-  __Pyx_WriteUnraisable("helpers.ekf_sym_pyx.EKF_sym.__dealloc__", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
+  __Pyx_WriteUnraisable("helpers.ekf_sym_pyx.EKF_sym_pyx.__dealloc__", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
   __pyx_L0:;
   __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
@@ -6163,19 +6163,19 @@ static void __pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_28__dealloc__(struct __pyx_
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_31__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_31__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_31__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_31__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__reduce_cython__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_30__reduce_cython__(((struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *)__pyx_v_self));
+  __pyx_r = __pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_30__reduce_cython__(((struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_30__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *__pyx_v_self) {
+static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_30__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
@@ -6207,7 +6207,7 @@ static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_30__reduce_cython__(CY
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym.__reduce_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym_pyx.__reduce_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_TraceReturn(__pyx_r, 0);
@@ -6223,19 +6223,19 @@ static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_30__reduce_cython__(CY
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_33__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state); /*proto*/
-static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_33__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state) {
+static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_33__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state); /*proto*/
+static PyObject *__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_33__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__setstate_cython__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_32__setstate_cython__(((struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *)__pyx_v_self), ((PyObject *)__pyx_v___pyx_state));
+  __pyx_r = __pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_32__setstate_cython__(((struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *)__pyx_v_self), ((PyObject *)__pyx_v___pyx_state));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_32__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state) {
+static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_32__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = NULL;
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
@@ -6267,7 +6267,7 @@ static PyObject *__pyx_pf_7helpers_11ekf_sym_pyx_7EKF_sym_32__setstate_cython__(
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym.__setstate_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("helpers.ekf_sym_pyx.EKF_sym_pyx.__setstate_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_TraceReturn(__pyx_r, 0);
@@ -21483,7 +21483,7 @@ static PyObject *__pyx_format_from_typeinfo(__Pyx_TypeInfo *__pyx_v_type) {
   return __pyx_r;
 }
 
-static PyObject *__pyx_tp_new_7helpers_11ekf_sym_pyx_EKF_sym(PyTypeObject *t, PyObject *a, PyObject *k) {
+static PyObject *__pyx_tp_new_7helpers_11ekf_sym_pyx_EKF_sym_pyx(PyTypeObject *t, PyObject *a, PyObject *k) {
   PyObject *o;
   if (likely((t->tp_flags & Py_TPFLAGS_IS_ABSTRACT) == 0)) {
     o = (*t->tp_alloc)(t, 0);
@@ -21491,14 +21491,14 @@ static PyObject *__pyx_tp_new_7helpers_11ekf_sym_pyx_EKF_sym(PyTypeObject *t, Py
     o = (PyObject *) PyBaseObject_Type.tp_new(t, __pyx_empty_tuple, 0);
   }
   if (unlikely(!o)) return 0;
-  if (unlikely(__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_1__cinit__(o, a, k) < 0)) goto bad;
+  if (unlikely(__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_1__cinit__(o, a, k) < 0)) goto bad;
   return o;
   bad:
   Py_DECREF(o); o = 0;
   return NULL;
 }
 
-static void __pyx_tp_dealloc_7helpers_11ekf_sym_pyx_EKF_sym(PyObject *o) {
+static void __pyx_tp_dealloc_7helpers_11ekf_sym_pyx_EKF_sym_pyx(PyObject *o) {
   #if CYTHON_USE_TP_FINALIZE
   if (unlikely(PyType_HasFeature(Py_TYPE(o), Py_TPFLAGS_HAVE_FINALIZE) && Py_TYPE(o)->tp_finalize) && (!PyType_IS_GC(Py_TYPE(o)) || !_PyGC_FINALIZED(o))) {
     if (PyObject_CallFinalizerFromDealloc(o)) return;
@@ -21508,38 +21508,38 @@ static void __pyx_tp_dealloc_7helpers_11ekf_sym_pyx_EKF_sym(PyObject *o) {
     PyObject *etype, *eval, *etb;
     PyErr_Fetch(&etype, &eval, &etb);
     __Pyx_SET_REFCNT(o, Py_REFCNT(o) + 1);
-    __pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_29__dealloc__(o);
+    __pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_29__dealloc__(o);
     __Pyx_SET_REFCNT(o, Py_REFCNT(o) - 1);
     PyErr_Restore(etype, eval, etb);
   }
   (*Py_TYPE(o)->tp_free)(o);
 }
 
-static PyMethodDef __pyx_methods_7helpers_11ekf_sym_pyx_EKF_sym[] = {
-  {"init_state", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_3init_state, METH_VARARGS|METH_KEYWORDS, 0},
-  {"state", (PyCFunction)__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_5state, METH_NOARGS, 0},
-  {"covs", (PyCFunction)__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_7covs, METH_NOARGS, 0},
-  {"set_filter_time", (PyCFunction)__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_9set_filter_time, METH_O, 0},
-  {"get_filter_time", (PyCFunction)__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_11get_filter_time, METH_NOARGS, 0},
-  {"set_global", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_13set_global, METH_VARARGS|METH_KEYWORDS, 0},
-  {"reset_rewind", (PyCFunction)__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_15reset_rewind, METH_NOARGS, 0},
-  {"predict", (PyCFunction)__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_17predict, METH_O, 0},
-  {"predict_and_update_batch", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_19predict_and_update_batch, METH_VARARGS|METH_KEYWORDS, 0},
-  {"augment", (PyCFunction)__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_21augment, METH_NOARGS, 0},
-  {"get_augment_times", (PyCFunction)__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_23get_augment_times, METH_NOARGS, 0},
-  {"rts_smooth", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_25rts_smooth, METH_VARARGS|METH_KEYWORDS, 0},
-  {"maha_test", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_27maha_test, METH_VARARGS|METH_KEYWORDS, 0},
-  {"__reduce_cython__", (PyCFunction)__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_31__reduce_cython__, METH_NOARGS, 0},
-  {"__setstate_cython__", (PyCFunction)__pyx_pw_7helpers_11ekf_sym_pyx_7EKF_sym_33__setstate_cython__, METH_O, 0},
+static PyMethodDef __pyx_methods_7helpers_11ekf_sym_pyx_EKF_sym_pyx[] = {
+  {"init_state", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_3init_state, METH_VARARGS|METH_KEYWORDS, 0},
+  {"state", (PyCFunction)__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_5state, METH_NOARGS, 0},
+  {"covs", (PyCFunction)__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_7covs, METH_NOARGS, 0},
+  {"set_filter_time", (PyCFunction)__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_9set_filter_time, METH_O, 0},
+  {"get_filter_time", (PyCFunction)__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_11get_filter_time, METH_NOARGS, 0},
+  {"set_global", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_13set_global, METH_VARARGS|METH_KEYWORDS, 0},
+  {"reset_rewind", (PyCFunction)__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_15reset_rewind, METH_NOARGS, 0},
+  {"predict", (PyCFunction)__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_17predict, METH_O, 0},
+  {"predict_and_update_batch", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_19predict_and_update_batch, METH_VARARGS|METH_KEYWORDS, 0},
+  {"augment", (PyCFunction)__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_21augment, METH_NOARGS, 0},
+  {"get_augment_times", (PyCFunction)__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_23get_augment_times, METH_NOARGS, 0},
+  {"rts_smooth", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_25rts_smooth, METH_VARARGS|METH_KEYWORDS, 0},
+  {"maha_test", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_27maha_test, METH_VARARGS|METH_KEYWORDS, 0},
+  {"__reduce_cython__", (PyCFunction)__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_31__reduce_cython__, METH_NOARGS, 0},
+  {"__setstate_cython__", (PyCFunction)__pyx_pw_7helpers_11ekf_sym_pyx_11EKF_sym_pyx_33__setstate_cython__, METH_O, 0},
   {0, 0, 0, 0}
 };
 
-static PyTypeObject __pyx_type_7helpers_11ekf_sym_pyx_EKF_sym = {
+static PyTypeObject __pyx_type_7helpers_11ekf_sym_pyx_EKF_sym_pyx = {
   PyVarObject_HEAD_INIT(0, 0)
-  "helpers.ekf_sym_pyx.EKF_sym", /*tp_name*/
-  sizeof(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym), /*tp_basicsize*/
+  "helpers.ekf_sym_pyx.EKF_sym_pyx", /*tp_name*/
+  sizeof(struct __pyx_obj_7helpers_11ekf_sym_pyx_EKF_sym_pyx), /*tp_basicsize*/
   0, /*tp_itemsize*/
-  __pyx_tp_dealloc_7helpers_11ekf_sym_pyx_EKF_sym, /*tp_dealloc*/
+  __pyx_tp_dealloc_7helpers_11ekf_sym_pyx_EKF_sym_pyx, /*tp_dealloc*/
   #if PY_VERSION_HEX < 0x030800b4
   0, /*tp_print*/
   #endif
@@ -21572,7 +21572,7 @@ static PyTypeObject __pyx_type_7helpers_11ekf_sym_pyx_EKF_sym = {
   0, /*tp_weaklistoffset*/
   0, /*tp_iter*/
   0, /*tp_iternext*/
-  __pyx_methods_7helpers_11ekf_sym_pyx_EKF_sym, /*tp_methods*/
+  __pyx_methods_7helpers_11ekf_sym_pyx_EKF_sym_pyx, /*tp_methods*/
   0, /*tp_members*/
   0, /*tp_getset*/
   0, /*tp_base*/
@@ -21582,7 +21582,7 @@ static PyTypeObject __pyx_type_7helpers_11ekf_sym_pyx_EKF_sym = {
   0, /*tp_dictoffset*/
   0, /*tp_init*/
   0, /*tp_alloc*/
-  __pyx_tp_new_7helpers_11ekf_sym_pyx_EKF_sym, /*tp_new*/
+  __pyx_tp_new_7helpers_11ekf_sym_pyx_EKF_sym_pyx, /*tp_new*/
   0, /*tp_free*/
   0, /*tp_is_gc*/
   0, /*tp_bases*/
@@ -22386,7 +22386,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_s_Cannot_assign_to_read_only_memor, __pyx_k_Cannot_assign_to_read_only_memor, sizeof(__pyx_k_Cannot_assign_to_read_only_memor), 0, 0, 1, 0},
   {&__pyx_kp_s_Cannot_create_writable_memory_vi, __pyx_k_Cannot_create_writable_memory_vi, sizeof(__pyx_k_Cannot_create_writable_memory_vi), 0, 0, 1, 0},
   {&__pyx_kp_s_Cannot_index_with_type_s, __pyx_k_Cannot_index_with_type_s, sizeof(__pyx_k_Cannot_index_with_type_s), 0, 0, 1, 0},
-  {&__pyx_n_s_EKF_sym, __pyx_k_EKF_sym, sizeof(__pyx_k_EKF_sym), 0, 0, 1, 1},
+  {&__pyx_n_s_EKF_sym_pyx, __pyx_k_EKF_sym_pyx, sizeof(__pyx_k_EKF_sym_pyx), 0, 0, 1, 1},
   {&__pyx_n_s_Ellipsis, __pyx_k_Ellipsis, sizeof(__pyx_k_Ellipsis), 0, 0, 1, 1},
   {&__pyx_kp_s_Empty_shape_tuple_for_cython_arr, __pyx_k_Empty_shape_tuple_for_cython_arr, sizeof(__pyx_k_Empty_shape_tuple_for_cython_arr), 0, 0, 1, 0},
   {&__pyx_n_s_ImportError, __pyx_k_ImportError, sizeof(__pyx_k_ImportError), 0, 0, 1, 1},
@@ -22906,16 +22906,16 @@ static int __Pyx_modinit_type_init_code(void) {
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__Pyx_modinit_type_init_code", 0);
   /*--- Type init code ---*/
-  if (PyType_Ready(&__pyx_type_7helpers_11ekf_sym_pyx_EKF_sym) < 0) __PYX_ERR(0, 81, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_7helpers_11ekf_sym_pyx_EKF_sym_pyx) < 0) __PYX_ERR(0, 81, __pyx_L1_error)
   #if PY_VERSION_HEX < 0x030800B1
-  __pyx_type_7helpers_11ekf_sym_pyx_EKF_sym.tp_print = 0;
+  __pyx_type_7helpers_11ekf_sym_pyx_EKF_sym_pyx.tp_print = 0;
   #endif
-  if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_7helpers_11ekf_sym_pyx_EKF_sym.tp_dictoffset && __pyx_type_7helpers_11ekf_sym_pyx_EKF_sym.tp_getattro == PyObject_GenericGetAttr)) {
-    __pyx_type_7helpers_11ekf_sym_pyx_EKF_sym.tp_getattro = __Pyx_PyObject_GenericGetAttr;
+  if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_7helpers_11ekf_sym_pyx_EKF_sym_pyx.tp_dictoffset && __pyx_type_7helpers_11ekf_sym_pyx_EKF_sym_pyx.tp_getattro == PyObject_GenericGetAttr)) {
+    __pyx_type_7helpers_11ekf_sym_pyx_EKF_sym_pyx.tp_getattro = __Pyx_PyObject_GenericGetAttr;
   }
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_EKF_sym, (PyObject *)&__pyx_type_7helpers_11ekf_sym_pyx_EKF_sym) < 0) __PYX_ERR(0, 81, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_7helpers_11ekf_sym_pyx_EKF_sym) < 0) __PYX_ERR(0, 81, __pyx_L1_error)
-  __pyx_ptype_7helpers_11ekf_sym_pyx_EKF_sym = &__pyx_type_7helpers_11ekf_sym_pyx_EKF_sym;
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_EKF_sym_pyx, (PyObject *)&__pyx_type_7helpers_11ekf_sym_pyx_EKF_sym_pyx) < 0) __PYX_ERR(0, 81, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_7helpers_11ekf_sym_pyx_EKF_sym_pyx) < 0) __PYX_ERR(0, 81, __pyx_L1_error)
+  __pyx_ptype_7helpers_11ekf_sym_pyx_EKF_sym_pyx = &__pyx_type_7helpers_11ekf_sym_pyx_EKF_sym_pyx;
   __pyx_vtabptr_array = &__pyx_vtable_array;
   __pyx_vtable_array.get_memview = (PyObject *(*)(struct __pyx_array_obj *))__pyx_array_get_memview;
   if (PyType_Ready(&__pyx_type___pyx_array) < 0) __PYX_ERR(1, 105, __pyx_L1_error)

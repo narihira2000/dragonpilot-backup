@@ -31,6 +31,14 @@ CRUISE_INTERVAL_SIGN = {
   ButtonType.decelCruise: -1,
 }
 
+# Constants for Limit controllers.
+LIMIT_ADAPT_ACC = -0.8  # (closer to zero ealier it decel) m/s^2 Ideal acceleration for the adapting (braking) phase when approaching speed limits.
+LIMIT_MIN_ACC = -1.4    # m/s^2 Maximum deceleration allowed for limit controllers to provide.
+LIMIT_MAX_ACC = 1.0     # m/s^2 Maximum acelration allowed for limit controllers to provide while active.
+LIMIT_MIN_SPEED = 8.33  # m/s, Minimum speed limit to provide as solution on limit controllers.
+LIMIT_SPEED_OFFSET_TH = -1.   # m/s Maximum offset between speed limit and current speed for adapting state.
+LIMIT_MAX_MAP_DATA_AGE = 10.  # s Maximum time to hold to map data, then consider it invalid inside limits controllers.
+
 
 class MPC_COST_LAT:
   PATH = 1.0
@@ -122,7 +130,7 @@ def get_lag_adjusted_curvature(CP, v_ego, psis, curvatures, curvature_rates):
 
   # This is the "desired rate of the setpoint" not an actual desired rate
   desired_curvature_rate = curvature_rates[0]
-  max_curvature_rate = MAX_LATERAL_JERK / (v_ego**2)
+  max_curvature_rate = MAX_LATERAL_JERK / (v_ego**2) # inexact calculation, check https://github.com/commaai/openpilot/pull/24755
   safe_desired_curvature_rate = clip(desired_curvature_rate,
                                           -max_curvature_rate,
                                           max_curvature_rate)

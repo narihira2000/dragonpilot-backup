@@ -216,7 +216,7 @@ class CarState(CarStateBase):
 
     ret.cruiseActualEnabled = ret.cruiseState.enabled
     # distance button
-    self.distance = cp_cam.vl["ACC_CONTROL"]['DISTANCE']
+    # self.distance = cp_cam.vl["ACC_CONTROL"]['DISTANCE']
     self._update_traffic_signals(cp_cam)
     ret.cruiseState.speedLimit = self._calculate_speed_limit()
 

@@ -48,6 +48,7 @@ class CarState(CarStateBase):
     self.lkas_hud = {}
 
     #dp
+    self.frame = 0
     self.dp_sig_check = False
     self.dp_sig_sport_on_seen = True
     self.dp_sig_econ_on_seen = True
@@ -65,6 +66,19 @@ class CarState(CarStateBase):
     self.dp_zss_compute = False
     self.dp_zss_cruise_active_last = False
     self.dp_zss_angle_offset = 0.
+
+    # bsm
+    self.dp_toyota_debug_bsm = Params().get_bool('dp_toyota_debug_bsm')
+
+    self.left_blindspot = False
+    self.left_blindspot_d1 = 0
+    self.left_blindspot_d2 = 0
+    self.left_blindspot_counter = 0
+
+    self.right_blindspot = False
+    self.right_blindspot_d1 = 0
+    self.right_blindspot_d2 = 0
+    self.right_blindspot_counter = 0
 
   def update(self, cp, cp_cam):
     ret = car.CarState.new_message()
@@ -223,7 +237,8 @@ class CarState(CarStateBase):
     cp_acc = cp_cam if self.CP.carFingerprint in (TSS2_CAR - RADAR_ACC_CAR) else cp
 
     if self.CP.carFingerprint in (TSS2_CAR | RADAR_ACC_CAR):
-      self.acc_type = cp_acc.vl["ACC_CONTROL"]["ACC_TYPE"]
+      if not (self.CP.flags & ToyotaFlags.SMART_DSU.value):
+        self.acc_type = cp_acc.vl["ACC_CONTROL"]["ACC_TYPE"]
       ret.stockFcw = bool(cp_acc.vl["ACC_HUD"]["FCW"])
 
     # some TSS2 cars have low speed lockout permanently set, so ignore on those cars
@@ -251,12 +266,58 @@ class CarState(CarStateBase):
       ret.leftBlindspot = (cp.vl["BSM"]["L_ADJACENT"] == 1) or (cp.vl["BSM"]["L_APPROACHING"] == 1)
       ret.rightBlindspot = (cp.vl["BSM"]["R_ADJACENT"] == 1) or (cp.vl["BSM"]["R_APPROACHING"] == 1)
 
+    # Enable blindspot debug mode once (@arne182)
+    # let's keep all the commented out code for easy debug purpose for future.
+    if self.dp_toyota_debug_bsm and self.frame > 1999: #self.CP.carFingerprint == CAR.PRIUS_TSS2: #not (self.CP.carFingerprint in TSS2_CAR or self.CP.carFingerprint == CAR.CAMRY or self.CP.carFingerprint == CAR.CAMRYH):
+        distance_1 = cp.vl["DEBUG"].get('BLINDSPOTD1')
+        distance_2 = cp.vl["DEBUG"].get('BLINDSPOTD2')
+        side = cp.vl["DEBUG"].get('BLINDSPOTSIDE')
+
+        if distance_1 is not None and distance_2 is not None and side is not None:
+          if side == 65: # Left blind spot
+            if distance_1 != self.left_blindspot_d1:
+                self.left_blindspot_d1 = distance_1
+                self.left_blindspot_counter = 100
+            if distance_2 != self.left_blindspot_d2:
+                self.left_blindspot_d2 = distance_2
+                self.left_blindspot_counter = 100
+            if self.left_blindspot_d1 > 10 or self.left_blindspot_d2 > 10:
+                self.left_blindspot = True
+          elif side == 66: # Right blind spot
+            if distance_1 != self.right_blindspot_d1:
+                self.right_blindspot_d1 = distance_1
+                self.right_blindspot_counter = 100
+            if distance_2 != self.right_blindspot_d2:
+                self.right_blindspot_d2 = distance_2
+                self.right_blindspot_counter = 100
+            if self.right_blindspot_d1 > 10 or self.right_blindspot_d2 > 10:
+                self.right_blindspot = True
+
+          if self.left_blindspot_counter > 0:
+            self.left_blindspot_counter -= 2
+          else:
+            self.left_blindspot = False
+            self.left_blindspot_d1 = 0
+            self.left_blindspot_d2 = 0
+
+          if self.right_blindspot_counter > 0:
+            self.right_blindspot_counter -= 2
+          else:
+            self.right_blindspot = False
+            self.right_blindspot_d1 = 0
+            self.right_blindspot_d2 = 0
+
+          ret.leftBlindspot = self.left_blindspot
+          ret.rightBlindspot = self.right_blindspot
+
+
     if self.CP.carFingerprint != CAR.PRIUS_V:
       self.lkas_hud = copy.copy(cp_cam.vl["LKAS_HUD"])
 
     self._update_traffic_signals(cp_cam)
     ret.cruiseState.speedLimit = self._calculate_speed_limit()
 
+    self.frame += 1
     return ret
 
   def _init_traffic_signals(self):
@@ -432,6 +493,9 @@ class CarState(CarStateBase):
       signals.append(("INTERCEPTOR_GAS2", "GAS_SENSOR"))
       checks.append(("GAS_SENSOR", 50))
 
+
+    dp_toyota_debug_bsm = Params().get_bool('dp_toyota_debug_bsm')
+
     if CP.enableBsm:
       signals += [
         ("L_ADJACENT", "BSM"),
@@ -441,13 +505,26 @@ class CarState(CarStateBase):
       ]
       checks.append(("BSM", 1))
 
+    if dp_toyota_debug_bsm:
+        signals +=[
+         ("BLINDSPOT", "DEBUG"),
+         ("BLINDSPOTSIDE", "DEBUG"),
+         ("BLINDSPOTD1", "DEBUG"),
+         ("BLINDSPOTD2", "DEBUG"),
+        ]
+
     if CP.carFingerprint in RADAR_ACC_CAR:
+      if not CP.flags & ToyotaFlags.SMART_DSU.value:
+        signals += [
+          ("ACC_TYPE", "ACC_CONTROL"),
+        ]
+        checks += [
+          ("ACC_CONTROL", 33),
+        ]
       signals += [
-        ("ACC_TYPE", "ACC_CONTROL"),
         ("FCW", "ACC_HUD"),
       ]
       checks += [
-        ("ACC_CONTROL", 33),
         ("ACC_HUD", 1),
       ]
 

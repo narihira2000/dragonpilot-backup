@@ -4,18 +4,16 @@ from traceback import print_exception
 import numpy as np
 from time import strftime, gmtime
 import cereal.messaging as messaging
-from common.realtime import Ratekeeper, sec_since_boot
+from common.realtime import Ratekeeper, sec_since_boot, config_realtime_process
 from selfdrive.mapd.lib.osm import OSM
 from selfdrive.mapd.lib.geo import distance_to_points
 from selfdrive.mapd.lib.WayCollection import WayCollection
-from selfdrive.mapd.config import QUERY_RADIUS, MIN_DISTANCE_FOR_NEW_QUERY, FULL_STOP_MAX_SPEED, LOOK_AHEAD_HORIZON_TIME
+from selfdrive.mapd.config import QUERY_RADIUS, MIN_DISTANCE_FOR_NEW_QUERY, FULL_STOP_MAX_SPEED, LOOK_AHEAD_HORIZON_TIME, QUERY_RADIUS_OFFLINE
 from system.swaglog import cloudlog
 
 # dp
 from common.params import Params
 import json
-
-ROAD_NAME_TIMEOUT = 30 # secs
 
 _DEBUG = False
 _CLOUDLOG_DEBUG = True
@@ -39,6 +37,7 @@ threading.excepthook = excepthook
 class MapD():
   def __init__(self):
     self.osm = OSM()
+    self.is_offline = self.osm.is_offline()
     self.way_collection = None
     self.route = None
     self.last_gps_fix_timestamp = 0
@@ -55,20 +54,6 @@ class MapD():
     self._disengaging = False
     self._query_thread = None
     self._lock = threading.RLock()
-    self._road_name_last = ""
-    self._road_name_last_timed_out = 0.
-
-    # dp - use LastGPSPosition as init position (if we are in a undercover car park?)
-    # this way we can prefetch osm data before we get a fix.
-    last_pos = Params().get("LastGPSPosition")
-    if last_pos is not None and last_pos != "":
-      l = json.loads(last_pos)
-      lat = float(l["latitude"])
-      lon = float(l["longitude"])
-      self.location_rad = np.radians(np.array([lat, lon], dtype=float))
-      self.location_deg = (lat, lon)
-      self.bearing_rad = np.radians(0, dtype=float)
-      _debug("Use LastGPSPosition position - lat: %s, lon: %s" % (lat, lon))
 
   def udpate_state(self, sm):
     sock = 'controlsState'
@@ -114,7 +99,7 @@ class MapD():
       # Only issue an update if we received some ways. Otherwise it is most likely a conectivity issue.
       # Will retry on next loop.
       if len(ways) > 0:
-        new_way_collection = WayCollection(areas, ways, location_rad)
+        new_way_collection = WayCollection(areas, ways, location_rad, osm.is_offline())
 
         # Use the lock to update the way_collection as it might be being used to update the route.
         _debug('Mapd: Locking to write results from osm.', log_to_cloud=False)
@@ -130,7 +115,7 @@ class MapD():
       return
 
     self._query_thread = threading.Thread(target=query, args=(self.osm, self.location_deg, self.location_rad,
-                                                              QUERY_RADIUS))
+                                                              QUERY_RADIUS if self.is_offline else QUERY_RADIUS_OFFLINE))
     self._query_thread.start()
 
   def updated_osm_data(self):
@@ -145,7 +130,7 @@ class MapD():
 
     if self.last_fetch_location is not None:
       distance_since_last = distance_to_points(self.last_fetch_location, np.array([self.location_rad]))[0]
-      if distance_since_last < QUERY_RADIUS - MIN_DISTANCE_FOR_NEW_QUERY:
+      if distance_since_last < ((QUERY_RADIUS if self.is_offline else QUERY_RADIUS_OFFLINE) - MIN_DISTANCE_FOR_NEW_QUERY):
         # do not query if are still not close to the border of previous query area
         return
 
@@ -249,19 +234,6 @@ class MapD():
     map_data_msg.liveMapData.turnSpeedLimitsAhead = [float(s.value) for s in next_turn_speed_limit_sections]
     map_data_msg.liveMapData.turnSpeedLimitsAheadDistances = [float(s.start) for s in next_turn_speed_limit_sections]
     map_data_msg.liveMapData.turnSpeedLimitsAheadSigns = [float(s.curv_sign) for s in next_turn_speed_limit_sections]
-
-    # dp - cache road name to avoid name display blinking
-    if current_road_name == "":
-      sec = sec_since_boot()
-      if self._road_name_last_timed_out == 0.:
-        self._road_name_last_timed_out = sec + ROAD_NAME_TIMEOUT
-
-      if sec < self._road_name_last_timed_out:
-        current_road_name = self._road_name_last
-    else:
-      self._road_name_last_timed_out = 0.
-      self._road_name_last = current_road_name
-
     map_data_msg.liveMapData.currentRoadName = current_road_name
 
     pm.send('liveMapData', map_data_msg)
@@ -270,6 +242,7 @@ class MapD():
 
 # provides live map data information
 def mapd_thread(sm=None, pm=None):
+  config_realtime_process([2], 5)
   mapd = MapD()
   rk = Ratekeeper(1., print_delay_threshold=None)  # Keeps rate at 1 hz
 

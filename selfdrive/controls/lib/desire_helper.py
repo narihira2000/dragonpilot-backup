@@ -67,6 +67,8 @@ class DesireHelper:
       self.lane_change_state = LaneChangeState.off
       self.lane_change_direction = LaneChangeDirection.none
     else:
+      blindspot_detected = ((carstate.leftBlindspot and self.lane_change_direction == LaneChangeDirection.left) or
+                              (carstate.rightBlindspot and self.lane_change_direction == LaneChangeDirection.right))
       # LaneChangeState.off
       if self.lane_change_state == LaneChangeState.off and one_blinker and not self.prev_one_blinker and not below_lane_change_speed:
         self.lane_change_state = LaneChangeState.preLaneChange
@@ -93,8 +95,6 @@ class DesireHelper:
               (sec_since_boot() - self.dp_lc_auto_delay_start_sec >= self.dp_lc_auto_delay):
               torque_applied = True
 
-        blindspot_detected = ((carstate.leftBlindspot and self.lane_change_direction == LaneChangeDirection.left) or
-                              (carstate.rightBlindspot and self.lane_change_direction == LaneChangeDirection.right))
 
         #dp
         if self.dp_lateral_road_edge_detected:
@@ -106,6 +106,9 @@ class DesireHelper:
         else:
           road_edge_detected = False
 
+        if blindspot_detected:
+          self.dp_lc_auto_done = False
+          self.dp_lc_auto_delay_start_sec = None
         if not one_blinker or below_lane_change_speed:
           self.lane_change_state = LaneChangeState.off
         elif torque_applied and not blindspot_detected and not road_edge_detected:
@@ -113,12 +116,18 @@ class DesireHelper:
 
       # LaneChangeState.laneChangeStarting
       elif self.lane_change_state == LaneChangeState.laneChangeStarting:
-        # fade out over .5s
-        self.lane_change_ll_prob = max(self.lane_change_ll_prob - 2 * DT_MDL, 0.0)
+        if blindspot_detected:
+          self.lane_change_state = LaneChangeState.preLaneChange
+          self.lane_change_ll_prob = 1.0
+          self.dp_lc_auto_done = False
+          self.dp_lc_auto_delay_start_sec = None
+        else:
+          # fade out over .5s
+          self.lane_change_ll_prob = max(self.lane_change_ll_prob - 2 * DT_MDL, 0.0)
 
-        # 98% certainty
-        if lane_change_prob < 0.02 and self.lane_change_ll_prob < 0.01:
-          self.lane_change_state = LaneChangeState.laneChangeFinishing
+          # 98% certainty
+          if lane_change_prob < 0.02 and self.lane_change_ll_prob < 0.01:
+            self.lane_change_state = LaneChangeState.laneChangeFinishing
 
       # LaneChangeState.laneChangeFinishing
       elif self.lane_change_state == LaneChangeState.laneChangeFinishing:

@@ -1,6 +1,6 @@
 import math
 
-from cereal import car
+from cereal import car, log
 from common.conversions import Conversions as CV
 from common.numpy_fast import clip, interp
 from common.realtime import DT_MDL
@@ -26,6 +26,8 @@ LON_MPC_N = 32
 
 # EU guidelines
 MAX_LATERAL_JERK = 5.0
+
+MAX_VEL_ERR = 5.0
 
 ButtonEvent = car.CarState.ButtonEvent
 ButtonType = car.CarState.ButtonEvent.Type
@@ -61,12 +63,15 @@ class VCruiseHelper:
     self.v_cruise_kph_last = 0
     self.button_timers = {ButtonType.decelCruise: 0, ButtonType.accelCruise: 0}
     self.button_change_states = {btn: {"standstill": False, "enabled": False} for btn in self.button_timers}
+    self.dp_override_v_cruise_kph = V_CRUISE_UNSET
+    self.dp_override_cruise_speed_last = V_CRUISE_UNSET
+    self.dp_override_enabled_last = False
 
   @property
   def v_cruise_initialized(self):
     return self.v_cruise_kph != V_CRUISE_UNSET
 
-  def update_v_cruise(self, CS, enabled, is_metric):
+  def update_v_cruise(self, CS, enabled, is_metric, dp_override_speed):
     self.v_cruise_kph_last = self.v_cruise_kph
 
     if CS.cruiseState.available:
@@ -76,9 +81,25 @@ class VCruiseHelper:
         self.v_cruise_cluster_kph = self.v_cruise_kph
         self.update_button_timers(CS, enabled)
       else:
-        self.v_cruise_kph = CS.cruiseState.speed * CV.MS_TO_KPH
-        self.v_cruise_cluster_kph = CS.cruiseState.speedCluster * CV.MS_TO_KPH
+        if enabled and dp_override_speed and CS.cruiseState.speed * CV.MS_TO_KPH < dp_override_speed:
+          if self.dp_override_v_cruise_kph == V_CRUISE_UNSET:
+            self.dp_override_v_cruise_kph = max(CS.vEgo * CV.MS_TO_KPH, V_CRUISE_MIN)
+        else:
+          self.dp_override_v_cruise_kph = V_CRUISE_UNSET
+
+        # when we have an override_speed, use it
+        if self.dp_override_v_cruise_kph != V_CRUISE_UNSET:
+          self.v_cruise_kph = self.dp_override_v_cruise_kph
+          self.v_cruise_cluster_kph = self.dp_override_v_cruise_kph
+        else:
+          self.v_cruise_kph = CS.cruiseState.speed * CV.MS_TO_KPH
+          self.v_cruise_cluster_kph = CS.cruiseState.speedCluster * CV.MS_TO_KPH
+
+        self.dp_override_cruise_speed_last = CS.cruiseState.speed
+        self.dp_override_enabled_last = enabled
+
     else:
+      self.dp_override_v_cruise_kph = V_CRUISE_UNSET
       self.v_cruise_kph = V_CRUISE_UNSET
       self.v_cruise_cluster_kph = V_CRUISE_UNSET
 
@@ -272,6 +293,25 @@ def get_0816_lag_adjusted_curvature(CP, v_ego, psis, curvatures, curvature_rates
 
   return safe_desired_curvature, safe_desired_curvature_rate
 
+
+def get_friction(lateral_accel_error: float, lateral_accel_deadzone: float, friction_threshold: float, torque_params: car.CarParams.LateralTorqueTuning, friction_compensation: bool) -> float:
+  friction_interp = interp(
+    apply_center_deadzone(lateral_accel_error, lateral_accel_deadzone),
+    [-friction_threshold, friction_threshold],
+    [-torque_params.friction, torque_params.friction]
+  )
+  friction = float(friction_interp) if friction_compensation else 0.0
+  return friction
+
+
+def get_speed_error(modelV2: log.ModelDataV2, v_ego: float) -> float:
+  # ToDo: Try relative error, and absolute speed
+  if len(modelV2.temporalPose.trans):
+    vel_err = clip(modelV2.temporalPose.trans[0] - v_ego, -MAX_VEL_ERR, MAX_VEL_ERR)
+    return float(vel_err)
+  return 0.0
+
+  
 def get_lane_laneless_mode(lll_prob, rll_prob, mode):
   if lll_prob < 0.3 and rll_prob < 0.3:
     mode = False

@@ -32,19 +32,17 @@ class CarInterface(CarInterfaceBase):
       return CarControllerParams.NIDEC_ACCEL_MIN, interp(current_speed, ACCEL_MAX_BP, ACCEL_MAX_VALS)
 
   @staticmethod
-  def _get_params(ret, candidate, fingerprint, car_fw, experimental_long):
+  def _get_params(ret, candidate, fingerprint, car_fw, experimental_long, docs):
     ret.carName = "honda"
 
     if candidate in HONDA_BOSCH:
       ret.safetyConfigs = [get_safety_config(car.CarParams.SafetyModel.hondaBosch)]
       ret.radarUnavailable = True
-
-      if candidate not in HONDA_BOSCH_RADARLESS:
-        # Disable the radar and let openpilot control longitudinal
-        # WARNING: THIS DISABLES AEB!
-        ret.experimentalLongitudinalAvailable = True
-        ret.openpilotLongitudinalControl = experimental_long
-
+      # Disable the radar and let openpilot control longitudinal
+      # WARNING: THIS DISABLES AEB!
+      # If Bosch radarless, this blocks ACC messages from the camera
+      ret.experimentalLongitudinalAvailable = True
+      ret.openpilotLongitudinalControl = experimental_long
       ret.pcmCruise = not ret.openpilotLongitudinalControl
     else:
       ret.safetyConfigs = [get_safety_config(car.CarParams.SafetyModel.hondaNidec)]
@@ -61,7 +59,7 @@ class CarInterface(CarInterfaceBase):
       if candidate in HONDA_BOSCH:
         ret.pcmCruise = True
 
-    if candidate == CAR.CRV_5G:
+    if candidate in (CAR.CRV_5G, CAR.CRV_HYBRID_BSM):
       ret.enableBsm = 0x12f8bfa7 in fingerprint[0]
 
     # Detect Bosch cars with new HUD msgs
@@ -84,6 +82,8 @@ class CarInterface(CarInterfaceBase):
       ret.longitudinalTuning.kpV = [0.25]
       ret.longitudinalTuning.kiV = [0.05]
       ret.longitudinalActuatorDelayUpperBound = 0.5 # s
+      if candidate in HONDA_BOSCH_RADARLESS:
+        ret.stopAccel = CarControllerParams.BOSCH_ACCEL_MIN  # stock uses -4.0 m/s^2 once stopped but limited by safety model
     else:
       # default longitudinal tuning for all hondas
       ret.longitudinalTuning.kpBP = [0., 5., 35.]
@@ -173,7 +173,7 @@ class CarInterface(CarInterfaceBase):
       tire_stiffness_factor = 0.677
       ret.wheelSpeedFactor = 1.025
 
-    elif candidate == CAR.CRV_HYBRID:
+    elif candidate in (CAR.CRV_HYBRID, CAR.CRV_HYBRID_BSM):
       ret.mass = 1667. + STD_CARGO_KG  # mean of 4 models in kg
       ret.wheelbase = 2.66
       ret.centerToFront = ret.wheelbase * 0.41
@@ -202,15 +202,18 @@ class CarInterface(CarInterfaceBase):
       tire_stiffness_factor = 0.75
       ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.2], [0.05]]
 
-    elif candidate == CAR.HRV:
+    elif candidate in (CAR.HRV, CAR.HRV_3G):
       ret.mass = 3125 * CV.LB_TO_KG + STD_CARGO_KG
       ret.wheelbase = 2.61
       ret.centerToFront = ret.wheelbase * 0.41
       ret.steerRatio = 15.2
       ret.lateralParams.torqueBP, ret.lateralParams.torqueV = [[0, 4096], [0, 4096]]
       tire_stiffness_factor = 0.5
-      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.16], [0.025]]
-      ret.wheelSpeedFactor = 1.025
+      if candidate == CAR.HRV:
+        ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.16], [0.025]]
+        ret.wheelSpeedFactor = 1.025
+      else:
+        ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.8], [0.24]]  # TODO: can probably use some tuning
 
     elif candidate == CAR.ACURA_RDX:
       ret.mass = 3935. * CV.LB_TO_KG + STD_CARGO_KG
@@ -322,7 +325,7 @@ class CarInterface(CarInterfaceBase):
       elif candidate == CAR.CRV_5G:
         ret.lateralParams.torqueBP, ret.lateralParams.torqueV = [[0, 2560, 10000], [0, 2560, 3840]] #tuned by Titanminer (8000)
         ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.21], [0.07]]
-      elif candidate == CAR.CRV_HYBRID:
+      elif candidate in (CAR.CRV_HYBRID, CAR.CRV_HYBRID_BSM):
         ret.lateralParams.torqueBP, ret.lateralParams.torqueV = [[0x0, 0xB5, 0x161, 0x2D6, 0x4C0, 0x70D, 0xC42, 0x1058, 0x2C00], [0x0, 0x160, 0x1F0, 0x2E0, 0x378, 0x4A0, 0x5F0, 0x804, 0xF00]]
         ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.21], [0.07]] #still needs to finish tuning for the new car
         ret.lateralTuning.pid.kf = 0.00004

@@ -5,7 +5,6 @@ import time
 import shutil
 from collections import defaultdict
 from concurrent.futures import Future, ProcessPoolExecutor
-from datetime import datetime
 from enum import IntEnum
 from typing import List, Optional, Dict, Any
 
@@ -88,7 +87,6 @@ class Laikad:
     self.auto_fetch_navs = auto_fetch_navs
     self.orbit_fetch_executor: Optional[ProcessPoolExecutor] = None
     self.orbit_fetch_future: Optional[Future] = None
-    self.got_first_gnss_msg = False
 
     self.last_report_time = GPSTime(0, 0)
     self.last_fetch_navs_t = GPSTime(0, 0)
@@ -220,16 +218,28 @@ class Laikad:
       # TODO this is not robust to gps week rollover
       if self.gps_week is None:
         return
-      ephem = parse_qcom_ephem(gnss_msg.drSvPoly, self.gps_week)
-      self.astro_dog.add_qcom_polys({ephem.prn: [ephem]})
+      try:
+        ephem = parse_qcom_ephem(gnss_msg.drSvPoly, self.gps_week)
+        self.astro_dog.add_qcom_polys({ephem.prn: [ephem]})
+      except Exception:
+        cloudlog.exception("Error parsing qcom svPoly ephemeris from qcom module")
+        return
 
     else:
       if gnss_msg.which() == 'ephemeris':
         data_struct = ephemeris_structs.Ephemeris.new_message(**gnss_msg.ephemeris.to_dict())
-        ephem = GPSEphemeris(data_struct, file_name='ublox')
+        try:
+          ephem = GPSEphemeris(data_struct, file_name='ublox')
+        except Exception:
+          cloudlog.exception("Error parsing GPS ephemeris from ublox")
+          return
       elif gnss_msg.which() == 'glonassEphemeris':
         data_struct = ephemeris_structs.GlonassEphemeris.new_message(**gnss_msg.glonassEphemeris.to_dict())
-        ephem = GLONASSEphemeris(data_struct, file_name='ublox')
+        try:
+          ephem = GLONASSEphemeris(data_struct, file_name='ublox')
+        except Exception:
+          cloudlog.exception("Error parsing GLONASS ephemeris from ublox")
+          return
       else:
         cloudlog.error(f"Unsupported ephemeris type: {gnss_msg.which()}")
         return
@@ -242,9 +252,11 @@ class Laikad:
     processed_measurements = process_measurements(new_meas, self.astro_dog)
     if self.last_fix_pos is not None:
       est_pos = self.last_fix_pos
+      correct_delay = True
     else:
       est_pos = self.gnss_kf.x[GStates.ECEF_POS].tolist()
-    corrected_measurements = correct_measurements(processed_measurements, est_pos, self.astro_dog)
+      correct_delay = False
+    corrected_measurements = correct_measurements(processed_measurements, est_pos, self.astro_dog, correct_delay=correct_delay)
     return corrected_measurements
 
   def calc_fix(self, t, measurements):
@@ -270,7 +282,6 @@ class Laikad:
       week, tow, new_meas = self.read_report(gnss_msg)
       self.gps_week = week
       if week > 0:
-        self.got_first_gnss_msg = True
         latest_msg_t = GPSTime(week, tow)
         if self.auto_fetch_navs:
           self.fetch_navs(latest_msg_t, block)
@@ -418,10 +429,7 @@ def main(sm=None, pm=None):
     raw_name = "qcomGnss"
   else:
     raw_name = "ubloxGnss"
-  raw_gnss_sock = messaging.sub_sock(raw_name, conflate=False, timeout=1000)
-
-  if sm is None:
-    sm = messaging.SubMaster(['clocks',])
+  raw_gnss_sock = messaging.sub_sock(raw_name, conflate=False)
   if pm is None:
     pm = messaging.PubMaster(['gnssMeasurements'])
 
@@ -429,22 +437,15 @@ def main(sm=None, pm=None):
   use_internet = False  # "LAIKAD_NO_INTERNET" not in os.environ
 
   replay = "REPLAY" in os.environ
-  if replay or "CI" in os.environ:
+  if replay:
     use_internet = True
 
   laikad = Laikad(save_ephemeris=not replay, auto_fetch_navs=use_internet, use_qcom=use_qcom)
 
   while True:
-    for in_msg in messaging.drain_sock(raw_gnss_sock):
+    for in_msg in messaging.drain_sock(raw_gnss_sock, wait_for_one=True):
       out_msg = laikad.process_gnss_msg(getattr(in_msg, raw_name), in_msg.logMonoTime, replay)
       pm.send('gnssMeasurements', out_msg)
-
-    sm.update(0)
-    if not laikad.got_first_gnss_msg and sm.updated['clocks']:
-      clocks_msg = sm['clocks']
-      t = GPSTime.from_datetime(datetime.utcfromtimestamp(clocks_msg.wallTimeNanos * 1E-9))
-      if laikad.auto_fetch_navs:
-        laikad.fetch_navs(t, block=replay)
 
 
 if __name__ == "__main__":

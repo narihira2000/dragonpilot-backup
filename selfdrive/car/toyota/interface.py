@@ -3,30 +3,21 @@ from cereal import car
 from common.conversions import Conversions as CV
 from panda import Panda
 from selfdrive.car.toyota.values import Ecu, CAR, DBC, ToyotaFlags, CarControllerParams, TSS2_CAR, RADAR_ACC_CAR, NO_DSU_CAR, \
-                                        MIN_ACC_SPEED, EPS_SCALE, EV_HYBRID_CAR, UNSUPPORTED_DSU_CAR, NO_STOP_TIMER_CAR, ANGLE_CONTROL_CAR
+  MIN_ACC_SPEED, EPS_SCALE, EV_HYBRID_CAR, UNSUPPORTED_DSU_CAR, NO_STOP_TIMER_CAR, ANGLE_CONTROL_CAR
 from selfdrive.car import STD_CARGO_KG, scale_tire_stiffness, get_safety_config
 from selfdrive.car.interfaces import CarInterfaceBase
 from common.params import Params
 
 EventName = car.CarEvent.EventName
 
-CRUISE_OVERRIDE_SPEED_MIN = 5 * CV.KPH_TO_MS
-
 
 class CarInterface(CarInterfaceBase):
-  def __init__(self, CP, CarController, CarState):
-    super().__init__(CP, CarController, CarState)
-
-    self.dp_cruise_speed = 0. # km/h
-    self.dp_override_speed_last = 0. # km/h
-    self.dp_override_speed = 0. # m/s
-
   @staticmethod
   def get_pid_accel_limits(CP, current_speed, cruise_speed):
     return CarControllerParams.ACCEL_MIN, CarControllerParams.ACCEL_MAX
 
   @staticmethod
-  def _get_params(ret, candidate, fingerprint, car_fw, experimental_long):
+  def _get_params(ret, candidate, fingerprint, car_fw, experimental_long, docs):
     ret.carName = "toyota"
     ret.safetyConfigs = [get_safety_config(car.CarParams.SafetyModel.toyota)]
     ret.safetyConfigs[0].safetyParam = EPS_SCALE[candidate]
@@ -153,8 +144,9 @@ class CarInterface(CarInterfaceBase):
       tire_stiffness_factor = 0.444  # not optimized yet
       ret.mass = 3060. * CV.LB_TO_KG + STD_CARGO_KG
 
-    elif candidate in (CAR.LEXUS_ES_TSS2, CAR.LEXUS_ESH_TSS2, CAR.LEXUS_ESH):
-      stop_and_go = True
+    elif candidate in (CAR.LEXUS_ES, CAR.LEXUS_ESH, CAR.LEXUS_ES_TSS2, CAR.LEXUS_ESH_TSS2):
+      if candidate not in (CAR.LEXUS_ES,):  # TODO: LEXUS_ES may have sng
+        stop_and_go = True
       ret.wheelbase = 2.8702
       ret.steerRatio = 16.0  # not optimized
       tire_stiffness_factor = 0.444  # not optimized yet
@@ -219,14 +211,18 @@ class CarInterface(CarInterfaceBase):
                                                                          tire_stiffness_factor=tire_stiffness_factor)
 
     ret.enableBsm = 0x3F6 in fingerprint[0] and candidate in TSS2_CAR
-    # Detect smartDSU, which intercepts ACC_CMD from the DSU allowing openpilot to send it
-    smartDsu = 0x2FF in fingerprint[0]
-    # In TSS2 cars the camera does long control
+
+    # Detect smartDSU, which intercepts ACC_CMD from the DSU (or radar) allowing openpilot to send it
+    if 0x2FF in fingerprint[0]:
+      ret.flags |= ToyotaFlags.SMART_DSU.value
+
+    # In TSS2 cars, the camera does long control
     found_ecus = [fw.ecu for fw in car_fw]
-    ret.enableDsu = len(found_ecus) > 0 and Ecu.dsu not in found_ecus and candidate not in (NO_DSU_CAR | UNSUPPORTED_DSU_CAR) and not smartDsu
+    ret.enableDsu = len(found_ecus) > 0 and Ecu.dsu not in found_ecus and candidate not in (NO_DSU_CAR | UNSUPPORTED_DSU_CAR) and not (ret.flags & ToyotaFlags.SMART_DSU)
     ret.enableGasInterceptor = 0x201 in fingerprint[0]
+
     # if the smartDSU is detected, openpilot can send ACC_CMD (and the smartDSU will block it from the DSU) or not (the DSU is "connected")
-    ret.openpilotLongitudinalControl = smartDsu or ret.enableDsu or candidate in (TSS2_CAR - RADAR_ACC_CAR)
+    ret.openpilotLongitudinalControl = bool(ret.flags & ToyotaFlags.SMART_DSU) or ret.enableDsu or candidate in (TSS2_CAR - RADAR_ACC_CAR)
     ret.autoResumeSng = ret.openpilotLongitudinalControl and candidate in NO_STOP_TIMER_CAR
 
     if int(Params().get("dp_atl").decode('utf-8')) == 1:
@@ -253,15 +249,16 @@ class CarInterface(CarInterfaceBase):
     if candidate in TSS2_CAR or ret.enableGasInterceptor:
       tune.kpBP = [0., 5., 20.]
       tune.kpV = [1.3, 1.0, 0.7]
-      tune.kiBP = [0., 3., 4., 5., 12., 20., 23., 40.]
-      tune.kiV = [.08, .16, .26, .215, .20, .166, .1, .006]
+      tune.kiBP = [0.,  3.,  12.,  20.,  23.,  40.]
+      #kiBP in mph [0,  6.7, 22,   45,   51,   89]
+      tune.kiV = [.209,  .219, .209, .168, .085, .0027]
       if candidate in TSS2_CAR:
-        #ret.vEgoStopping = 0.3  # car is near 0.1 to 0.2 when car starts requesting stopping accel
-        ret.vEgoStarting = 0.1 # needs to be > or == vEgoStopping
-        #ret.stopAccel = -0.1  # Toyota requests -0.4 when stopped
-        ret.stoppingDecelRate = 0.04  # reach stopping target smoothly - seems to take 0.5 seconds to go from 0 to -0.4
-        #ret.longitudinalActuatorDelayLowerBound = 0.3
-        #ret.longitudinalActuatorDelayUpperBound = 0.3
+        ret.vEgoStopping = 0.1         # car is near 0.1 to 0.2 when car starts requesting stopping accel
+        ret.vEgoStarting = 0.1         # needs to be > or == vEgoStopping
+        ret.stopAccel = -0.4           # Toyota requests -0.4 when stopped
+        ret.stoppingDecelRate = 0.03   # reach stopping target smoothly
+        #ret.longitudinalActuatorDelayLowerBound = 0.2
+        #ret.longitudinalActuatorDelayUpperBound = 0.2
         ### stock ###
         #ret.vEgoStopping = 0.25
         #ret.vEgoStarting = 0.25
@@ -277,19 +274,6 @@ class CarInterface(CarInterfaceBase):
   # returns a car.CarState
   def _update(self, c):
     ret = self.CS.update(self.cp, self.cp_cam)
-
-    # low speed re-write
-    if self.dragonconf.dpToyotaCruiseOverride:
-      if self.dragonconf.dpToyotaCruiseOverrideSpeed != self.dp_override_speed_last:
-        self.dp_override_speed = self.dragonconf.dpToyotaCruiseOverrideSpeed * CV.KPH_TO_MS
-        self.dp_override_speed_last = self.dragonconf.dpToyotaCruiseOverrideSpeed
-      if self.CP.openpilotLongitudinalControl and ret.cruiseState.speed <= self.dp_override_speed:
-        if self.dp_cruise_speed == 0.:
-          self.dp_cruise_speed = self.dp_cruise_speed = max(CRUISE_OVERRIDE_SPEED_MIN, ret.vEgo)
-        else:
-          ret.cruiseState.speed = self.dp_cruise_speed
-      else:
-        self.dp_cruise_speed = 0.
 
     # events
     events = self.create_common_events(ret)

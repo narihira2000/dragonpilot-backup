@@ -25,6 +25,22 @@ UNLOCK_CMD = b'\x40\x05\x30\x11\x00\x40\x00\x00'
 LOCK_CMD = b'\x40\x05\x30\x11\x00\x80\x00\x00'
 LOCK_AT_SPEED = 10 * CV.KPH_TO_MS
 
+# Blindspot codes
+LEFT_BLINDSPOT = b'\x41'
+RIGHT_BLINDSPOT = b'\x42'
+
+def set_blindspot_debug_mode(lr,enable):
+  if enable:
+    m = lr + b'\x02\x10\x60\x00\x00\x00\x00'
+  else:
+    m = lr + b'\x02\x10\x01\x00\x00\x00\x00'
+  return make_can_msg(0x750, m, 0)
+
+
+def poll_blindspot_status(lr):
+  m = lr + b'\x02\x21\x69\x00\x00\x00\x00'
+  return make_can_msg(0x750, m, 0)
+
 class CarController:
   def __init__(self, dbc_name, CP, VM):
     self.CP = CP
@@ -51,12 +67,22 @@ class CarController:
     self.lock_once = False
     self.lat_controller_type = None
     self.lat_controller_type_prev = None
+    self.blindspot_debug_enabled_left = False
+    self.blindspot_debug_enabled_right = False
+    self.blindspot_frame = 0
+    if self.CP.carFingerprint in TSS2_CAR: # tss2 can do higher hz then tss1 and can be on at all speed/standstill
+        self.blindspot_rate = 2
+        self.blindspot_always_on = True
+    else:
+        self.blindspot_rate = 20
+        self.blindspot_always_on = False
 
   def update(self, CC, CS, now_nanos, dragonconf):
     if dragonconf is not None:
       self.dp_toyota_sng = dragonconf.dpToyotaSng
       self.dp_toyota_auto_lock = dragonconf.dpToyotaAutoLock
       self.dp_toyota_auto_unlock = dragonconf.dpToyotaAutoUnlock
+      self.dp_toyota_debug_bsm = dragonconf.dpToyotaDebugBsm
     self.lat_controller_type = CC.latController
     if self.lat_controller_type != self.lat_controller_type_prev:
       self.torque_rate_limits.update(CC.latController)
@@ -141,6 +167,45 @@ class CarController:
         can_sends.append(make_can_msg(0x750, LOCK_CMD, 0))
         self.lock_once = True
       self.last_gear = gear
+
+    # Enable blindspot debug mode once (@arne182)
+    # let's keep all the commented out code for easy debug purpose for future.
+    if self.dp_toyota_debug_bsm:
+      if self.frame > 2000:
+        #left bsm
+        if not self.blindspot_debug_enabled_left:
+            if (self.blindspot_always_on or (CS.out.leftBlinker and CS.out.vEgo > 6)): # eagle eye camera will stop working if right bsm is switched on under 6m/s
+                can_sends.append(set_blindspot_debug_mode(LEFT_BLINDSPOT, True))
+                self.blindspot_debug_enabled_left = True
+                # print("bsm debug left, on")
+        else:
+            if not self.blindspot_always_on and not CS.out.leftBlinker and self.frame - self.blindspot_frame > 500:
+                can_sends.append(set_blindspot_debug_mode(LEFT_BLINDSPOT, False))
+                self.blindspot_debug_enabled_left = False
+                # print("bsm debug left, off")
+            if self.frame % self.blindspot_rate == 0:
+                can_sends.append(poll_blindspot_status(LEFT_BLINDSPOT))
+                if CS.out.leftBlinker:
+                    self.blindspot_frame = self.frame
+                    # print(self.blindspot_frame)
+                # print("bsm poll left")
+        #right bsm
+        if not self.blindspot_debug_enabled_right:
+            if (self.blindspot_always_on or (CS.out.rightBlinker and CS.out.vEgo > 6)): # eagle eye camera will stop working if right bsm is switched on under 6m/s
+                can_sends.append(set_blindspot_debug_mode(RIGHT_BLINDSPOT, True))
+                self.blindspot_debug_enabled_right = True
+                # print("bsm debug right, on")
+        else:
+            if not self.blindspot_always_on and not CS.out.rightBlinker and self.frame - self.blindspot_frame > 500:
+                can_sends.append(set_blindspot_debug_mode(RIGHT_BLINDSPOT, False))
+                self.blindspot_debug_enabled_right = False
+                # print("bsm debug right, off")
+            if self.frame % self.blindspot_rate == self.blindspot_rate/2:
+                can_sends.append(poll_blindspot_status(RIGHT_BLINDSPOT))
+                if CS.out.rightBlinker:
+                    self.blindspot_frame = self.frame
+                    # print(self.blindspot_frame)
+                # print("bsm poll right")
 
     # *** control msgs ***
     # print("steer {0} {1} {2} {3}".format(apply_steer, min_lim, max_lim, CS.steer_torque_motor)

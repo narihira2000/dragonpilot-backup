@@ -1,5 +1,5 @@
 from selfdrive.mapd.lib.NodesData import NodesData, NodeDataIdx
-from selfdrive.mapd.config import QUERY_RADIUS
+from selfdrive.mapd.config import QUERY_RADIUS, QUERY_RADIUS_OFFLINE
 from selfdrive.mapd.lib.geo import ref_vectors, R, distance_to_points
 from itertools import compress
 import numpy as np
@@ -13,7 +13,7 @@ _MAP_DATA_EDGE_DISTANCE = 50  # mts. Consider edge of map data from this distanc
 class Route():
   """A set of consecutive way relations forming a default driving route.
   """
-  def __init__(self, current, wr_index, way_collection_id, query_center):
+  def __init__(self, current, wr_index, way_collection_id, query_center, is_offline):
     """Create a Route object from a given `wr_index` (Way relation index)
 
     Args:
@@ -161,7 +161,7 @@ class Route():
       # data for the way that actually continues straight.
       if cos_delta[best_idx] > _MAX_ALLOWED_BEARING_DELTA_COSINE_AT_EDGE:
         dist_to_center = distance_to_points(query_center, np.array([ref_point]))[0]
-        if dist_to_center > QUERY_RADIUS - _MAP_DATA_EDGE_DISTANCE:
+        if dist_to_center > ((QUERY_RADIUS if is_offline else QUERY_RADIUS_OFFLINE) - _MAP_DATA_EDGE_DISTANCE):
           break
 
       # - Select next way.

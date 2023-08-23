@@ -85,6 +85,7 @@ confs = [
   {'name': 'dp_toyota_auto_lock', 'default': False, 'type': 'Bool', 'conf_type': ['param', 'struct']},
   {'name': 'dp_toyota_auto_unlock', 'default': False, 'type': 'Bool', 'conf_type': ['param', 'struct']},
   {'name': 'dp_toyota_fp_btn_link', 'default': False, 'type': 'Bool', 'conf_type': ['param']},
+  {'name': 'dp_toyota_debug_bsm', 'default': False, 'type': 'Bool', 'conf_type': ['param', 'struct']},
 
   {'name': 'dp_mapd', 'default': False, 'type': 'Bool', 'conf_type': ['param', 'struct']},
   {'name': 'dp_local_db', 'default': False, 'type': 'Bool', 'conf_type': ['param', 'struct']},
@@ -197,6 +198,11 @@ confs = [
   # {'name': 'dp_ftpd', 'default': False, 'type': 'Bool', 'conf_type': ['param']},
   {'name': 'dp_lateral_version', 'default': 0, 'min': 0, 'max': 2, 'type': 'UInt8', 'conf_type': ['param']},
   {'name': 'dp_lateral_steer_rate_cost', 'default': 1.0, 'min': 0.5, 'max': 2.0, 'type': 'Float32', 'conf_type': ['param']},
+  {'name': 'dp_upload_ignored', 'default': True, 'type': 'Bool', 'conf_type': ['param']},
+  {'name': 'local_trip_count_total', 'default': 0.0, 'type': 'Float32', 'conf_type': ['param']},
+  {'name': 'local_trip_meter_total', 'default': 0.0, 'type': 'Float32', 'conf_type': ['param']},
+  {'name': 'local_trip_min_total', 'default': 0.0, 'type': 'Float32', 'conf_type': ['param']},
+  {'name': 'dp_lateral_lc_manual', 'default': False, 'type': 'Bool', 'conf_type': ['param', 'struct']},
 ]
 
 def get_definition(name):

@@ -29,7 +29,6 @@ from selfdrive.controls.lib.alertmanager import AlertManager, set_offroad_alert
 from selfdrive.controls.lib.vehicle_model import VehicleModel
 from selfdrive.locationd.calibrationd import Calibration
 from system.hardware import HARDWARE
-from selfdrive.manager.process_config import managed_processes
 
 SOFT_DISABLE_TIME = 3  # seconds
 LDW_MIN_SPEED = 31 * CV.MPH_TO_MS
@@ -38,9 +37,7 @@ LANE_DEPARTURE_THRESHOLD = 0.1
 REPLAY = "REPLAY" in os.environ
 SIMULATION = "SIMULATION" in os.environ
 NOSENSOR = "NOSENSOR" in os.environ
-IGNORE_PROCESSES = {"uploader", "deleter", "loggerd", "logmessaged", "tombstoned", "statsd", "mapd", "navd", "gpxd",
-                    "logcatd", "proclogd", "clocksd", "updated", "timezoned", "manage_athenad"} | \
-                   {k for k, v in managed_processes.items() if not v.enabled}
+IGNORE_PROCESSES = {"loggerd", "encoderd", "statsd", "mapd", "navd", "gpxd"}
 
 ThermalStatus = log.DeviceState.ThermalStatus
 State = log.ControlsState.OpenpilotState
@@ -138,6 +135,9 @@ class Controls:
     self.dp_lateral_alt_v_cruise_kph = 0
     self.dp_lateral_alt_v_cruise_kph_prev = 0
     self.dp_lateral_alt_active = False
+    self.local_trip_min_total = float(self.params.get("local_trip_min_total", encoding='utf8'))
+    self.local_trip_meter_total = float(self.params.get("local_trip_meter_total", encoding='utf8'))
+    self.local_trip_count_added = False
 
     # read params
     self.is_metric = self.params.get_bool("IsMetric")
@@ -361,11 +361,12 @@ class Controls:
         self.events.add(EventName.calibrationIncomplete)
       else:
         self.events.add(EventName.calibrationInvalid)
-
+    direction = self.sm['lateralPlan'].laneChangeDirection
     # Handle lane change
     if self.sm['lateralPlan'].laneChangeState == LaneChangeState.preLaneChange:
       self.dp_lateral_road_edge_detected = self.sm['dragonConf'].dpLateralRoadEdgeDetected
-      direction = self.sm['lateralPlan'].laneChangeDirection
+      #dp - moved it up L364
+      #direction = self.sm['lateralPlan'].laneChangeDirection
       if (CS.leftBlindspot and direction == LaneChangeDirection.left) or \
          (CS.rightBlindspot and direction == LaneChangeDirection.right):
         self.events.add(EventName.laneChangeBlocked)
@@ -389,7 +390,11 @@ class Controls:
           self.events.add(EventName.preLaneChangeRight)
     elif self.sm['lateralPlan'].laneChangeState in (LaneChangeState.laneChangeStarting,
                                                     LaneChangeState.laneChangeFinishing):
-      self.events.add(EventName.laneChange)
+      if (CS.leftBlindspot and direction == LaneChangeDirection.left) or \
+         (CS.rightBlindspot and direction == LaneChangeDirection.right):
+        self.events.add(EventName.laneChangeBlocked)
+      else:
+        self.events.add(EventName.laneChange)
 
     for i, pandaState in enumerate(self.sm['pandaStates']):
       # All pandas must match the list of safetyConfigs, and if outside this list, must be silent or noOutput
@@ -420,7 +425,7 @@ class Controls:
           self.events.add(EventName.cameraMalfunction)
         elif not self.sm.all_freq_ok(self.camera_packets):
           self.events.add(EventName.cameraFrameRate)
-    if self.rk.lagging:
+    if not REPLAY and self.rk.lagging:
       self.events.add(EventName.controlsdLagging)
     if len(self.sm['radarState'].radarErrors) or not self.sm.all_checks(['radarState']):
       self.events.add(EventName.radarFault)
@@ -495,7 +500,7 @@ class Controls:
     # TODO: fix simulator
     if not SIMULATION:
       if not NOSENSOR:
-        if not self.sm['liveLocationKalman'].gpsOK and (self.distance_traveled > 1000):
+        if not self.sm['liveLocationKalman'].gpsOK and self.sm['liveLocationKalman'].inputsOK and (self.distance_traveled > 1000):
           # Not show in first 1 km to allow for driving out of garage. This event shows after 5 minutes
           self.events.add(EventName.noGps)
 
@@ -546,13 +551,26 @@ class Controls:
       self.mismatch_counter += 1
 
     self.distance_traveled += CS.vEgo * DT_CTRL
+    # dp - local trip log
+    self.local_trip_meter_total += CS.vEgo * DT_CTRL
+    if not self.local_trip_count_added:
+      if self.local_trip_meter_total > 0:
+        put_nonblocking("local_trip_count_total", str(float(self.params.get("local_trip_count_total").decode('utf-8')) + 1))
+        self.local_trip_count_added = True
+    # every 30 secs
+    if self.local_trip_count_added and self.sm.frame % int(30. / DT_CTRL) == 0:
+      put_nonblocking("local_trip_meter_total", str(round(self.local_trip_meter_total, 2)))
+      put_nonblocking("local_trip_min_total", str(self.local_trip_min_total + 0.5))
 
     return CS
 
   def state_transition(self, CS):
     """Compute conditional state transitions and execute actions on state transitions"""
 
-    self.v_cruise_helper.update_v_cruise(CS, self.enabled, self.is_metric)
+    # dp - toyota speed override here
+    # dp - @todo may apply to other makes in the future?
+    dp_override_speed = self.sm['dragonConf'].dpToyotaCruiseOverrideSpeed if self.sm['dragonConf'].dpToyotaCruiseOverride else False
+    self.v_cruise_helper.update_v_cruise(CS, self.enabled, self.is_metric, dp_override_speed)
 
     # decrement the soft disable timer at every step, as it's reset on
     # entrance in SOFT_DISABLING state
@@ -687,7 +705,18 @@ class Controls:
 
     if CS.leftBlinker or CS.rightBlinker:
       self.last_blinker_frame = self.sm.frame
-
+      # dp - manual lane change
+      if self.sm['dragonConf'].dpLateralLcManual:
+        speed = CS.vEgo * CV.MS_TO_MPH
+        if self.sm['dragonConf'].dpLateralMode == 1 and speed >= self.sm['dragonConf'].dpLcMinMph:
+          pass
+        # we use "or" here in case dpLcAutoMinMph is smaller than dpLcMinMph
+        elif self.sm['dragonConf'].dpLateralMode == 2 and (speed >= self.sm['dragonConf'].dpLcMinMph or speed >= self.sm['dragonConf'].dpLcAutoMinMph):
+          pass
+        else:
+          if CC.latActive:
+            self.events.add(EventName.manualSteeringRequiredBlinkersOn)
+          CC.latActive = False
     # State specific actions
 
     if not CC.latActive:
@@ -806,8 +835,8 @@ class Controls:
     if len(desire_prediction) and ldw_allowed:
       right_lane_visible = model_v2.laneLineProbs[2] > 0.5
       left_lane_visible = model_v2.laneLineProbs[1] > 0.5
-      l_lane_change_prob = desire_prediction[Desire.laneChangeLeft - 1]
-      r_lane_change_prob = desire_prediction[Desire.laneChangeRight - 1]
+      l_lane_change_prob = desire_prediction[Desire.laneChangeLeft]
+      r_lane_change_prob = desire_prediction[Desire.laneChangeRight]
 
       lane_lines = model_v2.laneLines
       l_lane_close = left_lane_visible and (lane_lines[1].y[0] > -(1.08 + CAMERA_OFFSET))

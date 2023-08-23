@@ -7,6 +7,7 @@ import sys
 from common.basedir import BASEDIR
 from common.params import Params
 from common.spinner import Spinner
+from selfdrive.mapd.lib.helpers import is_local_osm_installed, timestamp_local_osm_db, is_osm_db_up_to_date, OSM_LOCAL_PATH, OSM_VERSION
 from selfdrive.manager.custom_dep import wait_for_internet_connection
 import time
 
@@ -36,12 +37,12 @@ def _install(_spinner, script, title):
 
 
 if __name__ == "__main__":
-  from selfdrive.mapd.lib.helpers import is_local_osm_installed, timestamp_local_osm_db, is_osm_db_up_to_date, OSM_LOCAL_PATH
-  sys.path.append(os.path.join(BASEDIR, "third_party/mapd"))
+  #from selfdrive.mapd.lib.helpers import is_local_osm_installed, timestamp_local_osm_db, is_osm_db_up_to_date, OSM_LOCAL_PATH
+  #sys.path.append(os.path.join(BASEDIR, "third_party/mapd"))
   params = Params()
   update_osm_db_check = params.get_bool("OsmDbUpdatesCheck")
   if not (os.path.exists(f"{OSM_LOCAL_PATH}/db") or
-          os.path.exists(f"{OSM_LOCAL_PATH}/v0.7.57")) or update_osm_db_check:
+          os.path.exists(f"{OSM_LOCAL_PATH}/{OSM_VERSION}")) or update_osm_db_check:
     spinner = Spinner()
     spinner.update("Waiting for internet connection...")
     if wait_for_internet_connection(return_on_failure=True):

@@ -20,6 +20,9 @@ class OSM():
     self.osm_local_db_enabled = is_local_osm_installed()
     # self.api = overpy.Overpass(url='http://3.65.170.21/api/interpreter')
 
+  def is_offline(self):
+    return self.osm_local_db_enabled
+
   def fetch_road_ways_around_location(self, lat, lon, radius):
     # Calculate the bounding box coordinates for the bbox containing the circle around location.
     bbox_angle = np.degrees(radius / R)

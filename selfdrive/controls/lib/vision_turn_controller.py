@@ -252,6 +252,7 @@ class VisionTurnController():
         self.state = VisionTurnControllerState.disabled
 
   def _update_solution(self):
+    a_target = self._a_ego
     # DISABLED
     if self.state == VisionTurnControllerState.disabled:
       # when not overshooting, calculate v_turn as the speed at the prediction horizon when following

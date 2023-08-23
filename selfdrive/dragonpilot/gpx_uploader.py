@@ -75,8 +75,9 @@ class GpxUploader():
       return False
 
   def _get_is_uploaded(self, filename):
-    _debug("%s is uploaded: %s" % (filename, getxattr(filename, UPLOAD_ATTR_NAME) is not None))
-    return getxattr(filename, UPLOAD_ATTR_NAME) is not None
+    result = getxattr(filename, UPLOAD_ATTR_NAME) is not None
+    _debug("%s is uploaded: %s" % (filename, result))
+    return result
 
   def _set_is_uploaded(self, filename):
     _debug("%s set to uploaded" % filename)
@@ -111,9 +112,13 @@ class GpxUploader():
 
   def run(self):
     while True:
+      is_offroad = Params().get_bool("IsOffroad")
       files = self._get_files_to_be_uploaded()
       if len(files) == 0:
-        _debug("run - no files")
+        if is_offroad and self._delete_after_upload:
+          for file in self._get_files():
+            os.remove(file)
+        _debug("run - no files, clean stash")
       elif not self._is_online() and self._delete_after_upload:
         _debug("run - not online & delete_after_upload")
         for file in files:
@@ -129,7 +134,7 @@ class GpxUploader():
               self._set_is_uploaded(file)
       # sleep for 300 secs if offroad
       # otherwise sleep 60 secs
-      time.sleep(300 if Params().get_bool("IsOffroad") else 60)
+      time.sleep(180 if is_offroad else 60)
 
 def gpx_uploader_thread():
   gpx_uploader = GpxUploader()

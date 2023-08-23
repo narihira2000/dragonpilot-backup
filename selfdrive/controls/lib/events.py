@@ -372,6 +372,7 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
   # Car is recognized, but marked as dashcam only
   EventName.startupNoControl: {
     ET.PERMANENT: StartupAlert(_("Dashcam mode")),
+    ET.NO_ENTRY: NoEntryAlert(_("Dashcam mode")),
   },
 
   # Car is not recognized
@@ -680,9 +681,13 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
   },
 
   EventName.steerTempUnavailable: {
-    ET.PERMANENT: soft_disable_alert(_("Steering Temporarily Unavailable")),
     ET.SOFT_DISABLE: soft_disable_alert(_("Steering Temporarily Unavailable")),
     ET.NO_ENTRY: NoEntryAlert(_("Steering Temporarily Unavailable")),
+  },
+
+  EventName.steerTimeLimit: {
+    ET.SOFT_DISABLE: soft_disable_alert("Vehicle Steering Time Limit"),
+    ET.NO_ENTRY: NoEntryAlert("Vehicle Steering Time Limit"),
   },
 
   EventName.outOfSpace: {
@@ -741,7 +746,7 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
 
   EventName.calibrationIncomplete: {
     ET.PERMANENT: calibration_incomplete_alert,
-    ET.SOFT_DISABLE: soft_disable_alert(_("Calibration in Progress")),
+    ET.SOFT_DISABLE: soft_disable_alert(_("Device remount detected: recalibrating")),
     ET.NO_ENTRY: NoEntryAlert(_("Calibration in Progress")),
   },
 
@@ -836,10 +841,6 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
     ET.IMMEDIATE_DISABLE: ImmediateDisableAlert(_("Cruise Fault: Restart the Car")),
     ET.PERMANENT: NormalPermanentAlert(_("Cruise Fault: Restart the car to engage")),
     ET.NO_ENTRY: NoEntryAlert(_("Cruise Fault: Restart the Car")),
-  },
-
-  EventName.accFaultedTemp: {
-    ET.NO_ENTRY: NoEntryAlert("Cruise Temporarily Faulted"),
   },
 
   EventName.controlsMismatch: {
@@ -971,13 +972,18 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
     ET.NO_ENTRY: NoEntryAlert(_("LKAS Disabled")),
   },
 
-  # dp - use for atl alert
-  EventName.communityFeatureDisallowedDEPRECATED: {
-    ET.OVERRIDE_LATERAL: Alert(
+  EventName.vehicleSensorsInvalid: {
+    ET.IMMEDIATE_DISABLE: ImmediateDisableAlert(_("Vehicle Sensors Invalid")),
+    ET.PERMANENT: NormalPermanentAlert(_("Vehicle Sensors Calibrating"), _("Drive to Calibrate")),
+    ET.NO_ENTRY: NoEntryAlert(_("Vehicle Sensors Calibrating"), _("Drive to Calibrate")),
+  },
+
+  # dp - use for manual lane change
+  EventName.manualSteeringRequiredBlinkersOn: {
+    ET.PERMANENT: Alert(
+      _("STEERING REQUIRED: Blinkers ON"),
       "",
-      "",
-      AlertStatus.normal, AlertSize.none,
-      Priority.MID, VisualAlert.none,
-      AudibleAlert.disengage, .2),
+      AlertStatus.normal, AlertSize.small,
+      Priority.LOW, VisualAlert.none, AudibleAlert.none, .0, alert_rate=0.25),
   },
 }

@@ -284,6 +284,24 @@ Thanks to @TheCrowd</source>
 Reboot Required.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Enable Enhance BSM Requests.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enabling this will block alc for all the car&apos;s that has stock factor BSM that openpilot currently do not support. (Prius TSS2 and Rav4 TSS1 has been fully tested and working) but also allow&apos;s your toyota/lexus see more object&apos;s.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Turn it on at your own risk, user is responsible to pay attention at all time.
+Reboot recommended.
+Reboot?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reboot</source>
+        <translation type="unfinished">重启</translation>
+    </message>
 </context>
 <context>
     <name>DPControlPanel</name>
@@ -437,13 +455,6 @@ More linear steering experience.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Use at your own risk! Your drive will not upload but you can find them under /data/media/0/fakedata you will not be ban but we just don&apos;t upload since comma does not use data from fork but it will be stored locally.
-1 = Stock Long
-2 = OP Long
-Reboot required.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Enable this if you wish to use following dist. mode in DE2E.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -456,38 +467,6 @@ Reboot required.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>    ALCA Delay</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>    ALCA Min Speed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>    LCA Min Speed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>   Camera Offset</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>   Driving Path Offset</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>    DE2E Adapt Following Mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>    DE2E Adapt Accel Mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>   DE2E w/ VOACC</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>ALC RoadEdge Detection</source>
         <translation type="unfinished"></translation>
     </message>
@@ -496,15 +475,39 @@ Reboot required.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>      Camera Offset</source>
+        <source>ALCA Delay</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>      Driving Path Offset</source>
+        <source>ALCA Min Speed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>   When Set Speed Above:</source>
+        <source>LCA Min Speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Camera Offset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Driving Path Offset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>DE2E Adapt Following Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>DE2E Adapt Accel Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>DE2E w/ VOACC</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>When Set Speed Above:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -517,7 +520,7 @@ Reboot required.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>   Alternative Controller</source>
+        <source>Alternative Controller</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -529,15 +532,28 @@ Your Vehicle may not support all the options, YMMV.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>   Use Lanelines</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Use Alternative Controller</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>This feature will let you use alternative lateral controller at higher set speed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use at your own risk!
+1 = Stock Long
+2 = OP Long
+Reboot required.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Manual Lane Change</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enabling this will allow lane change manually when blinker is on.
+NOTES: Once LCA/ALCA is enabled, those settings will override manual lane change.
+e.g. If you have this option on and LCA at 20km/hr, ALCA at 40km/hr, speed below 20km/hr will be manual lane change.<byte value="x8"/> If you disable LCA/ALCA and have this option on, manual lane change will apply to ALL SPEED.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -689,8 +705,24 @@ Reboot required.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>    Auto Shutdown In</source>
+        <source>Auto Shutdown In</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable Driver Monitor (Front Cam)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable this option if you wish to use front camera for driver monitoring.
+On = Front Cam Monitor + Steering Monitor
+Off = Steering Monitor only.
+Enable this will increase device temp a lot, use at your own risk.
+Reboot Required.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reboot</source>
+        <translation type="unfinished">重启</translation>
     </message>
 </context>
 <context>
@@ -896,6 +928,10 @@ Reboot now?</source>
         <source>for all the tesla fanboy&apos;s.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>DEFAULT</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>DeclinePage</name>
@@ -1041,6 +1077,14 @@ Reboot now?</source>
     <message>
         <source>Review</source>
         <translation>预览</translation>
+    </message>
+    <message>
+        <source>Debug Console</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error displaying tmux output.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1789,10 +1833,6 @@ This may take up to a minute.</source>
         <translation>上传驾驶员摄像头的数据，帮助改进驾驶员监控算法。</translation>
     </message>
     <message>
-        <source>Experimental openpilot Longitudinal Control</source>
-        <translation>试验性的openpilot纵向控制</translation>
-    </message>
-    <message>
         <source>Disengage on Accelerator Pedal</source>
         <translation>踩油门时取消控制</translation>
     </message>
@@ -1819,14 +1859,6 @@ This may take up to a minute.</source>
     <message>
         <source>Experimental Mode</source>
         <translation>测试模式</translation>
-    </message>
-    <message>
-        <source>WARNING: openpilot longitudinal control is experimental for this car and will disable Automatic Emergency Braking (AEB).</source>
-        <translation>警告： 此车辆的openpilot纵向控制是试验性功能，且将禁用AEB自动刹车功能。</translation>
-    </message>
-    <message>
-        <source>On this car, openpilot defaults to the car&apos;s built-in ACC instead of openpilot&apos;s longitudinal control. Enable this to switch to openpilot longitudinal control. Enabling Experimental mode is recommended when using experimental openpilot longitudinal control.</source>
-        <translation>针对此车辆，openpilot默认使用车辆自带的ACC，而非openpilot的纵向控制。启用此选项将切换到openpilot纵向控制。当使用试验性的openpilot纵向控制时，建议同时启用试验模式。</translation>
     </message>
     <message>
         <source>openpilot defaults to driving in &lt;b&gt;chill mode&lt;/b&gt;. Experimental mode enables &lt;b&gt;alpha-level features&lt;/b&gt; that aren&apos;t ready for chill mode. Experimental features are listed below:</source>
@@ -1863,6 +1895,18 @@ This may take up to a minute.</source>
     <message>
         <source>Enable experimental longitudinal control to allow Experimental mode.</source>
         <translation>启用试验性的纵向控制，以便允许使用试验模式。</translation>
+    </message>
+    <message>
+        <source>openpilot Longitudinal Control (Alpha)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>WARNING: openpilot longitudinal control is in alpha for this car and will disable Automatic Emergency Braking (AEB).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>On this car, openpilot defaults to the car&apos;s built-in ACC instead of openpilot&apos;s longitudinal control. Enable this to switch to openpilot longitudinal control. Enabling Experimental mode is recommended when enabling openpilot longitudinal control alpha.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

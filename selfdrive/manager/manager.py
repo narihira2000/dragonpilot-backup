@@ -13,14 +13,15 @@ from common.basedir import BASEDIR
 from common.params import Params, ParamKeyType
 from common.text_window import TextWindow
 from selfdrive.boardd.set_time import set_time
-from system.hardware import HARDWARE, PC
+from system.hardware import HARDWARE, PC, TICI
 from selfdrive.manager.helpers import unblock_stdout
 from selfdrive.manager.process import ensure_running
 from selfdrive.manager.process_config import managed_processes
 from selfdrive.athena.registration import register, UNREGISTERED_DONGLE_ID
 from system.swaglog import cloudlog, add_file_handler
 from system.version import is_dirty, get_commit, get_version, get_origin, get_short_branch, \
-                              terms_version, training_version, is_tested_branch, is_release_branch
+                           get_normalized_origin, terms_version, training_version, \
+                           is_tested_branch, is_release_branch
 from common.dp_conf import init_params_vals
 
 
@@ -104,7 +105,12 @@ def manager_init() -> None:
 
   # init logging
   sentry.init(sentry.SentryProject.SELFDRIVE)
-  cloudlog.bind_global(dongle_id=dongle_id, version=get_version(), dirty=is_dirty(),
+  cloudlog.bind_global(dongle_id=dongle_id,
+                       version=get_version(),
+                       origin=get_normalized_origin(),
+                       branch=get_short_branch(),
+                       commit=get_commit(),
+                       dirty=is_dirty(),
                        device=HARDWARE.get_device_type())
 
 
@@ -135,6 +141,9 @@ def manager_thread() -> None:
   ignore: List[str] = []
 
   # dp
+  if TICI:
+    params.put_bool('dp_dm', True)
+    params.put_bool('dp_jetson', False)
   dp_nav = params.get_bool('dp_nav')
   dp_otisserv = dp_nav and params.get_bool('dp_otisserv')
   dp_jetson = params.get_bool('dp_jetson')
@@ -145,7 +154,8 @@ def manager_thread() -> None:
   ignore += ['mapd'] if not dp_mapd else []
   ignore += ['gpxd'] if not dp_otisserv and not dp_mapd and not params.get_bool('dp_gpxd') else []
   ignore += ['uploader'] if not params.get_bool('dp_api_custom') and dp_jetson else []
-  ignore += ['logcatd', 'proclogd', 'loggerd', 'logmessaged', 'encoderd', '']
+  if dp_jetson:
+    ignore += ['logcatd', 'proclogd', 'loggerd', 'logmessaged', 'encoderd', 'uploader']
 
   if params.get("DongleId", encoding='utf8') in (None, UNREGISTERED_DONGLE_ID):
     ignore += ["manage_athenad", "uploader"]
@@ -158,10 +168,25 @@ def manager_thread() -> None:
 
   ensure_running(managed_processes.values(), False, params=params, CP=sm['carParams'], not_run=ignore)
 
+  started_prev = False
+
   while True:
     sm.update()
 
     started = sm['deviceState'].started
+
+    if started and not started_prev:
+      params.clear_all(ParamKeyType.CLEAR_ON_ONROAD_TRANSITION)
+    elif not started and started_prev:
+      params.clear_all(ParamKeyType.CLEAR_ON_OFFROAD_TRANSITION)
+
+    # initialize and update onroad params, which drives boardd's safety setter thread
+    if started != started_prev or sm.frame == 0:
+      params.put_bool("IsOnroad", started)
+      params.put_bool("IsOffroad", not started)
+
+    started_prev = started
+
     ensure_running(managed_processes.values(), started, params=params, CP=sm['carParams'], not_run=ignore)
 
     running = ' '.join("%s%s\u001b[0m" % ("\u001b[32m" if p.proc.is_alive() else "\u001b[31m", p.name)

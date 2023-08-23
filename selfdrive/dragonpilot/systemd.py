@@ -34,7 +34,7 @@ import os
 params = Params()
 from common.dp_helpers import get_last_modified, LAST_MODIFIED_TIMER_SYSTEMD
 import socket
-from common.realtime import Ratekeeper
+from common.realtime import Ratekeeper, config_realtime_process
 import threading
 from selfdrive.dragonpilot.gpx_uploader import gpx_uploader_thread
 from typing import Dict, Any
@@ -47,6 +47,7 @@ HERTZ = 1
 last_modified_confs: Dict[str, Any] = {}
 
 def confd_thread():
+  config_realtime_process([2], 5)
   sm = messaging.SubMaster(['deviceState'])
   pm = messaging.PubMaster(['dragonConf'])
 

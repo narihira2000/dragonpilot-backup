@@ -47,6 +47,7 @@ struct InitData {
     chffrIos @3;
     tici @4;
     pc @5;
+    tizi @6;
   }
 
   struct PandaInfo {
@@ -140,16 +141,6 @@ struct FrameData {
   targetGreyFraction @22 :Float32;
   exposureValPercent @27 :Float32;
 
-  # Focus
-  lensPos @11 :Int32;
-  lensSag @12 :Float32;
-  lensErr @13 :Float32;
-  lensTruePos @14 :Float32;
-  focusVal @16 :List(Int16);
-  focusConf @17 :List(UInt8);
-  sharpnessScore @18 :List(UInt16);
-  recoverState @19 :Int32;
-
   transform @10 :List(Float32);
 
   image @6 :Data;
@@ -172,6 +163,14 @@ struct FrameData {
 
   globalGainDEPRECATED @5 :Int32;
   androidCaptureResultDEPRECATED @9 :AndroidCaptureResult;
+  lensPosDEPRECATED @11 :Int32;
+  lensSagDEPRECATED @12 :Float32;
+  lensErrDEPRECATED @13 :Float32;
+  lensTruePosDEPRECATED @14 :Float32;
+  focusValDEPRECATED @16 :List(Int16);
+  focusConfDEPRECATED @17 :List(UInt8);
+  sharpnessScoreDEPRECATED @18 :List(UInt16);
+  recoverStateDEPRECATED @19 :Int32;
   struct AndroidCaptureResult {
     sensitivity @0 :Int32;
     frameDuration @1 :Int64;
@@ -410,10 +409,16 @@ struct PandaState @0xa7649e2575e4591e {
   powerSaveEnabled @16 :Bool;
   uptime @17 :UInt32;
   faults @18 :List(FaultType);
-  harnessStatus @21 :HarnessStatus;
   heartbeatLost @22 :Bool;
   interruptLoad @25 :Float32;
   fanPower @28 :UInt8;
+  fanStallCount @34 :UInt8;
+
+  spiChecksumErrorCount @33 :UInt16;
+
+  harnessStatus @21 :HarnessStatus;
+  sbu1Voltage @35 :Float32;
+  sbu2Voltage @36 :Float32;
 
   # can health
   canState0 @29 :PandaCanState;
@@ -429,7 +434,10 @@ struct PandaState @0xa7649e2575e4591e {
   alternativeExperience @23 :Int16;
   safetyRxChecksInvalid @32 :Bool;
   #dp: enable torque interceptor
-  torqueInterceptorDetected @33 :Bool;
+  torqueInterceptorDetected @37 :Bool;
+
+  voltage @0 :UInt32;
+  current @1 :UInt32;
 
   enum FaultStatus {
     none @0;
@@ -463,6 +471,8 @@ struct PandaState @0xa7649e2575e4591e {
     interruptRateExti @22;
     interruptRateSpi @23;
     interruptRateUart7 @24;
+    sirenMalfunction @25;
+    heartbeatLoopWatchdog @26;
     # Update max fault type in boardd when adding faults
   }
 
@@ -484,15 +494,6 @@ struct PandaState @0xa7649e2575e4591e {
     normal @1;
     flipped @2;
   }
-
-  startedSignalDetectedDEPRECATED @5 :Bool;
-  voltageDEPRECATED @0 :UInt32;
-  currentDEPRECATED @1 :UInt32;
-  hasGpsDEPRECATED @6 :Bool;
-  fanSpeedRpmDEPRECATED @11 :UInt16;
-  usbPowerModeDEPRECATED @12 :PeripheralState.UsbPowerModeDEPRECATED;
-  safetyParamDEPRECATED @20 :Int16;
-  safetyParam2DEPRECATED @26 :UInt32;
 
   struct PandaCanState {
     busOff @0 :Bool;
@@ -528,6 +529,13 @@ struct PandaState @0xa7649e2575e4591e {
       noChange @7;
     }
   }
+
+  startedSignalDetectedDEPRECATED @5 :Bool;
+  hasGpsDEPRECATED @6 :Bool;
+  fanSpeedRpmDEPRECATED @11 :UInt16;
+  usbPowerModeDEPRECATED @12 :PeripheralState.UsbPowerModeDEPRECATED;
+  safetyParamDEPRECATED @20 :Int16;
+  safetyParam2DEPRECATED @26 :UInt32;
 }
 
 struct PeripheralState {
@@ -1154,6 +1162,7 @@ struct LiveLocationKalman {
   deviceStable @22 :Bool = true;
   timeSinceReset @23 :Float64;
   excessiveResets @24 :Bool;
+  timeToFirstFix @25 :Float32;
 
   enum Status {
     uninitialized @0;
@@ -1241,7 +1250,7 @@ struct GnssMeasurements {
     type @2 :EphemerisType;
     source @3 :EphemerisSource;
   }
-  
+
   struct CorrectedMeasurement {
     constellationId @0 :ConstellationId;
     svId @1 :UInt8;
@@ -1282,7 +1291,7 @@ struct GnssMeasurements {
     glonassIacUltraRapid @2;
     qcom @3;
   }
-  
+
   enum EphemerisSource {
     gnssChip @0;
     internet @1;
@@ -1301,7 +1310,7 @@ struct UbloxGnss {
     glonassEphemeris @5 :GlonassEphemeris;
     satReport @6 :SatReport;
   }
-  
+
   struct SatReport {
     #received time of week in gps time in seconds and gps week
     iTow @0 :UInt32;
@@ -1516,7 +1525,7 @@ struct UbloxGnss {
     p4 @27 :UInt8;
 
     freqNumDEPRECATED @28 :UInt32;
-    
+
     n4 @29 :UInt8;
     nt @30 :UInt16;
     freqNum @31 :Int16;
@@ -1954,7 +1963,6 @@ struct LiveParametersData {
   stiffnessFactor @4 :Float32;
   steerRatio @5 :Float32;
   sensorValid @6 :Bool;
-  yawRate @7 :Float32;
   posenetSpeed @8 :Float32;
   posenetValid @9 :Bool;
   angleOffsetFastStd @10 :Float32;
@@ -1962,6 +1970,8 @@ struct LiveParametersData {
   stiffnessFactorStd @12 :Float32;
   steerRatioStd @13 :Float32;
   roll @14 :Float32;
+
+  yawRateDEPRECATED @7 :Float32;
 }
 
 struct LiveTorqueParametersData {

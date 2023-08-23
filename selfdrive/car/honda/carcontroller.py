@@ -1,7 +1,6 @@
 from collections import namedtuple
 
 from cereal import car
-from common.conversions import Conversions as CV
 from common.numpy_fast import clip, interp
 from common.realtime import DT_CTRL
 from opendbc.can.packer import CANPacker
@@ -117,6 +116,7 @@ class CarController:
     self.brake_last = 0.
     self.apply_brake_last = 0
     self.last_pump_ts = 0.
+    self.stopping_counter = 0
 
     self.accel = 0.0
     self.speed = 0.0
@@ -127,7 +127,8 @@ class CarController:
   def update(self, CC, CS, now_nanos, dragonconf):
     actuators = CC.actuators
     hud_control = CC.hudControl
-    hud_v_cruise = hud_control.setSpeed * CV.MS_TO_KPH if hud_control.speedVisible else 255
+    conversion = hondacan.get_cruise_speed_conversion(self.CP.carFingerprint, CS.is_metric)
+    hud_v_cruise = hud_control.setSpeed / conversion if hud_control.speedVisible else 255
     pcm_cancel_cmd = CC.cruiseControl.cancel
 
     if CC.longActive:
@@ -161,7 +162,7 @@ class CarController:
     can_sends = []
 
     # tester present - w/ no response (keeps radar disabled)
-    if self.CP.carFingerprint in HONDA_BOSCH and self.CP.openpilotLongitudinalControl:
+    if self.CP.carFingerprint in (HONDA_BOSCH - HONDA_BOSCH_RADARLESS) and self.CP.openpilotLongitudinalControl:
       if self.frame % 10 == 0:
         can_sends.append((0x18DAB0F1, 0, b"\x02\x3E\x80\x00\x00\x00\x00\x00", 1))
 
@@ -205,7 +206,10 @@ class CarController:
       if pcm_cancel_cmd:
         can_sends.append(hondacan.spam_buttons_command(self.packer, CruiseButtons.CANCEL, self.CP.carFingerprint))
       elif CC.cruiseControl.resume:
-        can_sends.append(hondacan.spam_buttons_command(self.packer, CruiseButtons.RES_ACCEL, self.CP.carFingerprint))
+        if CS.CP.carFingerprint in (CAR.CIVIC_BOSCH, CAR.CRV_HYBRID_BSM) and CS.hud_lead == 1:
+          can_sends.append(hondacan.spam_buttons_command(self.packer, CruiseButtons.RES_ACCEL, CS.CP.carFingerprint))
+        else:
+          can_sends.append(hondacan.spam_buttons_command(self.packer, CruiseButtons.RES_ACCEL, self.CP.carFingerprint))
 
     else:
       # Send gas and brake commands.
@@ -217,14 +221,15 @@ class CarController:
           self.gas = interp(accel, self.params.BOSCH_GAS_LOOKUP_BP, self.params.BOSCH_GAS_LOOKUP_V)
 
           stopping = actuators.longControlState == LongCtrlState.stopping
+          self.stopping_counter = self.stopping_counter + 1 if stopping else 0
           can_sends.extend(hondacan.create_acc_commands(self.packer, CC.enabled, CC.longActive, self.accel, self.gas,
-                                                        stopping, self.CP.carFingerprint))
+                                                        self.stopping_counter, self.CP.carFingerprint))
         else:
           apply_brake = clip(self.brake_last - wind_brake, 0.0, 1.0)
           apply_brake = int(clip(apply_brake * self.params.NIDEC_BRAKE_MAX, 0, self.params.NIDEC_BRAKE_MAX - 1))
           pump_on, self.last_pump_ts = brake_pump_hysteresis(apply_brake, self.apply_brake_last, self.last_pump_ts, ts)
           if self.CP.carFingerprint == CAR.ODYSSEY_HYBRID:
-            pump_on = True
+            pump_on = apply_brake > 0
 
           pcm_override = True
           can_sends.append(hondacan.create_brake_command(self.packer, apply_brake, pump_on,

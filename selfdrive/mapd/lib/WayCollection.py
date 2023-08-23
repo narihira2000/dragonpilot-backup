@@ -11,7 +11,7 @@ _ACCEPTABLE_BEARING_DELTA_IND = 0.7071067811865475  # sin(pi/4) | 45 degrees acc
 class WayCollection():
   """A collection of WayRelations to use for maps data analysis.
   """
-  def __init__(self, areas, ways, query_center):
+  def __init__(self, areas, ways, query_center, is_offline):
     """Creates a WayCollection with a set of OSM way objects.
 
     Args:
@@ -23,6 +23,7 @@ class WayCollection():
     self.query_center = query_center
 
     self.wr_index = WayRelationIndex(self.way_relations)
+    self.is_offline = is_offline
 
   def get_route(self, location_rad, bearing_rad, location_stdev):
     """Provides the best route found in the way collection based on current location and bearing.
@@ -82,4 +83,4 @@ class WayCollection():
           wr_accurate_distance.sort(key=lambda wr: wr.highway_rank)
           current = wr_accurate_distance[0]
 
-    return Route(current, self.wr_index, self.id, self.query_center)
+    return Route(current, self.wr_index, self.id, self.query_center, self.is_offline)

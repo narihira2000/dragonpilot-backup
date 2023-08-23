@@ -12,7 +12,7 @@ from selfdrive.modeld.constants import T_IDXS
 from selfdrive.controls.lib.longcontrol import LongCtrlState
 from selfdrive.controls.lib.longitudinal_mpc_lib.long_mpc import LongitudinalMpc, MIN_ACCEL, MAX_ACCEL, T_FOLLOW
 from selfdrive.controls.lib.longitudinal_mpc_lib.long_mpc import T_IDXS as T_IDXS_MPC
-from selfdrive.controls.lib.drive_helpers import V_CRUISE_MAX, CONTROL_N
+from selfdrive.controls.lib.drive_helpers import V_CRUISE_MAX, CONTROL_N, get_speed_error
 from system.swaglog import cloudlog
 from selfdrive.controls.lib.vision_turn_controller import VisionTurnController
 from selfdrive.controls.lib.speed_limit_controller import SpeedLimitController, SpeedLimitResolver
@@ -40,15 +40,17 @@ DP_ACCEL_NORMAL = 1
 DP_ACCEL_SPORT = 2
 
 # accel profile by @arne182 modified by cgw
-_DP_CRUISE_MIN_V =       [-0.6,  -0.6,  -0.7,  -0.8,  -0.8,  -0.5]
-_DP_CRUISE_MIN_V_ECO =   [-0.5,  -0.5,  -0.6,  -0.7,  -0.7,  -0.45]
-_DP_CRUISE_MIN_V_SPORT = [-0.7,  -0.7,  -0.8,  -0.9,  -0.9,  -0.6]
-_DP_CRUISE_MIN_BP =      [0.,    8.3,   14,    20.,   30.,   55.]
+_DP_CRUISE_MIN_V =       [-0.53, -0.53, -0.55, -0.65, -0.65, -0.60,  -0.43]
+_DP_CRUISE_MIN_V_ECO =   [-0.50, -0.50, -0.53, -0.60, -0.60, -0.55,  -0.40]
+_DP_CRUISE_MIN_V_SPORT = [-0.60, -0.60, -0.65, -0.70, -0.80, -0.70,  -0.50]
+_DP_CRUISE_MIN_BP =      [0.,    3.,    8.3,   14,    20.,   30.,   55.]
+#DP_CRUISE_MIN_BP in mph=[0.,    2,     18,    31,    44,    67,    94]
 
-_DP_CRUISE_MAX_V =       [3.5, 3.4, 2.1, 1.6, 1.1, 0.91, 0.69, 0.44, 0.34, 0.13]
+_DP_CRUISE_MAX_V =       [3.5, 3.4, 2.1, 1.6, 1.1,  0.91, 0.69, 0.44, 0.34, 0.14]
 _DP_CRUISE_MAX_V_ECO =   [3.0, 1.8, 1.3, 1.0, 0.71, 0.59, 0.45, 0.36, 0.28, 0.09]
-_DP_CRUISE_MAX_V_SPORT = [3.5, 3.5, 3.4, 3.0, 2.1, 1.7, 1.3,  0.9, 0.7, 0.5]
-_DP_CRUISE_MAX_BP =      [0.,  3,   6.,  8.,  11., 15.,  20.,  25.,  30.,  55.]
+_DP_CRUISE_MAX_V_SPORT = [3.5, 3.5, 3.4, 3.0, 2.1,  1.7,  1.3,  0.9,  0.7,  0.5]
+_DP_CRUISE_MAX_BP =      [0.,  3,   6.,  8.,  11.,  15.,  20.,  25.,  30.,  42.]
+#DP_CRUISE_MAX_BP in mph=[0.,  6.7, 13,  18,  25,   33,   45,   56,   67,   94]
 
 # d-e2e, from modeldata.h
 TRAJECTORY_SIZE = 33
@@ -196,7 +198,7 @@ class LongitudinalPlanner:
     # when we see a lead
     if sm['dragonConf'].dpE2EConditionalVoacc and self.dp_e2e_has_lead:
       # drive above conditional speed and lead is too close
-      if lead_dist <= v_ego_kph * self.dp_e2e_tf * interp(v_ego_kph, [50., 60., 80.], [1.30, 1.20, 1.10]) / 3.6:
+      if lead_dist <= v_ego_kph * self.dp_e2e_tf * interp(v_ego_kph, [50., 60., 80., 85, 90.], [1.25, 1.20, 1.10, 1.05, 1.]) / 3.6:
         self.dp_e2e_tf_count += 1
       else:
         self.dp_e2e_tf_count = 0
@@ -240,16 +242,16 @@ class LongitudinalPlanner:
       return desired_tf
     if self.dp_following_profile_ctrl:
       if self.dp_following_profile == 0:
-        x_vel =  [1.1,  3.3,  5.5,    13.89,  19.7,   25.0,   41.67]
-        y_dist = [1.0,  1.2,  1.3,    1.34,    1.34,   1.23,   1.34]
+        x_vel =  [1.1,  3.3,   5.5,    19.7,   22.0,   25.0,   42]
+        y_dist = [1.0,  1.24,  1.31,   1.33,   1.3,    1.24,   1.25]
         desired_tf = np.interp(v_ego, x_vel, y_dist)
       elif self.dp_following_profile == 1:
-        x_vel =  [5.556, 19.7,   41.67]
-        y_dist = [1.4,   1.6,    1.6 ]
+        x_vel =  [1.1,  5.556, 19.7,   42]
+        y_dist = [1.0,  1.35,  1.6,    1.6 ]
         desired_tf = np.interp(v_ego, x_vel, y_dist)
       elif self.dp_following_profile == 2:
-        x_vel =  [0,     19.7,   41.67]
-        y_dist = [1.4,   2.0,    2.0]
+        x_vel =  [1.1,  5.556, 19.7,   42]
+        y_dist = [1.0,  1.4,   2.0,    2.0]
         desired_tf = np.interp(v_ego, x_vel, y_dist)
     return desired_tf
 
@@ -305,8 +307,7 @@ class LongitudinalPlanner:
     # Prevent divergence, smooth in current v_ego
     self.v_desired_filter.x = max(0.0, self.v_desired_filter.update(v_ego))
     # Compute model v_ego error
-    if len(sm['modelV2'].temporalPose.trans):
-      self.v_model_error = sm['modelV2'].temporalPose.trans[0] - v_ego
+    self.v_model_error = get_speed_error(sm['modelV2'], v_ego)
 
     # Get acceleration and active solutions for custom long mpc.
     self.cruise_source, a_min_sol, v_cruise_sol = self.cruise_solutions(not reset_state, self.v_desired_filter.x,

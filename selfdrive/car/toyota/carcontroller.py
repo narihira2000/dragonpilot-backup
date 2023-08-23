@@ -7,12 +7,18 @@ from selfdrive.car.toyota.toyotacan import create_steer_command, create_ui_comma
 from selfdrive.car.toyota.values import CAR, STATIC_DSU_MSGS, NO_STOP_TIMER_CAR, TSS2_CAR, \
                                         MIN_ACC_SPEED, PEDAL_TRANSITION, CarControllerParams
 from opendbc.can.packer import CANPacker
+from common.conversions import Conversions as CV
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 
 # constants for fault workaround
 MAX_STEER_RATE = 100  # deg/s
 MAX_STEER_RATE_FRAMES = 19
+
+GearShifter = car.CarState.GearShifter
+UNLOCK_CMD = b'\x40\x05\x30\x11\x00\x40\x00\x00'
+LOCK_CMD = b'\x40\x05\x30\x11\x00\x80\x00\x00'
+LOCK_AT_SPEED = 25 * CV.KPH_TO_MS
 
 class CarController:
   def __init__(self, dbc_name, CP, VM):
@@ -32,10 +38,19 @@ class CarController:
 
     # dp
     self.dp_toyota_sng = False
+    self.dp_atl = 0
+
+    self.dp_toyota_auto_lock = False
+    self.dp_toyota_auto_unlock = False
+    self.last_gear = GearShifter.park
+    self.lock_once = False
 
   def update(self, CC, CS, dragonconf):
     if dragonconf is not None:
       self.dp_toyota_sng = dragonconf.dpToyotaSng
+      self.dp_atl = dragonconf.dpAtl
+      self.dp_toyota_auto_lock = dragonconf.dpToyotaAutoLock
+      self.dp_toyota_auto_unlock = dragonconf.dpToyotaAutoUnlock
     actuators = CC.actuators
     hud_control = CC.hudControl
     pcm_cancel_cmd = CC.cruiseControl.cancel
@@ -79,6 +94,11 @@ class CarController:
       apply_steer_req = 0
       self.steer_rate_counter = 0
 
+    # dp - try to avoid steering fault
+    if self.dp_atl > 0 and abs(CS.out.steeringAngleDeg) > 500:
+      apply_steer = 0
+      apply_steer_req = 0
+
     # TODO: probably can delete this. CS.pcm_acc_status uses a different signal
     # than CS.cruiseState.enabled. confirm they're not meaningfully different
     if not CC.enabled and CS.pcm_acc_status:
@@ -96,6 +116,21 @@ class CarController:
     self.last_standstill = CS.out.standstill
 
     can_sends = []
+
+    # dp - door auto lock / unlock logic
+    # thanks to AlexandreSato & cydia2020
+    # https://github.com/AlexandreSato/openpilot/blob/personal/doors.py
+    if self.dp_toyota_auto_lock or self.dp_toyota_auto_unlock:
+      gear = CS.out.gearShifter
+      if self.last_gear != gear and gear == GearShifter.park:
+        if self.dp_toyota_auto_unlock:
+          can_sends.append(make_can_msg(0x750, UNLOCK_CMD, 0))
+        if self.dp_toyota_auto_lock:
+          self.lock_once = False
+      elif self.dp_toyota_auto_lock and gear == GearShifter.drive and not self.lock_once and CS.out.vEgo >= LOCK_AT_SPEED:
+        can_sends.append(make_can_msg(0x750, LOCK_CMD, 0))
+        self.lock_once = True
+      self.last_gear = gear
 
     # *** control msgs ***
     # print("steer {0} {1} {2} {3}".format(apply_steer, min_lim, max_lim, CS.steer_torque_motor)
@@ -131,28 +166,29 @@ class CarController:
       can_sends.append(create_gas_interceptor_command(self.packer, interceptor_gas_cmd, self.frame // 2))
       self.gas = interceptor_gas_cmd
 
-    # ui mesg is at 1Hz but we send asap if:
-    # - there is something to display
-    # - there is something to stop displaying
-    fcw_alert = hud_control.visualAlert == VisualAlert.fcw
-    steer_alert = hud_control.visualAlert in (VisualAlert.steerRequired, VisualAlert.ldw)
+    if self.CP.carFingerprint != CAR.PRIUS_V:
+      # ui mesg is at 1Hz but we send asap if:
+      # - there is something to display
+      # - there is something to stop displaying
+      fcw_alert = hud_control.visualAlert == VisualAlert.fcw
+      steer_alert = hud_control.visualAlert in (VisualAlert.steerRequired, VisualAlert.ldw)
 
-    send_ui = False
-    if ((fcw_alert or steer_alert) and not self.alert_active) or \
-       (not (fcw_alert or steer_alert) and self.alert_active):
-      send_ui = True
-      self.alert_active = not self.alert_active
-    elif pcm_cancel_cmd:
-      # forcing the pcm to disengage causes a bad fault sound so play a good sound instead
-      send_ui = True
+      send_ui = False
+      if ((fcw_alert or steer_alert) and not self.alert_active) or \
+         (not (fcw_alert or steer_alert) and self.alert_active):
+        send_ui = True
+        self.alert_active = not self.alert_active
+      elif pcm_cancel_cmd:
+        # forcing the pcm to disengage causes a bad fault sound so play a good sound instead
+        send_ui = True
 
-    if (self.frame % 100 == 0 or send_ui) and (self.CP.carFingerprint != CAR.PRIUS_V):
-      can_sends.append(create_ui_command(self.packer, steer_alert, pcm_cancel_cmd, hud_control.leftLaneVisible,
-                                         hud_control.rightLaneVisible, hud_control.leftLaneDepart,
-                                         hud_control.rightLaneDepart, CC.enabled))
+      if self.frame % 100 == 0 or send_ui:
+        can_sends.append(create_ui_command(self.packer, steer_alert, pcm_cancel_cmd, hud_control.leftLaneVisible,
+                                           hud_control.rightLaneVisible, hud_control.leftLaneDepart,
+                                           hud_control.rightLaneDepart, CC.enabled))
 
-    if (self.frame % 100 == 0 or send_ui) and self.CP.enableDsu:
-      can_sends.append(create_fcw_command(self.packer, fcw_alert))
+      if (self.frame % 100 == 0 or send_ui) and self.CP.enableDsu:
+        can_sends.append(create_fcw_command(self.packer, fcw_alert))
 
     # *** static msgs ***
     for addr, cars, bus, fr_step, vl in STATIC_DSU_MSGS:

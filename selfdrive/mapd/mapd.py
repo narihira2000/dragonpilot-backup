@@ -217,7 +217,7 @@ class MapD():
     turn_speed_limit_section = self.route.current_curvature_speed_limit_section
     horizon_mts = self.gps_speed * LOOK_AHEAD_HORIZON_TIME
     next_turn_speed_limit_sections = self.route.next_curvature_speed_limit_sections(horizon_mts)
-    current_road_name = str(self.route.current_road_name).strip()
+    current_road_name = "" if self.route.current_road_name is None else str(self.route.current_road_name).strip()
 
     map_data_msg = messaging.new_message('liveMapData')
     map_data_msg.valid = sm.all_alive(service_list=['gpsLocationExternal']) and \
@@ -252,15 +252,12 @@ class MapD():
 
     # dp - cache road name to avoid name display blinking
     if current_road_name == "":
-      if self._road_name_last == "":
-        # can't do anything as we do not have any road name history
-        pass
-      else:
-        if self._road_name_last_timed_out == 0.:
-          self._road_name_last_timed_out = sec_since_boot() + ROAD_NAME_TIMEOUT
-        else:
-          if sec_since_boot() <= self._road_name_last_timed_out:
-            current_road_name = self._road_name_last
+      sec = sec_since_boot()
+      if self._road_name_last_timed_out == 0.:
+        self._road_name_last_timed_out = sec + ROAD_NAME_TIMEOUT
+
+      if sec < self._road_name_last_timed_out:
+        current_road_name = self._road_name_last
     else:
       self._road_name_last_timed_out = 0.
       self._road_name_last = current_road_name

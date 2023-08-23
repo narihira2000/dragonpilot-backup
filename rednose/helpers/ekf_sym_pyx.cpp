@@ -9,7 +9,7 @@
         "language": "c++",
         "name": "helpers.ekf_sym_pyx",
         "sources": [
-            "/data/dp-private/rednose/helpers/ekf_sym_pyx.pyx"
+            "/data/openpilot/rednose/helpers/ekf_sym_pyx.pyx"
         ]
     },
     "module_name": "helpers.ekf_sym_pyx"

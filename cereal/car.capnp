@@ -172,6 +172,7 @@ struct CarState {
   # brake pedal, 0.0-1.0
   brake @5 :Float32;      # this is user pedal only
   brakePressed @6 :Bool;  # this is user pedal only
+  regenBraking @45 :Bool; # this is user pedal only
   parkingBrake @39 :Bool;
   brakeHoldActive @38 :Bool;
 
@@ -219,9 +220,9 @@ struct CarState {
   charging @43 :Bool;
 
   # dp
-  cruiseActualEnabled @45 :Bool;
-  engineRPM @46 :Float32;
-  distanceLines @47:UInt8;
+  cruiseActualEnabled @46 :Bool;
+  engineRPM @47 :Float32;
+  distanceLines @48:UInt8;
 
   struct WheelSpeeds {
     # optional wheel speeds

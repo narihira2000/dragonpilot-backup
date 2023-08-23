@@ -24,6 +24,7 @@ confs = [
   {'name': 'dp_jetson', 'default': False, 'type': 'Bool', 'conf_type': ['param']},
 
   # nav service
+  {'name': 'dp_nav', 'default': True, 'type': 'Bool', 'conf_type': ['param']},
   {'name': 'dp_otisserv', 'default': False, 'type': 'Bool', 'conf_type': ['param']},
   {'name': 'dp_nav_mapbox_token_pk', 'default': '', 'type': 'Text', 'conf_type': ['param']},
   {'name': 'dp_nav_mapbox_token_sk', 'default': '', 'type': 'Text', 'conf_type': ['param']},
@@ -68,6 +69,8 @@ confs = [
   {'name': 'dp_ui_event', 'default': True, 'type': 'Bool', 'conf_type': ['param', 'struct']},
   {'name': 'dp_ui_face', 'default': True, 'type': 'Bool', 'conf_type': ['param', 'struct']},
   {'name': 'dp_ui_lead_info', 'default': True, 'type': 'Bool', 'conf_type': ['param', 'struct']},
+  {'name': 'dp_ui_laneline', 'default': True, 'type': 'Bool', 'conf_type': ['param', 'struct']},
+  {'name': 'dp_ui_chevron', 'default': True, 'type': 'Bool', 'conf_type': ['param', 'struct']},
 
   #toyota
   {'name': 'dp_toyota_sng', 'default': False, 'type': 'Bool', 'conf_type': ['param', 'struct']},
@@ -89,11 +92,11 @@ confs = [
   # dashcam related
   {'name': 'dp_dashcamd', 'default': False, 'type': 'Bool', 'conf_type': ['param', 'struct']},
   # # auto shutdown
-  {'name': 'dp_auto_shutdown', 'default': False, 'type': 'Bool', 'conf_type': ['param']},
-  {'name': 'dp_auto_shutdown_in', 'default': 90, 'type': 'UInt16', 'min': 0, 'max': 600, 'depends': [{'name': 'dp_auto_shutdown', 'vals': [True]}], 'conf_type': ['param']},
+  {'name': 'dp_auto_shutdown', 'default': True, 'type': 'Bool', 'conf_type': ['param']},
+  {'name': 'dp_auto_shutdown_in', 'default': 60, 'type': 'UInt16', 'min': 0, 'max': 600, 'depends': [{'name': 'dp_auto_shutdown', 'vals': [True]}], 'conf_type': ['param']},
 
-  {'name': 'dp_mazda_steer_alert', 'default': True, 'type': 'Bool', 'conf_type': ['param', 'struct']},
-  {'name': 'dp_mazda_dashcam_bypass', 'default': True, 'type': 'Bool', 'conf_type': ['param']},
+  {'name': 'dp_mazda_steer_alert', 'default': False, 'type': 'Bool', 'conf_type': ['param', 'struct']},
+  {'name': 'dp_mazda_dashcam_bypass', 'default': False, 'type': 'Bool', 'conf_type': ['param']},
   # # service
   # {'name': 'dp_updated', 'default': False, 'type': 'Bool', 'conf_type': ['param']},
   # {'name': 'dp_logger', 'default': False, 'type': 'Bool', 'conf_type': ['param']},

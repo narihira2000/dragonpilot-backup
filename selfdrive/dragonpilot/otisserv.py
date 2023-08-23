@@ -30,6 +30,7 @@ import requests
 import math
 from common.basedir import BASEDIR
 from common.params import Params
+from common.i18n import supported_languages
 params = Params()
 
 hostName = ""
@@ -254,6 +255,17 @@ class OtisServ(BaseHTTPRequestHandler):
         return "121.3149803", "24.996256935"
     return "-117.1662042", "32.7207742"
 
+  def get_lang(self):
+    lang = params.get("LanguageSetting", encoding='utf8')
+    try:
+      if lang is not None:
+        lang = supported_languages[lang.strip()]
+      else:
+        lang = "en-US"
+    except KeyError:
+      lang = "en-US"
+    return lang
+
   def display_page_gmap_key(self):
     self.wfile.write(bytes(self.get_parsed_template("body", {"{{content}}": self.get_parsed_template("gmap/key_input")}), "utf-8"))
 
@@ -274,7 +286,7 @@ class OtisServ(BaseHTTPRequestHandler):
     self.wfile.write(bytes(self.get_parsed_template("body", {"{{content}}": content }), "utf-8"))
 
   def display_page_gmap(self):
-    self.wfile.write(bytes(self.get_parsed_template("gmap/index.html", {"{{gmap_key}}": self.get_gmap_key()}), "utf-8"))
+    self.wfile.write(bytes(self.get_parsed_template("gmap/index.html", {"{{gmap_key}}": self.get_gmap_key(), "{{language}}": self.get_lang()}), "utf-8"))
 
   def display_page_amap(self):
     self.wfile.write(bytes(self.get_parsed_template("amap/index.html", {"{{amap_key}}": self.get_amap_key(), "{{amap_key_2}}": self.get_amap_key_2()}), "utf-8"))

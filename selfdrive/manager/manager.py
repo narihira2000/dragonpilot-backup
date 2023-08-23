@@ -133,9 +133,11 @@ def manager_thread() -> None:
   ignore: List[str] = []
 
   # dp
-  dp_otisserv = params.get_bool('dp_otisserv')
+  dp_nav = params.get_bool('dp_nav')
+  dp_otisserv = dp_nav and params.get_bool('dp_otisserv')
   ignore += ['dmonitoringmodeld', 'dmonitoringd'] if params.get_bool('dp_jetson') else []
-  ignore += ['otisserv'] if not dp_otisserv else []
+  ignore += ['navd'] if not dp_nav else []
+  ignore += ['otisserv'] if not dp_nav or not dp_otisserv else []
   dp_mapd = params.get_bool('dp_mapd')
   ignore += ['mapd'] if not dp_mapd else []
   ignore += ['gpxd'] if not dp_otisserv and not dp_mapd and not params.get_bool('dp_gpxd') else []

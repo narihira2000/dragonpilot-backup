@@ -8,6 +8,7 @@ supported_languages = {
   "main_zh-CHT": "zh-TW",
   "main_zh-CHS": "zh-CN",
   "main_ko": "ko-KR",
+  "main_ja": "ja-JP",
 }
 
 def events():

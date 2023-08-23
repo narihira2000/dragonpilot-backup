@@ -1,4 +1,13 @@
-dragonpilot 2022.11.01
+dragonpilot 2022.11.14
+=======================
+* Synced with openpilot master 2022.11.14 commits.
+* COMMA: New Model.
+* COMMA: RAV4 TSS2 now uses PID.
+* REFACTORED: Turning off nav will free up some system resource. QR for nav has been move to home button / sidebar.
+* ADDED: 2 new toggle to turn on or off laneline / path and chevron.
+* ADDED: When reversing it will now show DM cam.
+
+dragonpilot [2022.11.01]
 =======================
 * Synced with openpilot master 2022.11.01 commits.
 * COMMA: New Model.

@@ -4,9 +4,17 @@ Dragonpilot Backup
 =======================
 This repository tries to back up each version of Dragonpilot release3. You can switch to the brance you want to install specific version. All branches comes from forks by others, if you have any concern, do not use it.
 
+Installation
+------
+Enter the url as the format below:
+```
+https://smiskol.com/fork/narihira2000/{branch}
+```
+You can replace the `{branch}` in the end of url by the version you want to install that version. For example, enter `https://smiskol.com/fork/narihira2000/r3-v2023.05.12` to install release3 v2023.05.12.
+
 Backed up versions
 ------
-* [x] v2023.07.05 - Backed up from me.
+* [x] v2023.07.05 - Backed up from me (Forked from Dragonpilot Official's repository).
 * [x] v2023.05.12 - Backed up from [tranlocquy](https://github.com/tranlocquy/dragonpilot).
 * [x] v2023.03.27 - Backed up from [Jimmyyk](https://github.com/Jimmyyk/dragonpilot/tree/release3).
 * [x] v2023.02.18 - Backed up from [acornsites](https://github.com/acornsites/dragonpilot/tree/077dc8f7def2b98afe2bb66753b611b5fa0ee196).
